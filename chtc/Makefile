@@ -34,7 +34,7 @@ jobdirs-binomial:
 	cp -rf ../R-libs simdata-binomial/shared/R-libs
 	cp -rf ../R/* simdata-binomial/shared/
 	cp -rf ../seeds.txt simdata-binomial/shared
-	./make-job-dirs.sh 1800 simrun-binomial
+	./make-job-dirs.sh 900 simrun-binomial
 	./mkdag \
 	  --cmdtorun=simulation-binomial.r \
 	  --data=simdata-binomial \
@@ -55,7 +55,7 @@ jobdirs-poisson:
 	cp -rf ../R-libs simdata-poisson/shared/R-libs
 	cp -rf ../R/* simdata-poisson/shared/
 	cp -rf ../seeds.txt simdata-poisson/shared
-	./make-job-dirs.sh 1800 simrun-poisson
+	./make-job-dirs.sh 900 simrun-poisson
 	./mkdag \
 	  --cmdtorun=simulation-poisson.r \
 	  --data=simdata-poisson \
