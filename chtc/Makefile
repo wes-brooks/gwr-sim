@@ -15,7 +15,7 @@ jobdirs-gaussian:
 	cp -rf ../seeds.txt simdata-gaussian/shared
 	./make-job-dirs.sh 1800 simrun-gaussian
 	./mkdag \
-	  --cmdtorun=beauty.r \
+	  --cmdtorun=simulation-gaussian.r \
 	  --data=simdata-gaussian \
 	  --dagdir=simoutput-gaussian \
 	  --pattern=result.txt \
