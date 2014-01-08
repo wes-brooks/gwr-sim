@@ -23,11 +23,11 @@ install.packages("geoR")
 install.packages("glmnet")
 install.packages("lars")
 install.packages("maptools")
-
 install.packages("R-libs/gwselect", repos=NULL, type='source')
 
 log(paste('installations complete', "\n", sep=''))
 
+dir.create('output')
 seeds = as.vector(read.csv("seeds.txt", header=FALSE)[,1])
 B = 100
 N = 30
