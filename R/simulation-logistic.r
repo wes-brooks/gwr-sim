@@ -38,10 +38,15 @@ tau = rep(0.1, settings)
 rho = rep(c(0, 0.5, 0.9), functions)
 params = data.frame(tau, rho)
 
-#Read command-line parameters
-args = commandArgs(trailingOnly=TRUE)
+#Read the cluster and process arguments
+args = scan('jobid.txt', 'character')
+args = strsplit(args, '\\n', fixed=TRUE)[[1]]
 cluster = as.integer(args[1])
 process = as.integer(args[2])
+
+sink("result.txt", append=TRUE)
+cat(paste('process:', args[2], "\n", sep=''))
+sink()
 
 #Simulation parameters are based on the value of process
 setting = process %/% B + 1
