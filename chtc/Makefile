@@ -2,7 +2,7 @@ CHTCUTILS:=chtc-utils
 export CHTCUTILS
 
 submit-gaussian:
-	./submit-gaussian.sh
+	./submit.sh gaussian
 
 jobdirs-gaussian:
 	find 'simdata-gaussian' -wholename 'simdata-gaussian/shared' -prune -o -not -name 'simdata-gaussian' | xargs rm -rf 
@@ -13,7 +13,7 @@ jobdirs-gaussian:
 	cp -rf ../R-libs simdata-gaussian/shared/R-libs
 	cp -rf ../R/* simdata-gaussian/shared/
 	cp -rf ../seeds.txt simdata-gaussian/shared
-	./make-job-dirs.sh 1800 simrun-gaussian
+	./make-job-dirs.sh gaussian 1800
 	./mkdag \
 	  --cmdtorun=simulation-gaussian.r \
 	  --data=simdata-gaussian \
@@ -23,7 +23,7 @@ jobdirs-gaussian:
 	  --version=sl5-R-2.15.3
 
 submit-binomial:
-	./submit-binomial.sh
+	./submit.sh binomial
 
 jobdirs-binomial:
 	find 'simdata-binomial' -wholename 'simdata-binomial/shared' -prune -o -not -name 'simdata-binomial' | xargs rm -rf 
@@ -34,7 +34,7 @@ jobdirs-binomial:
 	cp -rf ../R-libs simdata-binomial/shared/R-libs
 	cp -rf ../R/* simdata-binomial/shared/
 	cp -rf ../seeds.txt simdata-binomial/shared
-	./make-job-dirs.sh 900 simrun-binomial
+	./make-job-dirs.sh binomial 900
 	./mkdag \
 	  --cmdtorun=simulation-binomial.r \
 	  --data=simdata-binomial \
@@ -44,7 +44,7 @@ jobdirs-binomial:
 	  --version=sl5-R-2.15.3
 	  
 submit-poisson:
-	./submit-poisson.sh
+	./submit.sh poisson
 
 jobdirs-poisson:
 	find 'simdata-poisson' -wholename 'simdata-poisson/shared' -prune -o -not -name 'simdata-poisson' | xargs rm -rf 
@@ -55,7 +55,7 @@ jobdirs-poisson:
 	cp -rf ../R-libs simdata-poisson/shared/R-libs
 	cp -rf ../R/* simdata-poisson/shared/
 	cp -rf ../seeds.txt simdata-poisson/shared
-	./make-job-dirs.sh 900 simrun-poisson
+	./make-job-dirs.sh poisson 900
 	./mkdag \
 	  --cmdtorun=simulation-poisson.r \
 	  --data=simdata-poisson \

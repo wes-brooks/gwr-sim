@@ -1,7 +1,7 @@
 #! /bin/sh
 
-for ((i=1; i<=$1; i++))
+for ((i=1; i<=$2; i++))
 do
-  mkdir -p simdata-gaussian/$i
-  echo "$2\n$i" > simdata-gaussian/$i/jobid.txt
+  mkdir -p simdata-$1/$i
+  echo "$1\n$i" > simdata-$1/$i/jobid.txt
 done

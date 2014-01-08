@@ -1,2 +1,0 @@
-cd simoutput-binomial
-condor_submit_dag mydag.dag
