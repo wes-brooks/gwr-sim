@@ -2,7 +2,7 @@ CHTCUTILS:=chtc-utils
 export CHTCUTILS
 
 submit-gaussian:
-	./submit.sh
+	./submit-gaussian.sh
 
 jobdirs-gaussian:
 	find 'simdata-gaussian' -wholename 'simdata-gaussian/shared' -prune -o -not -name 'simdata-gaussian' | xargs rm -rf 

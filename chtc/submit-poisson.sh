@@ -1,2 +1,2 @@
-cd simoutput-gaussian
+cd simoutput-poisson
 condor_submit_dag mydag.dag
