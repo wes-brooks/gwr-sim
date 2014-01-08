@@ -1,0 +1,2 @@
+cd simoutput-gaussian
+condor_submit_dag mydag.dag
