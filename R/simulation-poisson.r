@@ -1,26 +1,32 @@
-library(sp, lib.loc=c('R', 'R-libs/x86_64-redhat-linux-gnu-library/3.0'))
-library(shapefiles, lib.loc'R-libs/x86_64-redhat-linux-gnu-library/3.0')
-library(plotrix, lib.loc='R-libs/x86_64-redhat-linux-gnu-library/3.0')
-library(ggplot2, lib.loc='R-libs/x86_64-redhat-linux-gnu-library/3.0')
-library(RandomFields, lib.loc='R-libs/x86_64-redhat-linux-gnu-library/3.0')
-library(scales, lib.loc='R-libs/x86_64-redhat-linux-gnu-library/3.0')
+sink("result.txt")
+cat(paste('entry', "\n", sep=''))
+sink()
 
-library(foreach, lib.loc='R-libs/x86_64-redhat-linux-gnu-library/3.0')
-library(iterators, lib.loc='R-libs/x86_64-redhat-linux-gnu-library/3.0')
-library(multicore, lib.loc='R-libs/x86_64-redhat-linux-gnu-library/3.0')
-library(doMC, lib.loc='R-libs/x86_64-redhat-linux-gnu-library/3.0')
+#Set ourselves up to import the packages:
+r = getOption("repos")
+r["CRAN"] = "http://cran.wustl.edu"
+options(repos = r)
+rm(r)
+dir.create("rlibs")
+Sys.setenv(R_LIBS="rlibs")
+.libPaths(new="rlibs")
+install.packages("sp")
+install.packages("scales")
+install.packages("foreach")
+install.packages("iterators")
+install.packages("multicore")
+install.packages("geoR")
+install.packages("glmnet")
+install.packages("lars")
+install.packages("maptools")
 
-library(lars, lib.loc='R-libs/x86_64-redhat-linux-gnu-library/3.0')
-library(glmnet, lib.loc='R-libs/x86_64-redhat-linux-gnu-library/3.0')
-library(gwselect, lib.loc='R-libs/x86_64-redhat-linux-gnu-library/3.0')
+install.packages("R-libs/gwselect", repos=NULL, type='source')
 
-library(splancs, lib.loc='R-libs/x86_64-redhat-linux-gnu-library/3.0')
-library(geoR, lib.loc='R-libs/x86_64-redhat-linux-gnu-library/3.0')
-library(maptools, lib.loc='R-libs/x86_64-redhat-linux-gnu-library/3.0')
-library(spgwr, lib.loc='R-libs/x86_64-redhat-linux-gnu-library/3.0')
+sink("result.txt", append=TRUE)
+cat(paste('installations complete', "\n", sep=''))
+sink()
 
-
-seeds = as.vector(read.csv("seeds.csv", header=FALSE)[,1])
+seeds = as.vector(read.csv("seeds.txt", header=FALSE)[,1])
 B = 100
 N = 30
 settings = 9

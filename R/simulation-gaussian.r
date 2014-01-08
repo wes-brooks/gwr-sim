@@ -26,7 +26,7 @@ sink("result.txt", append=TRUE)
 cat(paste('installations complete', "\n", sep=''))
 sink()
 
-seeds = as.vector(read.csv("seeds.csv", header=FALSE)[,1])
+seeds = as.vector(read.csv("seeds.txt", header=FALSE)[,1])
 B = 100
 N = 30
 settings = 18
