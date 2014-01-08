@@ -11,7 +11,6 @@ jobdirs-gaussian:
 	mkdir simdata-gaussian
 	mkdir simdata-gaussian/shared
 	cp -rf ../R-libs simdata-gaussian/shared/R-libs
-	cp -rf ../data simdata-gaussian/shared/data
 	cp -rf ../R/* simdata-gaussian/shared/
 	cp -rf ../seeds.txt simdata-gaussian/shared
 	./make-job-dirs.sh 1800 simrun-gaussian
