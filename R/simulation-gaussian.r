@@ -1,10 +1,10 @@
-log = function(message, file, append=TRUE) {
+write.log = function(message, file, append=TRUE) {
     sink(file, append=append)
     cat(message)
     sink()
 }
 
-log('entry\n', 'result.txt', append=FALSE)
+write.log('entry\n', 'result.txt', append=FALSE)
 
 #Set ourselves up to import the packages:
 r = getOption("repos")
@@ -36,7 +36,7 @@ require(lars)
 require(maptools)
 require(gwselect)
 
-log('installations complete\n', 'result.txt')
+write.log('installations complete\n', 'result.txt')
 
 dir.create('output')
 seeds = as.vector(read.csv("seeds.txt", header=FALSE)[,1])
@@ -59,7 +59,7 @@ args = strsplit(args, '\\n', fixed=TRUE)[[1]]
 cluster = args[1]
 process = as.integer(args[2])
 
-log(paste('process:', args[2], "\n", sep=''), 'result.txt')
+write.log(paste('process:', args[2], "\n", sep=''), 'result.txt')
 
 #Simulation parameters are based on the value of process
 setting = process %/% B + 1
@@ -129,23 +129,23 @@ for (i in 1:N**2) {
     if (vars[i,'B1']) { oracle[[i]] = c(oracle[[i]] , "X1") }
 }
 
-log('generated data\n', 'result.txt')
+write.log('generated data\n', 'result.txt')
 
 
 #MODELS:
-log('making GWAL-LLE model.\n', 'result.txt')
+write.log('making GWAL-LLE model.\n', 'result.txt')
 bw.glmnet = gwglmnet.sel(Y~X1+X2+X3+X4+X5-1, data=sim, family='gaussian', alpha=1, coords=sim[,c('loc.x','loc.y')], longlat=FALSE, mode.select='BIC', gweight=spherical, tol.bw=0.01, s=NULL, bw.method='knn', precondition=FALSE, parallel=FALSE, interact=TRUE, verbose=TRUE, shrunk.fit=FALSE, bw.select='AICc', resid.type='pearson')
 model.glmnet = gwglmnet(Y~X1+X2+X3+X4+X5-1, data=sim, family='gaussian', alpha=1, coords=sim[,c('loc.x','loc.y')], longlat=FALSE, N=1, mode.select='BIC', bw=bw.glmnet[['bw']], gweight=spherical, bw.method='knn', simulation=TRUE, precondition=FALSE, parallel=FALSE, interact=TRUE, verbose=TRUE, shrunk.fit=FALSE)
 
-log('making GWEN-LLE model.\n', 'result.txt')
+write.log('making GWEN-LLE model.\n', 'result.txt')
 bw.enet = gwglmnet.sel(Y~X1+X2+X3+X4+X5-1, data=sim, family='gaussian', alpha='adaptive', coords=sim[,c('loc.x','loc.y')], longlat=FALSE, mode.select='BIC', gweight=spherical, tol.bw=0.01, bw.method='knn', precondition=FALSE, parallel=FALSE, interact=TRUE, verbose=TRUE, shrunk.fit=FALSE, bw.select='AICc', resid.type='pearson')
 model.enet = gwglmnet(Y~X1+X2+X3+X4+X5-1, data=sim, family='gaussian', alpha='adaptive', coords=sim[,c('loc.x','loc.y')], longlat=FALSE, N=1, mode.select='BIC', bw=bw.enet[['bw']], gweight=spherical, bw.method='knn', simulation=TRUE, precondition=FALSE, parallel=FALSE, interact=TRUE, verbose=TRUE, shrunk.fit=FALSE)
 
-log('making oracular model.\n', 'result.txt')
+write.log('making oracular model.\n', 'result.txt')
 bw.oracular = gwglmnet.sel(Y~X1+X2+X3+X4+X5-1, data=sim, family='gaussian', oracle=oracle, coords=sim[,c('loc.x','loc.y')], longlat=FALSE, mode.select='BIC', gweight=spherical, tol.bw=0.01, bw.method='knn', parallel=FALSE, interact=TRUE, verbose=TRUE, shrunk.fit=FALSE, bw.select='AICc', resid.type='pearson')
 model.oracular = gwglmnet(Y~X1+X2+X3+X4+X5-1, data=sim, family='gaussian', oracle=oracle, coords=sim[,c('loc.x','loc.y')], longlat=FALSE, N=1, mode.select='BIC', bw=bw.oracular[['bw']], gweight=spherical, bw.method='knn', simulation=TRUE, parallel=FALSE, interact=TRUE, verbose=TRUE, shrunk.fit=FALSE)
 
-log('making GWR-LLE model.\n', 'result.txt')
+write.log('making GWR-LLE model.\n', 'result.txt')
 oracle2 = lapply(1:900, function(x) {return(c("X1", "X2", "X3", "X4", "X5"))})
 bw.gwr = gwglmnet.sel(Y~X1+X2+X3+X4+X5-1, data=sim, family='gaussian', oracle=oracle2, coords=sim[,c('loc.x','loc.y')], longlat=FALSE, mode.select='BIC', gweight=spherical, tol.bw=0.01, bw.method='knn', parallel=FALSE, interact=FALSE, verbose=TRUE, shrunk.fit=FALSE, bw.select='AICc', resid.type='pearson')
 model.gwr = gwglmnet(Y~X1+X2+X3+X4+X5-1, data=sim, family='gaussian', oracle=oracle2, coords=sim[,c('loc.x','loc.y')], longlat=FALSE, N=1, mode.select='BIC', bw=bw.gwr[['bw']], gweight=spherical, bw.method='knn', simulation=TRUE, parallel=FALSE, interact=FALSE, verbose=TRUE, shrunk.fit=FALSE)
@@ -154,12 +154,12 @@ model.gwr = gwglmnet(Y~X1+X2+X3+X4+X5-1, data=sim, family='gaussian', oracle=ora
 #OUTPUT:
 
 #First, write the data
-log('write the data.\n', 'result.txt')
+write.log('write the data.\n', 'result.txt')
 write.table(sim, file=paste("output/Data.", cluster, ".", process, ".csv", sep=""), sep=',', row.names=FALSE)
 
 
 #glmnet:
-log('summarize GWAL-LLE model.\n', 'result.txt')
+write.log('summarize GWAL-LLE model.\n', 'result.txt')
 vars = c('(Intercept)', 'X1', 'X2', 'X3', 'X4', 'X5')
 
 coefs = t(sapply(1:N**2, function(y) {as.vector(model.glmnet[['model']][['models']][[y]][['coef']])}))
@@ -184,7 +184,7 @@ write.table(output, file=paste("output/MiscParams.", cluster, ".", process, ".gl
 
 
 #enet:
-log('summarize GWEN-LLE model.\n', 'result.txt')
+write.log('summarize GWEN-LLE model.\n', 'result.txt')
 vars = c('(Intercept)', 'X1', 'X2', 'X3', 'X4', 'X5')
 
 coefs = t(sapply(1:N**2, function(y) {as.vector(model.enet[['model']][['models']][[y]][['coef']])}))
@@ -209,7 +209,7 @@ write.table(output, file=paste("output/MiscParams.", cluster, ".", process, ".en
 
 
 #For oracle property:
-log('summarize oracle model.\n', 'result.txt')
+write.log('summarize oracle model.\n', 'result.txt')
 vars = c('(Intercept)', 'X1', 'X2', 'X3', 'X4', 'X5')
 
 coefs = t(sapply(1:N**2, function(y) {as.vector(model.oracular[['model']][['models']][[y]][['coef']])}))
@@ -231,7 +231,7 @@ write.table(output, file=paste("output/MiscParams.", cluster, ".", process, ".or
 
 
 #For all vars:
-log('summarize GWR-LLE model.\n', 'result.txt')
+write.log('summarize GWR-LLE model.\n', 'result.txt')
 vars = c('(Intercept)', 'X1', 'X2', 'X3', 'X4', 'X5')
 
 coefs = t(sapply(1:N**2, function(y) {as.vector(model.gwr[['model']][['models']][[y]][['coef']])}))
@@ -247,4 +247,4 @@ for (i in 2:length(params)) {
 }
 write.table(output, file=paste("output/MiscParams.", cluster, ".", process, ".gwr.csv", sep=""), col.names=params, sep=',', row.names=FALSE)
 
-log('done.\n', 'result.txt')
+write.log('done.\n', 'result.txt')
