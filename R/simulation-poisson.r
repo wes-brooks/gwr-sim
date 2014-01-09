@@ -38,7 +38,6 @@ require(gwselect)
 
 write.log('installations complete\n', 'result.txt')
 
-dir.create('output')
 seeds = as.vector(read.csv("seeds.txt", header=FALSE)[,1])
 B = 100
 N = 30
@@ -148,7 +147,7 @@ model.gwr = gwglmnet(Y~X1+X2+X3+X4+X5-1, data=sim, family='poisson', oracle=orac
 
 #First, write the data
 write.log('write the data.\n', 'result.txt')
-write.table(sim, file=paste("output/Data.", cluster, ".", process, ".csv", sep=""), sep=',', row.names=FALSE)
+write.table(sim, file=paste("Data.", cluster, ".", process, ".csv", sep=""), sep=',', row.names=FALSE)
 
 
 #glmnet:
@@ -156,10 +155,10 @@ write.log('summarize the GWAL-LLE model.\n', 'result.txt')
 vars = c('(Intercept)', 'X1', 'X2', 'X3', 'X4', 'X5')
 
 coefs = t(sapply(1:N**2, function(y) {as.vector(model.glmnet[['model']][['models']][[y]][['coef']])}))
-write.table(coefs, file=paste("output/CoefEstimates.", cluster, ".", process, ".glmnet.csv", sep=""), col.names=vars, sep=',', row.names=FALSE)
+write.table(coefs, file=paste("CoefEstimates.", cluster, ".", process, ".glmnet.csv", sep=""), col.names=vars, sep=',', row.names=FALSE)
 
 coefs = t(sapply(1:N**2, function(y) {as.vector(model.glmnet[['model']][['models']][[y]][['coef.unshrunk']])}))
-write.table(coefs, file=paste("output/CoefEstimates.", cluster, ".", process, ".unshrunk.glmnet.csv", sep=""), col.names=vars, sep=',', row.names=FALSE)
+write.table(coefs, file=paste("CoefEstimates.", cluster, ".", process, ".unshrunk.glmnet.csv", sep=""), col.names=vars, sep=',', row.names=FALSE)
 
 params = c('bw', 'sigma2', 'loss.local', 's2.unshrunk', 'fitted')
 target = params[1]
@@ -169,7 +168,7 @@ for (i in 2:length(params)) {
     target = params[i]
     output = cbind(output, sapply(1:N**2, function(y) {model.glmnet[['model']][['models']][[y]][[target]]}))
 }
-write.table(output, file=paste("output/MiscParams.", cluster, ".", process, ".glmnet.csv", sep=""), col.names=params, sep=',', row.names=FALSE)
+write.table(output, file=paste("MiscParams.", cluster, ".", process, ".glmnet.csv", sep=""), col.names=params, sep=',', row.names=FALSE)
 
 
 
@@ -181,10 +180,10 @@ write.log('summarize the GWEN-LLE model.\n', 'result.txt')
 vars = c('(Intercept)', 'X1', 'X2', 'X3', 'X4', 'X5')
 
 coefs = t(sapply(1:N**2, function(y) {as.vector(model.enet[['model']][['models']][[y]][['coef']])}))
-write.table(coefs, file=paste("output/CoefEstimates.", cluster, ".", process, ".enet.csv", sep=""), col.names=vars, sep=',', row.names=FALSE)
+write.table(coefs, file=paste("CoefEstimates.", cluster, ".", process, ".enet.csv", sep=""), col.names=vars, sep=',', row.names=FALSE)
 
 coefs = t(sapply(1:N**2, function(y) {as.vector(model.enet[['model']][['models']][[y]][['coef.unshrunk']])}))
-write.table(coefs, file=paste("output/CoefEstimates.", cluster, ".", process, ".unshrunk.enet.csv", sep=""), col.names=vars, sep=',', row.names=FALSE)
+write.table(coefs, file=paste("CoefEstimates.", cluster, ".", process, ".unshrunk.enet.csv", sep=""), col.names=vars, sep=',', row.names=FALSE)
 
 params = c('bw', 'sigma2', 'loss.local', 's2.unshrunk', 'fitted')
 target = params[1]
@@ -194,7 +193,7 @@ for (i in 2:length(params)) {
     target = params[i]
     output = cbind(output, sapply(model.enet[['model']][['models']], function(y) {y[[target]]}))
 }
-write.table(output, file=paste("output/MiscParams.", cluster, ".", process, ".enet.csv", sep=""), col.names=params, sep=',', row.names=FALSE)
+write.table(output, file=paste("MiscParams.", cluster, ".", process, ".enet.csv", sep=""), col.names=params, sep=',', row.names=FALSE)
 
 
 
@@ -208,7 +207,7 @@ write.log('summarize the oracle model.\n', 'result.txt')
 vars = c('(Intercept)', 'X1', 'X2', 'X3', 'X4', 'X5')
 
 coefs = t(sapply(1:N**2, function(y) {as.vector(model.oracular[['model']][['models']][[y]][['coef']])}))
-write.table(coefs, file=paste("output/CoefEstimates.", cluster, ".", process, ".oracle.csv", sep=""), col.names=vars, sep=',', row.names=FALSE)
+write.table(coefs, file=paste("CoefEstimates.", cluster, ".", process, ".oracle.csv", sep=""), col.names=vars, sep=',', row.names=FALSE)
 
 params = c('bw', 'sigma2', 'loss.local', 'fitted')
 target = params[1]
@@ -218,7 +217,7 @@ for (i in 2:length(params)) {
     target = params[i]
     output = cbind(output, sapply(1:N**2, function(y) {model.oracular[['model']][['models']][[y]][[target]]}))
 }
-write.table(output, file=paste("output/MiscParams.", cluster, ".", process, ".oracle.csv", sep=""), col.names=params, sep=',', row.names=FALSE)
+write.table(output, file=paste("MiscParams.", cluster, ".", process, ".oracle.csv", sep=""), col.names=params, sep=',', row.names=FALSE)
 
 
 
@@ -229,7 +228,7 @@ write.log('summarize the GWR-LLE model.\n', 'result.txt')
 vars = c('(Intercept)', 'X1', 'X2', 'X3', 'X4', 'X5')
 
 coefs = t(sapply(1:N**2, function(y) {as.vector(model.gwr[['model']][['models']][[y]][['coef']])}))
-write.table(coefs, file=paste("output/CoefEstimates.", cluster, ".", process, ".gwr.csv", sep=""), col.names=vars, sep=',', row.names=FALSE)
+write.table(coefs, file=paste("CoefEstimates.", cluster, ".", process, ".gwr.csv", sep=""), col.names=vars, sep=',', row.names=FALSE)
 
 params = c('bw', 'sigma2', 'loss.local', 'fitted')
 target = params[1]
@@ -239,6 +238,6 @@ for (i in 2:length(params)) {
     target = params[i]
     output = cbind(output, sapply(1:N**2, function(y) {model.gwr[['model']][['models']][[y]][[target]]}))
 }
-write.table(output, file=paste("output/MiscParams.", cluster, ".", process, ".gwr.csv", sep=""), col.names=params, sep=',', row.names=FALSE)
+write.table(output, file=paste("MiscParams.", cluster, ".", process, ".gwr.csv", sep=""), col.names=params, sep=',', row.names=FALSE)
 
 write.log('done.\n', 'result.txt')
