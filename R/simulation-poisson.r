@@ -36,7 +36,6 @@ require(lars)
 require(maptools)
 require(gwselect)
 
-
 log('installations complete\n', 'result.txt')
 
 dir.create('output')
