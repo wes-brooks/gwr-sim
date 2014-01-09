@@ -25,6 +25,17 @@ install.packages("lars")
 install.packages("maptools")
 install.packages("R-libs/gwselect", repos=NULL, type='source')
 
+require(sp)
+require(scales)
+require(foreach)
+require(iterators)
+require(multicore)
+require(geoR)
+require(glmnet)
+require(lars)
+require(maptools)
+require(gwselect)
+
 log(paste('installations complete', "\n", sep=''))
 
 dir.create('output')
@@ -43,7 +54,7 @@ params = data.frame(tau, rho)
 #Read the cluster and process arguments
 args = scan('jobid.txt', 'character')
 args = strsplit(args, '\\n', fixed=TRUE)[[1]]
-cluster = as.integer(args[1])
+cluster = args[1]
 process = as.integer(args[2])
 
 log(paste('process:', args[2], "\n", sep=''))
