@@ -56,7 +56,7 @@ params = data.frame(tau, rho, sigma.tau, sigma)
 args = scan('jobid.txt', 'character')
 args = strsplit(args, '\\n', fixed=TRUE)[[1]]
 cluster = args[1]
-process = as.integer(args[2])
+process = as.integer(args[2]) - 1
 
 write.log(paste('process:', process, "\n", sep=''), 'result.txt')
 
@@ -82,6 +82,8 @@ if (parameters[['tau']] > 0) {
     d5 = rnorm(N**2, mean=0, sd=1)
 }
 
+write.log('generated GRFs', 'result.txt')
+
 loc.x = rep(coord, times=N)
 loc.y = rep(coord, each=N)
 
@@ -89,6 +91,8 @@ loc.y = rep(coord, each=N)
 S = matrix(parameters[['rho']], 5, 5)
 diag(S) = rep(1, 5)
 L = chol(S)
+
+write.log('generated correlation matrix', 'result.txt')
 
 #Force correlation on the Gaussian random fields:
 D = as.matrix(cbind(d1, d2, d3, d4, d5)) %*% L
@@ -100,9 +104,12 @@ X3 = matrix(D[,3], N, N)
 X4 = matrix(D[,4], N, N)
 X5 = matrix(D[,5], N, N)
 
+write.log('generated Xs', 'result.txt')
+
 if (parameters[['sigma.tau']] == 0) {epsilon = rnorm(N**2, mean=0, sd=parameters[['sigma']])}
 if (parameters[['sigma.tau']] > 0) {epsilon = grf(n=N**2, grid='reg', cov.model='exponential', cov.pars=c(parameters[['sigma']]**2,parameters[['sigma.tau']]))$data}
 
+write.log('generated epsilon', 'result.txt')
 
 if ((setting-1) %/% 6 == 0) {
     B1 = matrix(rep(ifelse(coord<=0.4, 0, ifelse(coord<0.6,5*(coord-0.4),1)), N), N, N)
@@ -116,6 +123,8 @@ if ((setting-1) %/% 6 == 0) {
     B1 = matrix(max(d)-d, N, N)
     B1 = B1 / max(B1)
 }
+
+write.log('generated B1 coefficient surface', 'result.txt')
 
 mu = X1*B1
 Y = mu + epsilon
