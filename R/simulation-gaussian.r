@@ -66,6 +66,7 @@ parameters = params[setting,]
 set.seed(seeds[process+1])
 
 write.log(paste('seed:', seeds[process+1], "\n", sep=''), 'result.txt')
+write.log(paste('parameters: ', paste(parameters, collapse=','), "\n", sep=''), 'result.txt')
 
 #Generate the covariates:
 if (parameters[['tau']] > 0) {
