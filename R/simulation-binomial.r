@@ -19,10 +19,14 @@ install.packages("scales")
 install.packages("foreach")
 install.packages("iterators")
 install.packages("multicore")
+install.packages("doMC")
+install.packages("R-libs/RandomFields", repos=NULL, type='source')
 install.packages("geoR")
 install.packages("glmnet")
 install.packages("lars")
 install.packages("maptools")
+install.packages('ggplot2')
+install.packages("plotrix")
 install.packages("R-libs/gwselect", repos=NULL, type='source')
 
 require(sp)
@@ -35,6 +39,7 @@ require(glmnet)
 require(lars)
 require(maptools)
 require(gwselect)
+
 
 write.log('installations complete\n', 'result.txt')
 
