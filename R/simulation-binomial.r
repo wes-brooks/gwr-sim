@@ -66,7 +66,7 @@ write.log(paste('process:', args[2], "\n", sep=''), 'result.txt')
 #Simulation parameters are based on the value of process
 setting = process %/% B + 1
 parameters = params[setting,]
-set.seed(seeds[process+1])
+set.seed(seeds[process+1]) - 1
 
 #Generate the covariates:
 if (parameters[['tau']] > 0) {
