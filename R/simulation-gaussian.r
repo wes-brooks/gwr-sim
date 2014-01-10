@@ -150,7 +150,7 @@ write.log('generated data\n', 'result.txt')
 
 #MODELS:
 write.log('making GWAL-LLE model.\n', 'result.txt')
-bw.glmnet = gwglmnet.sel(Y~X1+X2+X3+X4+X5-1, data=sim, family='gaussian', alpha=1, coords=sim[,c('loc.x','loc.y')], longlat=FALSE, mode.select='BIC', gweight=spherical, tol.bw=0.01, s=NULL, bw.method='knn', precondition=FALSE, parallel=FALSE, interact=TRUE, verbose=TRUE, shrunk.fit=FALSE, bw.select='AICc', resid.type='pearson')
+bw.glmnet = gwglmnet.sel(Y~X1+X2+X3+X4+X5-1, data=sim, family='gaussian', alpha=1, coords=sim[,c('loc.x','loc.y')], longlat=FALSE, mode.select='BIC', gweight=spherical, tol.bw=0.01, bw.method='knn', precondition=FALSE, parallel=FALSE, interact=TRUE, verbose=TRUE, shrunk.fit=FALSE, bw.select='AICc', resid.type='pearson')
 model.glmnet = gwglmnet(Y~X1+X2+X3+X4+X5-1, data=sim, family='gaussian', alpha=1, coords=sim[,c('loc.x','loc.y')], longlat=FALSE, N=1, mode.select='BIC', bw=bw.glmnet[['bw']], gweight=spherical, bw.method='knn', simulation=TRUE, precondition=FALSE, parallel=FALSE, interact=TRUE, verbose=TRUE, shrunk.fit=FALSE)
 
 write.log('making GWEN-LLE model.\n', 'result.txt')
