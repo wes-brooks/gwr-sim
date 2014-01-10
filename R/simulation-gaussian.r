@@ -70,12 +70,15 @@ write.log(paste('parameters: ', paste(parameters, collapse=','), "\n", sep=''), 
 
 #Generate the covariates:
 if (parameters[['tau']] > 0) {
+    write.log(paste('generating GRFs with tau of ', parameters[['tau']], sep=''), 'result.txt')
     d1 = grf(n=N**2, grid='reg', cov.model='exponential', cov.pars=c(1,parameters[['tau']]))$data
+print(d1)
     d2 = grf(n=N**2, grid='reg', cov.model='exponential', cov.pars=c(1,parameters[['tau']]))$data
     d3 = grf(n=N**2, grid='reg', cov.model='exponential', cov.pars=c(1,parameters[['tau']]))$data
     d4 = grf(n=N**2, grid='reg', cov.model='exponential', cov.pars=c(1,parameters[['tau']]))$data
     d5 = grf(n=N**2, grid='reg', cov.model='exponential', cov.pars=c(1,parameters[['tau']]))$data
 } else {
+    write.log('generating GRFs with tau of 0', 'result.txt')
     d1 = rnorm(N**2, mean=0, sd=1)
     d2 = rnorm(N**2, mean=0, sd=1)
     d3 = rnorm(N**2, mean=0, sd=1)
