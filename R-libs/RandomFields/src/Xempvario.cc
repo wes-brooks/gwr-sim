@@ -1,14 +1,13 @@
 /*
- Authors 
- Martin Schlather, schlather@math.uni-mannheim.de 
+ Authors  Martin Schlather, schlather@math.uni-mannheim.de 
 
  a second library for calculating the empirical variogram
 
- Copyright (C) 2002 - 2013 Martin Schlather, 
+ Copyright (C) 2002 - 2011 Martin Schlather, 
 
 This program is free software; you can redistribute it and/or
 modify it under the terms of the GNU General Public License
-as published by the Free Software Foundation; either version 3
+as published by the Free Software Foundation; either version 2
 of the License, or (at your option) any later version.
 
 This program is distributed in the hope that it will be useful,
@@ -68,8 +67,8 @@ void empvarioXT(double *X, double *T,
 { 
   long rep;
   int i, halfnbin,gridpoints[4], err, totalbins, totalspatialbins,
-    twoNphi, twoNphiNbin, Ntheta, nbinNphiNtheta, maxi[4], mini[4], ix, iy, iz,
-    it, endX, startX, endY, startY, endZ, startZ, endT, low, cur, up,
+    twoNphi, twoNphiNbin, Ntheta, nbinNphiNtheta, maxi[4], mini[4],
+    ix, iy, iz, it, endX, startX, endY, startY, endZ, startZ, endT, low, cur,
     ktheta, kphi, nstepTstepT, vec[4], deltaT, x, y, z, t,  j, stepT, nstepT;
   double *xx[4], *BinSq, maxbinsquare, step[4], delta[4], psq[4], dx[4],
     startphi, invsegphi, starttheta, invsegtheta, thetadata, phidata,
@@ -83,8 +82,7 @@ void empvarioXT(double *X, double *T,
   Ntheta = theta[1]==0 ? 1 : (int) theta[1];
   startphi = phi[0] - PI / (double) twoNphi; // [0, 2 pi]
   invsegphi = phi[1] / PI; // note that phi[1] can be zero!
-  //starttheta = theta[0] - PIHALF / (double) Ntheta;  // [0, pi]
-  starttheta = theta[0] - PIHALF;  // [0, pi]
+  starttheta = theta[0] - PIHALF / (double) Ntheta;  // [0, pi]
   invsegtheta = theta[1] / PI; // note that theta[1] can be zero
   nbinNphiNtheta = twoNphiNbin * Ntheta;
  
@@ -99,7 +97,7 @@ void empvarioXT(double *X, double *T,
 
   halfnbin = *nbin / 2;
    
-  if ((BinSq = (double *) MALLOC(sizeof(double)* (*nbin + 1)))==NULL) {
+  if ((BinSq = (double *) malloc(sizeof(double)* (*nbin + 1)))==NULL) {
     err=TOOLS_MEMORYERROR; goto ErrorHandling; 
   }
   totalspatialbins =  twoNphiNbin * Ntheta;
@@ -116,15 +114,12 @@ void empvarioXT(double *X, double *T,
 
   //////////////////////////////////// GRID ////////////////////////////////////
   if (*grid) {
-    error("use option 'fft' for space-time data on a grid");
-
     int segmentbase[6];
 
     segmentbase[0]=1; // here x runs the fastest; 
     for (i=0; i<=3; i++) {
       step[i] = xx[i][XSTEP];
-
-      gridpoints[i] = (int) xx[i][XLENGTH]; 
+      gridpoints[i] = (int) ((xx[i][XEND]-xx[i][XSTART])/step[i] + 1.5); 
       maxi[i] = (int) (sqrt(maxbinsquare) / step[i] + 0.1);
       if (maxi[i] >= gridpoints[i]) maxi[i] = gridpoints[i] - 1;
       mini[i] = -maxi[i];
@@ -169,6 +164,7 @@ void empvarioXT(double *X, double *T,
 	  vec[2] = vec[1] + iz * segmentbase[2];
 	 
 	  {
+	    int up;
 	    low=0; up= *nbin; /* */ cur= halfnbin;
 	    while(low!=up){
 	      if (psq[2] > BinSq[cur]) {low=cur;} else {up=cur-1;}/*( . ; . ]*/ 
@@ -211,14 +207,14 @@ void empvarioXT(double *X, double *T,
 		  endT = gridpoints[3] * segmentbase[3] - vec[3];
 		  for (t=z; t<endT; t+=segmentbase[3]) {
 		    for (rep = t; rep < segmentbase[5]; rep += segmentbase[4]) {
-		      double x2;
+		      double x;
 		      int rv;
 		      rv = rep + vec[3];
 		      assert(rv < segmentbase[5] && rv >=0);
-		      x2 = values[rep] - values[rv];
-		      x2 *= x2;
-		      sum[it] += x2;
-		      sq[it] += x2 * x2;
+		      x = values[rep] - values[rv];
+		      x *= x;
+		      sum[it] += x;
+		      sq[it] += x * x;
 		    } // repeat	
 		    n[it]++;
 		  } // t
@@ -236,7 +232,7 @@ void empvarioXT(double *X, double *T,
     spatial = *lx;
     i = 3;
     step[i] = xx[i][XSTEP];
-    gridpoints[i] = (int) xx[i][XLENGTH];
+    gridpoints[i] = (int) ((xx[i][XEND]-xx[i][XSTART])/step[i] + 1.5); 
     totalpoints = spatial * gridpoints[i];
     totalpointsrepet = totalpoints * *repet;
     for (i=0;i<spatial;i++) { // to have a better performance for large 
@@ -251,6 +247,7 @@ void empvarioXT(double *X, double *T,
 	distSq += dx[2] * dx[2];
 			
 	if ((distSq>BinSq[0]) && (distSq<=BinSq[*nbin])) {
+	  int up, cur,low;
 	  low=0; up=*nbin; cur=halfnbin;
 	  while (low!=up) {
 	    if (distSq> BinSq[cur]) {low=cur;} else {up=cur-1;} // ( * ; * ]  
@@ -277,15 +274,13 @@ void empvarioXT(double *X, double *T,
 	    endT= totalpoints - deltaT * spatial;
 	    for (t=0; t<endT; t+=spatial) {
 	      for (rep = t; rep < totalpointsrepet; rep += totalpoints){ 
-		double x2;
-		x2 = values[rep + jj] - values[i + rep];
-		if (R_FINITE(x2)) {
-		  x2 *= x2;
-		  sum[low] += x2;
-		  sq[low] += x2 * x2;
-		  n[low]++;
-		}
+		double x;
+		x = values[rep + jj] - values[i + rep];
+		x *= x;
+		sum[low] += x;
+		sq[low] += x * x;
 	      }
+	      n[low]++;
 	    } // t
 	  } // deltat
 	} // if (distSq)
@@ -295,6 +290,7 @@ void empvarioXT(double *X, double *T,
     
 
   for (i=0; i<totalbins; i++) {
+    n[i] *= *repet;
     sum[i] *= 0.5;
     sq[i] *= 0.25;
   }
