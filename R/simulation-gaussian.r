@@ -71,6 +71,8 @@ write.log(paste('parameters: ', paste(parameters, collapse=','), "\n", sep=''), 
 #Generate the covariates:
 if (parameters[['tau']] > 0) {
     write.log(paste('generating GRFs with tau of ', parameters[['tau']], sep=''), 'result.txt')
+print('making d1')
+print(grf)
     d1 = grf(n=N**2, grid='reg', cov.model='exponential', cov.pars=c(1,parameters[['tau']]))$data
 print(d1)
     d2 = grf(n=N**2, grid='reg', cov.model='exponential', cov.pars=c(1,parameters[['tau']]))$data
