@@ -1,10 +1,8 @@
 CHTCUTILS:=chtc-utils
 export CHTCUTILS
 
-submit-gaussian:
-	./submit.sh gaussian
 
-jobdirs-gaussian:
+gaussian:
 	find 'simdata-gaussian' -wholename 'simdata-gaussian/shared' -prune -o -not -name 'simdata-gaussian' | xargs rm -rf 
 	rm -rf simoutput-gaussian
 	rm -rf simdata-gaussian
@@ -21,11 +19,10 @@ jobdirs-gaussian:
 	  --pattern=result.txt \
 	  --type=R \
 	  --version=sl5-R-2.15.3
+	./submit.sh gaussian
 
-submit-binomial:
-	./submit.sh binomial
 
-jobdirs-binomial:
+binomial:
 	find 'simdata-binomial' -wholename 'simdata-binomial/shared' -prune -o -not -name 'simdata-binomial' | xargs rm -rf 
 	rm -rf simoutput-binomial
 	rm -rf simdata-binomial
@@ -42,11 +39,11 @@ jobdirs-binomial:
 	  --pattern=result.txt \
 	  --type=R \
 	  --version=sl5-R-2.15.3
+	./submit.sh binomial
 	  
-submit-poisson:
-	./submit.sh poisson
 
-jobdirs-poisson:
+
+poisson:
 	find 'simdata-poisson' -wholename 'simdata-poisson/shared' -prune -o -not -name 'simdata-poisson' | xargs rm -rf 
 	rm -rf simoutput-poisson
 	rm -rf simdata-poisson
@@ -63,3 +60,4 @@ jobdirs-poisson:
 	  --pattern=result.txt \
 	  --type=R \
 	  --version=sl5-R-2.15.3
+	./submit.sh poisson

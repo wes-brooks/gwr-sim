@@ -59,14 +59,14 @@ params = data.frame(tau, rho)
 args = scan('jobid.txt', 'character')
 args = strsplit(args, '\\n', fixed=TRUE)[[1]]
 cluster = args[1]
-process = as.integer(args[2])
+process = as.integer(args[2]) - 1
 
 write.log(paste('process:', args[2], "\n", sep=''), 'result.txt')
 
 #Simulation parameters are based on the value of process
 setting = process %/% B + 1
 parameters = params[setting,]
-set.seed(seeds[process+1]) - 1
+set.seed(seeds[process+1])
 
 #Generate the covariates:
 if (parameters[['tau']] > 0) {
