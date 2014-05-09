@@ -23,11 +23,10 @@ install.packages("doMC")
 install.packages("R-libs/RandomFields", repos=NULL, type='source')
 install.packages("geoR")
 install.packages("glmnet")
-install.packages("lars")
 install.packages("maptools")
 install.packages('ggplot2')
 install.packages("plotrix")
-install.packages("R-libs/gwselect", repos=NULL, type='source')
+install.packages("R-libs/lagr", repos=NULL, type='source')
 
 require(sp)
 require(scales)
@@ -36,9 +35,8 @@ require(iterators)
 require(multicore)
 require(geoR)
 require(glmnet)
-require(lars)
 require(maptools)
-require(gwselect)
+require(lagr)
 
 write.log('installations complete\n', 'result.txt')
 
@@ -149,22 +147,19 @@ write.log('generated data\n', 'result.txt')
 
 
 #MODELS:
-write.log('making GWAL-LLE model.\n', 'result.txt')
-bw.glmnet = gwglmnet.sel(Y~X1+X2+X3+X4+X5-1, data=sim, family='gaussian', alpha=1, coords=sim[,c('loc.x','loc.y')], longlat=FALSE, mode.select='BIC', gweight=spherical, tol.bw=0.01, bw.method='knn', precondition=FALSE, parallel=FALSE, interact=TRUE, verbose=FALSE, shrunk.fit=FALSE, bw.select='AICc', resid.type='pearson')
-model.glmnet = gwglmnet(Y~X1+X2+X3+X4+X5-1, data=sim, family='gaussian', alpha=1, coords=sim[,c('loc.x','loc.y')], longlat=FALSE, N=1, mode.select='BIC', bw=bw.glmnet[['bw']], gweight=spherical, bw.method='knn', simulation=TRUE, precondition=FALSE, parallel=FALSE, interact=TRUE, verbose=FALSE, shrunk.fit=FALSE)
+write.log('making lagr model.\n', 'result.txt')
+bw.lagr = lagr.sel(Y~X1+X2+X3+X4+X5-1, data=sim, family='gaussian', coords=sim[,c('loc.x','loc.y')], longlat=FALSE, varselect.method='AICc', kernel=epanechnikov, tol.bw=0.01, bw.type='knn', parallel=FALSE, interact=TRUE, verbose=FALSE, bwselect.method='AICc', resid.type='pearson')
+model.lagr = lagr(Y~X1+X2+X3+X4+X5-1, data=sim, family='gaussian', coords=sim[,c('loc.x','loc.y')], longlat=FALSE, N=1, varselect.method='AICc', bw=bw.lagr[['bw']], kernel=epanechnikov, bw.type='knn', simulation=TRUE, parallel=FALSE, interact=TRUE, verbose=FALSE)
 
-write.log('making GWEN-LLE model.\n', 'result.txt')
-bw.enet = gwglmnet.sel(Y~X1+X2+X3+X4+X5-1, data=sim, family='gaussian', alpha='adaptive', coords=sim[,c('loc.x','loc.y')], longlat=FALSE, mode.select='BIC', gweight=spherical, tol.bw=0.01, bw.method='knn', precondition=FALSE, parallel=FALSE, interact=TRUE, verbose=FALSE, shrunk.fit=FALSE, bw.select='AICc', resid.type='pearson')
-model.enet = gwglmnet(Y~X1+X2+X3+X4+X5-1, data=sim, family='gaussian', alpha='adaptive', coords=sim[,c('loc.x','loc.y')], longlat=FALSE, N=1, mode.select='BIC', bw=bw.enet[['bw']], gweight=spherical, bw.method='knn', simulation=TRUE, precondition=FALSE, parallel=FALSE, interact=TRUE, verbose=FALSE, shrunk.fit=FALSE)
+#write.log('making oracular model.\n', 'result.txt')
+#bw.oracular = gwglmnet.sel(Y~X1+X2+X3+X4+X5-1, data=sim, family='gaussian', oracle=oracle, coords=sim[,c('loc.x','loc.y')], longlat=FALSE, mode.select='BIC', gweight=spherical, tol.bw=0.01, bw.method='knn', parallel=FALSE, interact=TRUE, verbose=FALSE, shrunk.fit=FALSE, bw.select='AICc', resid.type='pearson')
+#model.oracular = gwglmnet(Y~X1+X2+X3+X4+X5-1, data=sim, family='gaussian', oracle=oracle, coords=sim[,c('loc.x','loc.y')], longlat=FALSE, N=1, mode.select='BIC', bw=bw.oracular[['bw']], gweight=spherical, bw.method='knn', simulation=TRUE, parallel=FALSE, interact=TRUE, verbose=FALSE, shrunk.fit=FALSE)
 
-write.log('making oracular model.\n', 'result.txt')
-bw.oracular = gwglmnet.sel(Y~X1+X2+X3+X4+X5-1, data=sim, family='gaussian', oracle=oracle, coords=sim[,c('loc.x','loc.y')], longlat=FALSE, mode.select='BIC', gweight=spherical, tol.bw=0.01, bw.method='knn', parallel=FALSE, interact=TRUE, verbose=FALSE, shrunk.fit=FALSE, bw.select='AICc', resid.type='pearson')
-model.oracular = gwglmnet(Y~X1+X2+X3+X4+X5-1, data=sim, family='gaussian', oracle=oracle, coords=sim[,c('loc.x','loc.y')], longlat=FALSE, N=1, mode.select='BIC', bw=bw.oracular[['bw']], gweight=spherical, bw.method='knn', simulation=TRUE, parallel=FALSE, interact=TRUE, verbose=FALSE, shrunk.fit=FALSE)
+#write.log('making gwr model.\n', 'result.txt')
+#oracle2 = lapply(1:nrow(sim), function(x) {return(c("X1", "X2", "X3", "X4", "X5"))})
+#bw.gwr = gwglmnet.sel(Y~X1+X2+X3+X4+X5-1, data=sim, family='gaussian', oracle=oracle, coords=sim[,c('loc.x','loc.y')], longlat=FALSE, mode.select='BIC', gweight=spherical, tol.bw=0.01, bw.method='knn', parallel=FALSE, interact=TRUE, verbose=FALSE, shrunk.fit=FALSE, bw.select='AICc', resid.type='pearson')
+#model.gwr = gwglmnet(Y~X1+X2+X3+X4+X5-1, data=sim, family='gaussian', oracle=oracle2, coords=sim[,c('loc.x','loc.y')], longlat=FALSE, N=1, mode.select='BIC', bw=bw.oracular[['bw']], gweight=spherical, bw.method='knn', simulation=TRUE, parallel=FALSE, interact=TRUE, verbose=FALSE, shrunk.fit=FALSE)
 
-write.log('making GWR-LLE model.\n', 'result.txt')
-oracle2 = lapply(1:900, function(x) {return(c("X1", "X2", "X3", "X4", "X5"))})
-bw.gwr = gwglmnet.sel(Y~X1+X2+X3+X4+X5-1, data=sim, family='gaussian', oracle=oracle2, coords=sim[,c('loc.x','loc.y')], longlat=FALSE, mode.select='BIC', gweight=spherical, tol.bw=0.01, bw.method='knn', parallel=FALSE, interact=FALSE, verbose=FALSE, shrunk.fit=FALSE, bw.select='AICc', resid.type='pearson')
-model.gwr = gwglmnet(Y~X1+X2+X3+X4+X5-1, data=sim, family='gaussian', oracle=oracle2, coords=sim[,c('loc.x','loc.y')], longlat=FALSE, N=1, mode.select='BIC', bw=bw.gwr[['bw']], gweight=spherical, bw.method='knn', simulation=TRUE, parallel=FALSE, interact=FALSE, verbose=FALSE, shrunk.fit=FALSE)
 
 
 #OUTPUT:
@@ -174,50 +169,23 @@ write.log('write the data.\n', 'result.txt')
 write.table(sim, file=paste("Data.", cluster, ".", process, ".csv", sep=""), sep=',', row.names=FALSE)
 
 
-#glmnet:
-write.log('summarize GWAL-LLE model.\n', 'result.txt')
+#LAGR:
+write.log('summarize LAGR model.\n', 'result.txt')
+write.log(paste('LAGR bandwidth: ', bw.lagr[['bw']], '.\n', sep=''), 'result.txt')
 vars = c('(Intercept)', 'X1', 'X2', 'X3', 'X4', 'X5')
 
-coefs = t(sapply(1:N**2, function(y) {as.vector(model.glmnet[['model']][['models']][[y]][['coef']])}))
-write.table(coefs, file=paste("CoefEstimates.", cluster, ".", process, ".glmnet.csv", sep=""), col.names=vars, sep=',', row.names=FALSE)
+coefs = t(sapply(1:N**2, function(y) {as.vector(model.lagr[['model']][['models']][[y]][['coef']])}))
+write.table(coefs, file=paste("CoefEstimates.", cluster, ".", process, ".lagr.csv", sep=""), col.names=vars, sep=',', row.names=FALSE)
 
-coefs = t(sapply(1:N**2, function(y) {as.vector(model.glmnet[['model']][['models']][[y]][['coef.unshrunk']])}))
-write.table(coefs, file=paste("CoefEstimates.", cluster, ".", process, ".unshrunk.glmnet.csv", sep=""), col.names=vars, sep=',', row.names=FALSE)
-
-params = c('bw', 'sigma2', 'loss.local', 's2.unshrunk', 'fitted')
+params = c('bw', 'sigma2', 'fitted')
 target = params[1]
-output = sapply(1:N**2, function(y) {model.glmnet[['model']][['models']][[y]][[target]]})
+output = sapply(1:N**2, function(y) {model.lagr[['model']][['models']][[y]][[target]]})
 
 for (i in 2:length(params)) {
     target = params[i]
-    output = cbind(output, sapply(1:N**2, function(y) {model.glmnet[['model']][['models']][[y]][[target]]}))
+    output = cbind(output, sapply(1:N**2, function(y) {model.lagr[['model']][['models']][[y]][[target]]}))
 }
-write.table(output, file=paste("MiscParams.", cluster, ".", process, ".glmnet.csv", sep=""), col.names=params, sep=',', row.names=FALSE)
-
-
-
-
-
-
-#enet:
-write.log('summarize GWEN-LLE model.\n', 'result.txt')
-vars = c('(Intercept)', 'X1', 'X2', 'X3', 'X4', 'X5')
-
-coefs = t(sapply(1:N**2, function(y) {as.vector(model.enet[['model']][['models']][[y]][['coef']])}))
-write.table(coefs, file=paste("CoefEstimates.", cluster, ".", process, ".enet.csv", sep=""), col.names=vars, sep=',', row.names=FALSE)
-
-coefs = t(sapply(1:N**2, function(y) {as.vector(model.enet[['model']][['models']][[y]][['coef.unshrunk']])}))
-write.table(coefs, file=paste("CoefEstimates.", cluster, ".", process, ".unshrunk.enet.csv", sep=""), col.names=vars, sep=',', row.names=FALSE)
-
-params = c('bw', 'sigma2', 'loss.local', 's2.unshrunk', 'fitted')
-target = params[1]
-output = sapply(model.enet[['model']][['models']], function(y) {y[[target]]})
-
-for (i in 2:length(params)) {
-    target = params[i]
-    output = cbind(output, sapply(model.enet[['model']][['models']], function(y) {y[[target]]}))
-}
-write.table(output, file=paste("MiscParams.", cluster, ".", process, ".enet.csv", sep=""), col.names=params, sep=',', row.names=FALSE)
+write.table(output, file=paste("MiscParams.", cluster, ".", process, ".lagr.csv", sep=""), col.names=params, sep=',', row.names=FALSE)
 
 
 
@@ -225,21 +193,21 @@ write.table(output, file=paste("MiscParams.", cluster, ".", process, ".enet.csv"
 
 
 #For oracle property:
-write.log('summarize oracle model.\n', 'result.txt')
-vars = c('(Intercept)', 'X1', 'X2', 'X3', 'X4', 'X5')
+#write.log('summarize oracle model.\n', 'result.txt')
+#vars = c('(Intercept)', 'X1', 'X2', 'X3', 'X4', 'X5')
 
-coefs = t(sapply(1:N**2, function(y) {as.vector(model.oracular[['model']][['models']][[y]][['coef']])}))
+#coefs = t(sapply(1:N**2, function(y) {as.vector(model.oracular[['model']][['models']][[y]][['coef']])}))
 write.table(coefs, file=paste("CoefEstimates.", cluster, ".", process, ".oracle.csv", sep=""), col.names=vars, sep=',', row.names=FALSE)
 
-params = c('bw', 'sigma2', 'loss.local', 'fitted')
-target = params[1]
-output = sapply(1:N**2, function(y) {model.oracular[['model']][['models']][[y]][[target]]})
+#params = c('bw', 'sigma2', 'loss.local', 'fitted')
+#target = params[1]
+#output = sapply(1:N**2, function(y) {model.oracular[['model']][['models']][[y]][[target]]})
 
-for (i in 2:length(params)) {
-    target = params[i]
-    output = cbind(output, sapply(1:N**2, function(y) {model.oracular[['model']][['models']][[y]][[target]]}))
-}
-write.table(output, file=paste("MiscParams.", cluster, ".", process, ".oracle.csv", sep=""), col.names=params, sep=',', row.names=FALSE)
+#for (i in 2:length(params)) {
+#    target = params[i]
+#    output = cbind(output, sapply(1:N**2, function(y) {model.oracular[['model']][['models']][[y]][[target]]}))
+#}
+#write.table(output, file=paste("MiscParams.", cluster, ".", process, ".oracle.csv", sep=""), col.names=params, sep=',', row.names=FALSE)
 
 
 
@@ -247,20 +215,20 @@ write.table(output, file=paste("MiscParams.", cluster, ".", process, ".oracle.cs
 
 
 #For all vars:
-write.log('summarize GWR-LLE model.\n', 'result.txt')
-vars = c('(Intercept)', 'X1', 'X2', 'X3', 'X4', 'X5')
+#write.log('summarize GWR-LLE model.\n', 'result.txt')
+#vars = c('(Intercept)', 'X1', 'X2', 'X3', 'X4', 'X5')
 
-coefs = t(sapply(1:N**2, function(y) {as.vector(model.gwr[['model']][['models']][[y]][['coef']])}))
-write.table(coefs, file=paste("CoefEstimates.", cluster, ".", process, ".gwr.csv", sep=""), col.names=vars, sep=',', row.names=FALSE)
+#coefs = t(sapply(1:N**2, function(y) {as.vector(model.gwr[['model']][['models']][[y]][['coef']])}))
+#write.table(coefs, file=paste("CoefEstimates.", cluster, ".", process, ".gwr.csv", sep=""), col.names=vars, sep=',', row.names=FALSE)
 
-params = c('bw', 'sigma2', 'loss.local', 'fitted')
-target = params[1]
-output = sapply(1:N**2, function(y) {model.gwr[['model']][['models']][[y]][[target]]})
+#params = c('bw', 'sigma2', 'loss.local', 'fitted')
+#target = params[1]
+#output = sapply(1:N**2, function(y) {model.gwr[['model']][['models']][[y]][[target]]})
 
-for (i in 2:length(params)) {
-    target = params[i]
-    output = cbind(output, sapply(1:N**2, function(y) {model.gwr[['model']][['models']][[y]][[target]]}))
-}
-write.table(output, file=paste("MiscParams.", cluster, ".", process, ".gwr.csv", sep=""), col.names=params, sep=',', row.names=FALSE)
+#for (i in 2:length(params)) {
+#    target = params[i]
+#    output = cbind(output, sapply(1:N**2, function(y) {model.gwr[['model']][['models']][[y]][[target]]}))
+#}
+#write.table(output, file=paste("MiscParams.", cluster, ".", process, ".gwr.csv", sep=""), #col.names=params, sep=',', row.names=FALSE)
 
 write.log('done.\n', 'result.txt')
