@@ -143,8 +143,8 @@ write.log('generated data\n', 'result.txt')
 
 #MODELS:
 write.log('making lagr model.\n', 'result.txt')
-bw.lagr = lagr.sel(Y~X1+X2+X3+X4+X5-1, data=sim, family='gaussian', coords=sim[,c('loc.x','loc.y')], longlat=FALSE, varselect.method='AICc', kernel=epanechnikov, tol.bw=0.01, bw.type='knn', parallel=FALSE, interact=TRUE, verbose=FALSE, bwselect.method='AICc', resid.type='pearson')
-model.lagr = lagr(Y~X1+X2+X3+X4+X5-1, data=sim, family='gaussian', coords=sim[,c('loc.x','loc.y')], longlat=FALSE, N=1, varselect.method='AICc', bw=bw.lagr[['bw']], kernel=epanechnikov, bw.type='knn', simulation=TRUE, parallel=FALSE, interact=TRUE, verbose=FALSE)
+bw.lagr = lagr.sel(Y~X1+X2+X3+X4+X5-1, data=sim, family='gaussian', coords=sim[,c('loc.x','loc.y')], longlat=FALSE, varselect.method='AICc', kernel=epanechnikov, tol.bw=0.01, bw.type='knn', verbose=FALSE, bwselect.method='AICc', resid.type='pearson')
+model.lagr = lagr(Y~X1+X2+X3+X4+X5-1, data=sim, family='gaussian', coords=sim[,c('loc.x','loc.y')], longlat=FALSE, varselect.method='AICc', bw=bw.lagr[['bw']], kernel=epanechnikov, bw.type='knn', simulation=TRUE, verbose=FALSE)
 
 #write.log('making oracular model.\n', 'result.txt')
 #bw.oracular = gwglmnet.sel(Y~X1+X2+X3+X4+X5-1, data=sim, family='gaussian', oracle=oracle, coords=sim[,c('loc.x','loc.y')], longlat=FALSE, mode.select='BIC', gweight=spherical, tol.bw=0.01, bw.method='knn', parallel=FALSE, interact=TRUE, verbose=FALSE, shrunk.fit=FALSE, bw.select='AICc', resid.type='pearson')
@@ -169,16 +169,16 @@ write.log('summarize LAGR model.\n', 'result.txt')
 write.log(paste('LAGR bandwidth: ', bw.lagr[['bw']], '.\n', sep=''), 'result.txt')
 vars = c('(Intercept)', 'X1', 'X2', 'X3', 'X4', 'X5')
 
-coefs = t(sapply(1:N**2, function(y) {as.vector(model.lagr[['model']][['models']][[y]][['coef']])}))
+coefs = t(sapply(model.lagr[['model']][['models']], function(x) as.vector(x[['coef']])))
 write.table(coefs, file=paste("CoefEstimates.", cluster, ".", process, ".lagr.csv", sep=""), col.names=vars, sep=',', row.names=FALSE)
 
-params = c('bw', 'sigma2', 'fitted')
+params = c('sigma2', 'fitted')
 target = params[1]
-output = sapply(1:N**2, function(y) {model.lagr[['model']][['models']][[y]][[target]]})
+output = sapply(model.lagr[['model']][['models']], function(x) x[[target]])
 
 for (i in 2:length(params)) {
     target = params[i]
-    output = cbind(output, sapply(1:N**2, function(y) {model.lagr[['model']][['models']][[y]][[target]]}))
+    output = cbind(output, sapply(model.lagr[['model']][['models']], function(x) x[[target]]))
 }
 write.table(output, file=paste("MiscParams.", cluster, ".", process, ".lagr.csv", sep=""), col.names=params, sep=',', row.names=FALSE)
 
@@ -192,7 +192,7 @@ write.table(output, file=paste("MiscParams.", cluster, ".", process, ".lagr.csv"
 #vars = c('(Intercept)', 'X1', 'X2', 'X3', 'X4', 'X5')
 
 #coefs = t(sapply(1:N**2, function(y) {as.vector(model.oracular[['model']][['models']][[y]][['coef']])}))
-write.table(coefs, file=paste("CoefEstimates.", cluster, ".", process, ".oracle.csv", sep=""), col.names=vars, sep=',', row.names=FALSE)
+#write.table(coefs, file=paste("CoefEstimates.", cluster, ".", process, ".oracle.csv", sep=""), col.names=vars, sep=',', row.names=FALSE)
 
 #params = c('bw', 'sigma2', 'loss.local', 'fitted')
 #target = params[1]
