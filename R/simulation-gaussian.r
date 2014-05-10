@@ -172,14 +172,9 @@ vars = c('(Intercept)', 'X1', 'X2', 'X3', 'X4', 'X5')
 coefs = t(sapply(model.lagr[['model']][['models']], function(x) as.vector(x[['coef']])))
 write.table(coefs, file=paste("CoefEstimates.", cluster, ".", process, ".lagr.csv", sep=""), col.names=vars, sep=',', row.names=FALSE)
 
-params = c('sigma2', 'fitted')
-target = params[1]
-output = sapply(model.lagr[['model']][['models']], function(x) x[[target]])
-
-for (i in 2:length(params)) {
-    target = params[i]
-    output = cbind(output, sapply(model.lagr[['model']][['models']], function(x) x[[target]]))
-}
+output = matrix(NA,0,2)
+output = t(sapply(model.lagr[['model']][['models']], function(x) c(x[['sigma2']][x[['s']]], x[['fitted']])))
+colnames(output) = c("s2", "fitted")
 write.table(output, file=paste("MiscParams.", cluster, ".", process, ".lagr.csv", sep=""), col.names=params, sep=',', row.names=FALSE)
 
 
