@@ -172,7 +172,7 @@ write.table(coefs, file=paste("CoefEstimates.", cluster, ".", process, ".lagr.cs
 output = matrix(NA,0,2)
 output = t(sapply(model.lagr[['model']][['models']], function(x) c(x[['sigma2']][x[['s']]], x[['fitted']])))
 colnames(output) = c("s2", "fitted")
-write.table(output, file=paste("MiscParams.", cluster, ".", process, ".lagr.csv", sep=""), col.names=colnames(output), sep=',', row.names=FALSE)
+write.table(output, file=paste("MiscParams.", cluster, ".", process, ".lagr.csv", sep=""), sep=',', row.names=FALSE)
 
 
 
