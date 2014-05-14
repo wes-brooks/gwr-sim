@@ -1,0 +1,126 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<html><head><title>R: Space-time K-functions</title>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+<link rel="stylesheet" type="text/css" href="R.css">
+</head><body>
+
+<table width="100%" summary="page for stkhat {splancs}"><tr><td>stkhat {splancs}</td><td align="right">R Documentation</td></tr></table>
+
+<h2>
+Space-time K-functions
+</h2>
+
+<h3>Description</h3>
+
+<p>Compute the space-time K-functions
+</p>
+
+
+<h3>Usage</h3>
+
+<pre>
+stkhat(pts, times, poly, tlimits, s, tm)
+</pre>
+
+
+<h3>Arguments</h3>
+
+<table summary="R argblock">
+<tr valign="top"><td><code>pts</code></td>
+<td>
+
+<p>A set of points as defined in Splancs
+</p>
+</td></tr>
+<tr valign="top"><td><code>times</code></td>
+<td>
+
+<p>A vector of times, the same length as the number of points in <code>pts</code>
+</p>
+</td></tr>
+<tr valign="top"><td><code>poly</code></td>
+<td>
+
+<p>A polygon enclosing the points
+</p>
+</td></tr>
+<tr valign="top"><td><code>tlimits</code></td>
+<td>
+
+<p>A vector of length 2 specifying the upper and lower temporal domain.
+</p>
+</td></tr>
+<tr valign="top"><td><code>s</code></td>
+<td>
+
+<p>A vector of spatial distances for the analysis.
+</p>
+</td></tr>
+<tr valign="top"><td><code>tm</code></td>
+<td>
+
+<p>A vector of times for the analysis
+</p>
+</td></tr></table>
+
+
+<h3>Value</h3>
+
+<p>A list with the following components is returned:
+</p>
+<table summary="R valueblock">
+<tr valign="top"><td><code>s, t</code></td>
+<td>
+<p>The spatial and temporal scales</p>
+</td></tr>
+<tr valign="top"><td><code>ks</code></td>
+<td>
+<p>The spatial K-function</p>
+</td></tr>
+<tr valign="top"><td><code>kt</code></td>
+<td>
+<p>The temporal K-function</p>
+</td></tr>
+<tr valign="top"><td><code>kst</code></td>
+<td>
+<p>The space-time K-function</p>
+</td></tr>
+</table>
+<p>For details see Diggle, Chetwynd, Haggkvist, and Morris (1995)
+</p>
+
+
+<h3>References</h3>
+
+<p>Diggle, P., Chetwynd, A., Haggkvist, R. and Morris, S. 1995 Second-order analysis of space-time clustering. Statistical Methods in Medical Research, 4, 124-136;Bailey, T. C. and Gatrell, A. C. 1995, Interactive spatial data analysis. Longman, Harlow, pp. 122-125;
+Rowlingson, B. and Diggle, P. 1993 Splancs: spatial point pattern analysis
+code in S-Plus.  Computers and Geosciences, 19, 627-655;
+the original sources can be accessed at:
+<a href="http://www.maths.lancs.ac.uk/~rowlings/Splancs/">http://www.maths.lancs.ac.uk/~rowlings/Splancs/</a>. See also Bivand, R. and
+Gebhardt, A. 2000 Implementing functions for spatial statistical analysis
+using the R language. Journal of Geographical Systems, 2, 307-317.
+</p>
+
+
+<h3>See Also</h3>
+
+<p><code><a href="stsecal.html">stsecal</a></code>, <code><a href="stvmat.html">stvmat</a></code>, <code><a href="stmctest.html">stmctest</a></code>, <code><a href="stdiagn.html">stdiagn</a></code>
+</p>
+
+
+<h3>Examples</h3>
+
+<pre>
+data(burkitt)
+bur1 &lt;- stkhat(burpts, burkitt$t, burbdy, c(400, 5800),
+  seq(1,40,2), seq(100, 1500, 100))
+oldpar &lt;- par(mfrow=c(2,1))
+plot(bur1$s, bur1$ks, type="l", xlab="distance", ylab="Estimated K",
+  main="spatial K function")
+plot(bur1$t, bur1$kt, type="l", xlab="time", ylab="Estimated K",
+  main="temporal K function")
+par(oldpar)
+</pre>
+
+<hr><div align="center">[Package <em>splancs</em> version 2.01-34 <a href="00Index.html">Index</a>]</div>
+</body></html>

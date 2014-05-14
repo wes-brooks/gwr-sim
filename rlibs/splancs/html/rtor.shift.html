@@ -1,0 +1,77 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<html><head><title>R: Random toroidal shift on a point data set</title>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+<link rel="stylesheet" type="text/css" href="R.css">
+</head><body>
+
+<table width="100%" summary="page for rtor.shift {splancs}"><tr><td>rtor.shift {splancs}</td><td align="right">R Documentation</td></tr></table>
+
+<h2>
+Random toroidal shift on a point data set
+</h2>
+
+<h3>Description</h3>
+
+<p>Perform a random toroidal shift on a point data set
+</p>
+
+
+<h3>Usage</h3>
+
+<pre>
+rtor.shift(pts,rect)
+</pre>
+
+
+<h3>Arguments</h3>
+
+<table summary="R argblock">
+<tr valign="top"><td><code>pts</code></td>
+<td>
+
+<p>The point data set to shift
+</p>
+</td></tr>
+<tr valign="top"><td><code>rect</code></td>
+<td>
+
+<p>A rectangle defining the region for the toroidal map. If not given, 
+the bounding box of <code>pts</code> is used.
+</p>
+</td></tr></table>
+
+
+<h3>Details</h3>
+
+<p>The planar region defined by <code>rect</code>
+is assumed connected at its top and bottom edges, and at its left and
+right sides. A random shift is applied to the 
+points and the resulting set of points returned. 
+</p>
+
+
+<h3>Value</h3>
+
+<p>A point data set like <code>pts</code>, but after application of a random toroidal 
+shift along the x and y axes. 
+</p>
+
+
+<h3>References</h3>
+
+<p>Rowlingson, B. and Diggle, P. 1993 Splancs: spatial point pattern analysis
+code in S-Plus.  Computers and Geosciences, 19, 627-655;
+the original sources can be accessed at:
+<a href="http://www.maths.lancs.ac.uk/~rowlings/Splancs/">http://www.maths.lancs.ac.uk/~rowlings/Splancs/</a>. See also Bivand, R. and
+Gebhardt, A. 2000 Implementing functions for spatial statistical analysis
+using the R language. Journal of Geographical Systems, 2, 307-317.
+</p>
+
+
+<h3>See Also</h3>
+
+<p><code><a href="shift.html">Shift</a></code>
+</p>
+
+<hr><div align="center">[Package <em>splancs</em> version 2.01-34 <a href="00Index.html">Index</a>]</div>
+</body></html>

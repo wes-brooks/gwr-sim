@@ -1,0 +1,67 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<html><head><title>R: Changings</title>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+<link rel="stylesheet" type="text/css" href="R.css">
+</head><body>
+
+<table width="100%" summary="page for Changings {RandomFields}"><tr><td>Changings {RandomFields}</td><td align="right">R Documentation</td></tr></table>
+
+<h2>Changings</h2>
+
+<h3>Description</h3>
+
+<p>Here, only the important inconsistencies
+between Version 1.3 to 2.0 of RandomFields are listed.
+</p>
+<p>Documentation of the extensions will be enhanced later.
+</p>
+
+
+<h3>Details</h3>
+
+
+<ul>
+<li><p> output of <code>fitvario</code><br>
+<code>$vario</code> is defunctioned. Use, for instance, <code>$ml$model</code> instead of
+<code>$vario$ml</code>.
+</p>
+</li>
+<li><p> The options for <code>mle.methods</code> in <CODE>fitvario</CODE>
+are currently restricted to &lsquo;ml&rsquo;. This options 
+&lsquo;reml&rsquo; and &lsquo;rml1&rsquo; have not been tested yet.
+</p>
+</li>
+<li><p> the <code>list</code> definition of sophisticated covariance models
+has become obsolete. Furthermore, the parameter <code>kappa</code>
+for the model parameters is not accepted anymore. Instead <code>k</code>
+should be used.
+</p>
+<p>See <code>help("sophisticated")</code> for the new definition
+of sophisticated covariance models
+</p>
+</li>
+<li>
+<p>Currently, <CODE>ShowModels</CODE> does not work, neither
+Havard Rue's Markov fields. Both should
+be available in summer 2011 again.
+</p>
+</li>
+<li>
+<p>Currently, the numerical evaluation of the covariance function in
+tbm2 is not implemented. This should be available in
+summer 2011 again.
+</p>
+</li></ul>
+
+<p>Please let the author know if further inconsistencies exist.
+</p>
+
+
+<h3>Author(s)</h3>
+
+<p>Martin Schlather, <a href="mailto:schlather@math.uni-mannheim.de">schlather@math.uni-mannheim.de</a>
+<a href="http://ms.math.uni-mannheim.de">http://ms.math.uni-mannheim.de</a>;
+</p>
+
+<hr><div align="center">[Package <em>RandomFields</em> version 2.0.71 <a href="00Index.html">Index</a>]</div>
+</body></html>

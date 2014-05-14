@@ -1,0 +1,41 @@
+CondSimu                Conditional Simulation
+CovarianceFct           Basic Covariance And Variogram Models
+DeleteRegister          Deleting Intermediate Results
+Dev                     Choosing the device
+EmpiricalVariogram      Empirical (Semi-)Variogram
+FileExists              Files
+GaussRF                 Gaussian Random Fields
+GetPracticalRange       Determination of the practical range
+GetRegisterInfo         Internal information
+Kriging                 Kriging methods
+Locator                 Graphical Input
+MaxStableRF             Max-Stable Random Fields
+Papers                  Code used in the papers co-authored by M.
+                        Schlather
+Print                   Nice print function returning also the names
+                        automatically
+PrintModelList          Information about the implemented covariance
+                        models
+RFMethods               Simulation Techniques
+RFparameters            Control Parameters
+RandomFields            Simulation and Analysis of Random Fields
+Readline                Read a Line
+ShowModels              Interactive Choice of Models and Parameters
+SimulateRF              Simulation of Random Fields
+changings               Changings
+eval.parameters         Interactive menu
+fitvario                LSQ and Maximum Likelihood Estimation of Random
+                        Field Parameters
+fractal.dim             fractal dimension
+getactions              Get input behaviour
+hostname                System calls
+hurst                   Hurst coefficient
+parameter.range         Range of model specific parameters
+parampositions          Position of the parameters
+regression              Regression plot
+sleep.milli             Sleep
+soil                    Soil data of North Bavaria, Germany
+sophisticated           Sophicated Covariance And Variogram Models
+useraction              Set input behaviour
+weather                 Pressure and temperature forecast errors over
+                        the Pacific Northwest

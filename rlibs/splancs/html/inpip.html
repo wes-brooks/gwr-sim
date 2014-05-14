@@ -1,0 +1,76 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<html><head><title>R: Select points inside a polygon</title>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+<link rel="stylesheet" type="text/css" href="R.css">
+</head><body>
+
+<table width="100%" summary="page for inpip {splancs}"><tr><td>inpip {splancs}</td><td align="right">R Documentation</td></tr></table>
+
+<h2>
+Select points inside a polygon
+</h2>
+
+<h3>Description</h3>
+
+<p>Select points inside a polygon
+</p>
+
+
+<h3>Usage</h3>
+
+<pre>
+inpip(pts,poly,bound=NULL,quiet=TRUE)
+</pre>
+
+
+<h3>Arguments</h3>
+
+<table summary="R argblock">
+<tr valign="top"><td><code>pts</code></td>
+<td>
+
+<p>A points data set
+</p>
+</td></tr>
+<tr valign="top"><td><code>poly</code></td>
+<td>
+
+<p>A polygon data set
+</p>
+</td></tr>
+<tr valign="top"><td><code>bound</code></td>
+<td>
+<p>If points fall exactly on polygon boundaries, the default NULL gives arbitrary assignments. If TRUE, then all points &quot;on&quot; boundaries are set as within the polygon, if FALSE, outside.</p>
+</td></tr>
+<tr valign="top"><td><code>quiet</code></td>
+<td>
+<p>Do not report which points are on boundary for non-NULL bound</p>
+</td></tr>
+</table>
+
+
+<h3>Value</h3>
+
+<p><code>inpip</code> returns a vector of indices of the points in <code>pts</code> that are located
+in the polygon. Note that &quot;in&quot; is an arbitrary concept for points &quot;on&quot; the polygon boundary.
+</p>
+
+
+<h3>References</h3>
+
+<p>Rowlingson, B. and Diggle, P. 1993 Splancs: spatial point pattern analysis
+code in S-Plus.  Computers and Geosciences, 19, 627-655;
+the original sources can be accessed at:
+<a href="http://www.maths.lancs.ac.uk/~rowlings/Splancs/">http://www.maths.lancs.ac.uk/~rowlings/Splancs/</a>. See also Bivand, R. and
+Gebhardt, A. 2000 Implementing functions for spatial statistical analysis
+using the R language. Journal of Geographical Systems, 2, 307-317.
+</p>
+
+
+<h3>See Also</h3>
+
+<p><code><a href="pip.html">pip</a></code>
+</p>
+
+<hr><div align="center">[Package <em>splancs</em> version 2.01-34 <a href="00Index.html">Index</a>]</div>
+</body></html>

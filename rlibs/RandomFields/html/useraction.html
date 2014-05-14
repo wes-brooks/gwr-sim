@@ -1,0 +1,246 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<html><head><title>R: Set input behaviour</title>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+<link rel="stylesheet" type="text/css" href="R.css">
+</head><body>
+
+<table width="100%" summary="page for useraction {RandomFields}"><tr><td>useraction {RandomFields}</td><td align="right">R Documentation</td></tr></table>
+
+<h2>Set input behaviour</h2>
+
+<h3>Description</h3>
+
+<p>The functions store values that influence the behaviour
+of <CODE><a href="Locator.html">Locator</a></CODE> and <CODE><a href="Readline.html">Readline</a></CODE>
+</p>
+
+
+<h3>Usage</h3>
+
+<pre>
+useraction(action=c("none", "start.register", "continue.register",
+                    "replay", "endless", "delete"),
+		    sleep, wait, PrintLevel, actionlist)
+putactions(l)
+</pre>
+
+
+<h3>Arguments</h3>
+
+<table summary="R argblock">
+<tr valign="top"><td><code>action</code></td>
+<td>
+<p>string of the following values
+</p>
+
+<dl>
+<dt>&lsquo;&quot;none&quot;&rsquo;</dt><dd><p>the behaviour of
+<CODE><a href="Readline.html">Readline</a></CODE> and <CODE><a href="Locator.html">Locator</a></CODE>
+is that of <CODE><a href="../../base/html/readline.html">readline</a></CODE> and
+<CODE><a href="../../graphics/html/locator.html">locator</a></CODE>, respectively.
+The values are <B>not</B> stored.
+</p>
+</dd> 
+<dt>&lsquo;&quot;start.register&quot;&rsquo;</dt><dd><p>the behaviour of
+<CODE><a href="Readline.html">Readline</a></CODE> and <CODE><a href="Locator.html">Locator</a></CODE>
+is that of <CODE><a href="../../base/html/readline.html">readline</a></CODE> and
+<CODE><a href="../../graphics/html/locator.html">locator</a></CODE>, respectively.
+The current list of stored values is
+deleted and new inputs by <CODE><a href="Readline.html">Readline</a></CODE> and
+<CODE><a href="Locator.html">Locator</a></CODE> are <B>stored</B>.</p>
+</dd>
+<dt>&lsquo;&quot;continue.register&quot;&rsquo;</dt><dd><p>the behaviour of
+<CODE><a href="Readline.html">Readline</a></CODE> and <CODE><a href="Locator.html">Locator</a></CODE>
+is that of <CODE><a href="../../base/html/readline.html">readline</a></CODE> and
+<CODE><a href="../../graphics/html/locator.html">locator</a></CODE>, respectively.
+The current list of stored values is continued with
+inputs from <CODE><a href="Readline.html">Readline</a></CODE> and
+<CODE><a href="Locator.html">Locator</a></CODE>.</p>
+</dd>
+<dt>&lsquo;&quot;replay&quot;&rsquo;</dt><dd>
+<p><CODE><a href="Locator.html">Locator</a></CODE> and <CODE><a href="Readline.html">Readline</a></CODE>
+do not get the data from the mouse or terminal, but
+read them from the stored list.
+If the end of storage list is reached, the user is informed and
+the <code>action</code> is switched to &ldquo;none&rdquo;.
+</p>
+</dd>
+<dt>&lsquo;&quot;endless&quot;&rsquo;</dt><dd><p>similar to &lsquo;&quot;replay&quot;&rsquo;, but
+storage list is looped.
+</p>
+</dd>
+<dt>&lsquo;&quot;delete&quot;&rsquo;</dt><dd>
+<p>The current list of stored values is
+deleted	and <code>action</code> is set to &ldquo;none&rdquo;
+</p>
+</dd>
+</dl>
+
+</td></tr>
+<tr valign="top"><td><code>actionlist</code></td>
+<td>
+<p>list of stored values by <CODE><a href="Readline.html">Readline</a></CODE> and
+<CODE><a href="Locator.html">Locator</a></CODE></p>
+</td></tr> 
+<tr valign="top"><td><code>sleep</code></td>
+<td>
+<p>sleeping time before the blinking starts (replay mode of
+<CODE><a href="Locator.html">Locator</a></CODE>); value is kept until explicit changing;
+starting value: 2.5
+</p>
+</td></tr> 
+<tr valign="top"><td><code>wait</code></td>
+<td>
+<p>regulated the blinking speed of the characters
+(<CODE><a href="Locator.html">Locator</a></CODE>) and of the 
+speed of appearance of characters (<CODE><a href="Readline.html">Readline</a></CODE>); value
+is kept until explicit changing; 
+starting value: 0.1</p>
+</td></tr>
+<tr valign="top"><td><code>PrintLevel</code></td>
+<td>
+
+<p>if <code>Printlevel&gt;1</code> and <CODE><a href="Readline.html">Readline</a></CODE> or
+<CODE><a href="Locator.html">Locator</a></CODE> is in replay mode then
+the current pointer position within the storage list
+and the tracing information (if any) is shown. The value
+is kept until explicit changing; 
+starting value: 0
+</p>
+</td></tr>
+<tr valign="top"><td><code>l</code></td>
+<td>
+<p>list of all parameters relevant to the behaviour of
+<CODE><a href="Readline.html">Readline</a></CODE> and 
+<CODE><a href="Locator.html">Locator</a></CODE>.
+</p>
+</td></tr>
+</table>
+
+
+<h3>Details</h3>
+
+<p>The function <CODE>putactions</CODE> restores the state
+taken by <CODE><a href="getactions.html">getactions</a></CODE>.
+</p>
+<p>Concerning the function <CODE>useraction</CODE>, the parameter
+<code>action</code> must be given. If any of the other 
+parameters is not given, its current value is kept.
+If <code>action="start.register"</code> or <code>action="delete"</code>,
+the value of <code>actionlist</code> is ignored.
+</p>
+<p>If replaying, <CODE><a href="Readline.html">Readline</a></CODE> shows the input
+values on the screen and <CODE><a href="Locator.html">Locator</a></CODE> shows
+blinking characters as side effects.
+</p>
+
+
+<h3>Value</h3>
+
+<p><CODE>useraction</CODE> returns <code>NULL</code>.
+</p>
+<p><CODE>putactions</CODE> returns invisibly the state before the new state is set.
+</p>
+
+
+<h3>Author(s)</h3>
+
+<p>Martin Schlather, <a href="mailto:schlather@math.uni-mannheim.de">schlather@math.uni-mannheim.de</a>
+<a href="http://ms.math.uni-mannheim.de">http://ms.math.uni-mannheim.de</a></p>
+
+
+<h3>See Also</h3>
+
+<p><CODE><a href="eval.parameters.html">eval.parameters</a></CODE>,
+<CODE><a href="getactions.html">getactions</a></CODE>,
+<CODE><a href="Locator.html">Locator</a></CODE>,
+<CODE><a href="Readline.html">Readline</a></CODE>,
+
+</p>
+
+
+<h3>Examples</h3>
+
+<pre>
+
+sample.interaction &lt;- function(read.r2=TRUE, type="p", pch=16) {
+  r1 &lt;- Readline(prompt="first input: ")
+  r2 &lt;- if (read.r2) Readline(prompt="second input: ", info="2nd input")
+  else " -- no input  -- "
+  cat("Mark some points with the right mouse key, then leave with the left mouse key\n")
+  do.call(getOption("device"), list())
+  plot(Inf, Inf, xlim=c(-1,1), ylim=c(-1,1), xlab="", ylab="")
+  l &lt;- Locator(100, info="locator input", type=type, pch=pch)
+  r3 &lt;- Readline(prompt="third input: ", info="last input")
+  return(list(r1=r1, r2=r2, l=l, r3=r3))
+}
+
+
+
+## Not run: 
+
+#########################
+## user terminal input ##
+#########################
+{
+  useraction("start.register")
+  str(sample.interaction())
+  str(l &lt;- getactionlist())
+}
+
+#################
+## just replay ##
+#################
+
+useraction("replay", sleep=2, wait=interactive() * 0.2 * 5,
+           PrintLevel=2, actionlist=l)
+str(sample.interaction(type="l"))
+
+
+##############################################
+## modify first the input list, then replay ##
+##############################################
+l2 &lt;- l[-2]
+l2[[1]] &lt;- list("some other words", info="changed input")
+str(l2)
+useraction("replay", sleep=1, wait=interactive() * 0.05,
+           PrintLevel=0, l2) 
+str(sample.interaction(read.r2=FALSE, type="o")) # input now from l2
+Readline(prompt="new input: ", info="?!") # switch to terminal
+##                                                since end of stored list
+# str(getactionlist())    # new input has not been not stored ...
+
+
+####################################################
+## use of the two lists, l and l2, in a mixed way ##
+####################################################
+useraction("replay", sleep=2, wait=interactive() * 0.05,
+           PrintLevel=0, actionlist=l)
+Readline(prompt="first input of 1: ")
+dump &lt;- getactions()
+useraction("replay", sleep=0.5, wait=interactive() * 0.05,
+           PrintLevel=0, actionlist=l2)
+Readline(prompt="first input of 2: ")
+dump2 &lt;- putactions(dump)
+Readline(prompt="second input of 1: ")
+## locator call reading from list 1:
+plot(Inf, Inf, xlim=c(-1,1), ylim=c(-1,1), xlab="", ylab="")
+Locator(100, info="locator input", type="p")
+dump &lt;- putactions(dump2)
+##locator call reading from list 2:
+Locator(100, info="locator input", type="p", pch=20, col="blue")
+Readline(prompt="last input of 2: ")
+putactions(dump)
+Readline(prompt="last input of 1: ")
+
+
+#####################################################
+## see help("eval.parameters") for another example ##
+#####################################################
+
+## End(Not run)
+
+</pre>
+
+<hr><div align="center">[Package <em>RandomFields</em> version 2.0.71 <a href="00Index.html">Index</a>]</div>
+</body></html>

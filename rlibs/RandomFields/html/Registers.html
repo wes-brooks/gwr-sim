@@ -1,0 +1,87 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<html><head><title>R: Deleting Intermediate Results</title>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+<link rel="stylesheet" type="text/css" href="R.css">
+</head><body>
+
+<table width="100%" summary="page for DeleteRegister {RandomFields}"><tr><td>DeleteRegister {RandomFields}</td><td align="right">R Documentation</td></tr></table>
+
+<h2>Deleting Intermediate Results</h2>
+
+<h3>Description</h3>
+
+<p><code>DeleteRegister</code> deletes an internal register of the random
+field simulation
+</p>
+<p><code>DeleteAllRegisters</code> deletes all internal registers
+</p>
+
+
+<h3>Usage</h3>
+
+<pre>DeleteRegister(nr=0)
+DeleteAllRegisters()
+</pre>
+
+
+<h3>Arguments</h3>
+
+<table summary="R argblock">
+<tr valign="top"><td><code>nr</code></td>
+<td>
+<p>number of the register to be deleted; in 0:9</p>
+</td></tr>
+</table>
+
+
+<h3>Details</h3>
+
+<p><code>DeleteRegister</code> and <code>DeleteAllRegister</code> should be used if
+</p>
+
+<ol>
+<li><p> the simulations are finished and there
+is not enough memory available to continue the R session,
+and <CODE><a href="RFparameters.html">RFparameters</a></CODE><code>()$Storing</code> has been
+<code>TRUE</code>.
+</p>
+</li>
+<li><p> one of the parameters
+<CODE><a href="RFparameters.html">RFparameters</a></CODE><code>()$Storing</code> or
+<CODE><a href="RFparameters.html">RFparameters</a></CODE><code>()$PracticalRange</code>
+((or <CODE><a href="RFparameters.html">RFparameters</a></CODE><code>()$TBM.method</code>,
+once this parameter is available)) has been changed by
+the user, and if these options should become
+global.
+</p>
+</li></ol>
+
+<p>See <a href="GaussRF.html">GaussRF</a> and <a href="RFparameters.html">RFparameters</a> for further details.
+</p>
+
+
+<h3>Value</h3>
+
+<p><code>NULL</code>.
+</p>
+
+
+<h3>Author(s)</h3>
+
+<p>Martin Schlather, <a href="mailto:schlather@math.uni-mannheim.de">schlather@math.uni-mannheim.de</a>,
+<a href="http://ms.math.uni-mannheim.de">http://ms.math.uni-mannheim.de</a></p>
+
+
+<h3>See Also</h3>
+
+<p><CODE><a href="GaussRF.html">GaussRF</a></CODE>, <code><a href="RandomFields.html">RandomFields</a></code> and <CODE><a href="RFparameters.html">RFparameters</a></CODE>.</p>
+
+
+<h3>Examples</h3>
+
+<pre>
+ DeleteAllRegisters() ## no effect visible for the user
+</pre>
+
+<hr><div align="center">[Package <em>RandomFields</em> version 2.0.71 <a href="00Index.html">Index</a>]</div>
+</body></html>
