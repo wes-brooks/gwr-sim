@@ -16,11 +16,13 @@ Sys.setenv(R_LIBS="rlibs")
 .libPaths(new="rlibs")
 
 require(sp)
+require(splancs)
 require(foreach)
 require(iterators)
 require(multicore)
 require(geoR)
 require(glmnet)
+require(SGL)
 require(lagr)
 
 write.log('installations complete', 'result.txt')
