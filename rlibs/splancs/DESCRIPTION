@@ -2,12 +2,11 @@ Package: splancs
 Version: 2.01-34
 Date: 2013-08-30
 Title: Spatial and Space-Time Point Pattern Analysis
-Authors@R: c(
-	person("Roger", "Bivand", role = c("cre"), email = "Roger.Bivand@nhh.no"),
-	person("Barry", "Rowlingson", role = "aut"),
-	person("Peter", "Diggle", role = "aut"),
-	person("Giovanni", "Petris", role = "ctb"),
-	person("Stephen", "Eglen", role = "ctb"))
+Authors@R: c( person("Roger", "Bivand", role = c("cre"), email =
+        "Roger.Bivand@nhh.no"), person("Barry", "Rowlingson", role =
+        "aut"), person("Peter", "Diggle", role = "aut"),
+        person("Giovanni", "Petris", role = "ctb"), person("Stephen",
+        "Eglen", role = "ctb"))
 Author: Barry Rowlingson and Peter Diggle
 Maintainer: Roger Bivand <Roger.Bivand@nhh.no>
 Depends: R (>= 2.10.0), sp (>= 0.9)
@@ -18,4 +17,4 @@ Packaged: 2013-09-01 18:48:02 UTC; rsb
 NeedsCompilation: yes
 Repository: CRAN
 Date/Publication: 2013-09-01 21:22:19
-Built: R 3.0.2; x86_64-redhat-linux-gnu; 2014-05-14 15:11:26 UTC; unix
+Built: R 2.15.3; x86_64-unknown-linux-gnu; 2014-05-14 20:26:09 UTC; unix
