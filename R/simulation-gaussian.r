@@ -14,13 +14,6 @@ rm(r)
 dir.create("rlibs")
 Sys.setenv(R_LIBS="rlibs")
 .libPaths(new="rlibs")
-install.packages("sp")
-install.packages("foreach")
-install.packages("iterators")
-install.packages("multicore")
-install.packages("doMC")
-install.packages("geoR")
-install.packages("glmnet")
 
 require(sp)
 require(foreach)
@@ -126,7 +119,6 @@ mu = X1*B1
 Y = mu + epsilon
 
 sim = data.frame(Y=as.vector(Y), X1=as.vector(X1), X2=as.vector(X2), X3=as.vector(X3), X4=as.vector(X4), X5=as.vector(X5), loc.x, loc.y)
-fitloc = cbind(rep(seq(0,1, length.out=N), each=N), rep(seq(0,1, length.out=N), times=N))
 
 vars = cbind(B1=as.vector(B1!=0))#, B2=as.vector(B2!=0), B3=as.vector(B3!=0))
 oracle = list()
