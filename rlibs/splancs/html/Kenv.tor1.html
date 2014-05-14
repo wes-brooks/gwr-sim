@@ -1,0 +1,116 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<html><head><title>R: Modified envelope of K12hat from random toroidal shifts of...</title>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+<link rel="stylesheet" type="text/css" href="R.css">
+</head><body>
+
+<table width="100%" summary="page for Kenv.tor1 {splancs}"><tr><td>Kenv.tor1 {splancs}</td><td align="right">R Documentation</td></tr></table>
+
+<h2>Modified envelope of K12hat from random toroidal shifts of two point patterns</h2>
+
+<h3>Description</h3>
+
+<p>Modification of <code>Kenv.tor()</code> to allow the assignment of a p value to the
+goodness of fit, following the method outlined in Peter Diggle's 1986
+paper (J Neurosci methods 18:115-125) and in his 2002 book.
+</p>
+
+
+<h3>Usage</h3>
+
+<pre>
+Kenv.tor1(pts1, pts2, poly, nsim, s, quiet = FALSE)
+</pre>
+
+
+<h3>Arguments</h3>
+
+<table summary="R argblock">
+<tr valign="top"><td><code>pts1</code></td>
+<td>
+<p>First point data set</p>
+</td></tr>
+<tr valign="top"><td><code>pts2</code></td>
+<td>
+<p>Second point data set</p>
+</td></tr>
+<tr valign="top"><td><code>poly</code></td>
+<td>
+<p>Polygon containing the points</p>
+</td></tr>
+<tr valign="top"><td><code>nsim</code></td>
+<td>
+<p>Number of random toroidal shifts to do</p>
+</td></tr>
+<tr valign="top"><td><code>s</code></td>
+<td>
+<p>Vector of distances at which to calculate the envelope</p>
+</td></tr>
+<tr valign="top"><td><code>quiet</code></td>
+<td>
+<p>If FALSE, print a message after every simulation for progress monitoring. If TRUE, print no messages</p>
+</td></tr>
+</table>
+
+
+<h3>Value</h3>
+
+<p>A list with components: <code>$upper</code>, <code>$lower</code>, <code>real</code>, <code>u</code>, <code>ksim</code>, and <code>rank</code>. The first three
+components are vectors like <code>s</code>, the next two contain results passed back from the simulations, and the final is a one-element vector with the rank of the observed data set.
+</p>
+
+
+<h3>Author(s)</h3>
+
+<p>Stephen Eglen &lt;stephen@inf.ed.ac.uk&gt;</p>
+
+
+<h3>See Also</h3>
+
+<p><code><a href="Kenv.tor.html">Kenv.tor</a></code></p>
+
+
+<h3>Examples</h3>
+
+<pre>
+data(amacrines)
+ama.a &lt;- rbind(amacrines.on, amacrines.off)
+ama.bb &lt;- bboxx(bbox(as.points(ama.a)))
+ama.t &lt;- seq(from = 0.002, to=.250, by=0.002)
+nsim=999
+plot(amacrines.on, asp=1, pch=19,
+ main="Data set, match figure 1.4 of Diggle(2002)?")
+points(amacrines.off, pch=1)
+#
+k12 &lt;- k12hat(amacrines.on, amacrines.off, ama.bb, ama.t)
+#
+k11 &lt;- khat(amacrines.on, ama.bb, ama.t)
+k22 &lt;- khat(amacrines.off, ama.bb, ama.t)
+k00 &lt;- khat(ama.a, ama.bb, ama.t)
+theor &lt;- pi * (ama.t^2)
+#
+plot(ama.t, k12-theor, ylim=c(min( c(k12, k11, k22, k00) - theor),
+ max( c(k12, k11, k22, k00) - theor)),
+ main="2nd order properties, match figure 4.8 of Diggle (2002)", type="l")
+lines(ama.t, -theor)
+lines(ama.t, k11-theor, lty=2)
+lines(ama.t, k22-theor, lty=3)
+lines(ama.t, k00-theor, lty=5)
+#
+k12.tor &lt;- Kenv.tor(amacrines.on, amacrines.off, ama.bb,
+ nsim, ama.t, quiet=TRUE)
+plot(ama.t, k12-theor, type="l", main="Output from Kenv.tor")
+lines(ama.t, k12.tor$upper-theor, type="l", col="red")
+lines(ama.t, k12.tor$lower-theor, type="l", col="red")
+#
+k12.sims &lt;- Kenv.tor1(amacrines.on, amacrines.off, ama.bb,
+ nsim, ama.t, quiet=TRUE)
+plot(ama.t, sqrt(k12.sims$real/pi), type="l", asp=1, bty="n",
+ main=paste("K12 versus toroidal sims; rank ", k12.sims$rank, "of",
+ length(k12.sims$u)))
+lines(ama.t, sqrt(k12.sims$upper/pi), col="red")
+lines(ama.t, sqrt(k12.sims$lower/pi), col="red")
+</pre>
+
+<hr><div align="center">[Package <em>splancs</em> version 2.01-34 <a href="00Index.html">Index</a>]</div>
+</body></html>

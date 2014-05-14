@@ -1,0 +1,157 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<html><head><title>R: Fit a GLM with a combination of lasso and group lasso...</title>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+<link rel="stylesheet" type="text/css" href="R.css">
+</head><body>
+
+<table width="100%" summary="page for SGL {SGL}"><tr><td>SGL {SGL}</td><td align="right">R Documentation</td></tr></table>
+
+<h2>Fit a GLM with a combination of lasso and group lasso regularization</h2>
+
+<h3>Description</h3>
+
+<p>Fit a regularized generalized linear model via penalized maximum likelihood.  The model is fit for a path of values of the penalty parameter. Fits linear, logistic and Cox models.</p>
+
+
+<h3>Usage</h3>
+
+<pre>
+SGL(data, index, type = "linear", maxit = 1000, thresh = 0.001, min.frac = 0.1, nlam = 20, gamma = 0.8, standardize = TRUE, verbose = FALSE, step = 1, reset = 10, alpha = 0.95, lambdas = NULL)
+</pre>
+
+
+<h3>Arguments</h3>
+
+<table summary="R argblock">
+<tr valign="top"><td><code>data</code></td>
+<td>
+<p>For <code>type="linear"</code> should be a list with $x$ an input matrix of dimension n-obs by p-vars, and $y$ a length $n$ response vector. For <code>type="logit"</code> should be a list with $x$, an input matrix, as before, and $y$ a length $n$ binary response vector. For <code>type="cox"</code> should be a list with x as before, <code>time</code>, an n-vector corresponding to failure/censor times, and <code>status</code>, an n-vector indicating failure (1) or censoring (0). 
+</p>
+</td></tr>
+<tr valign="top"><td><code>index</code></td>
+<td>
+<p>A p-vector indicating group membership of each covariate</p>
+</td></tr>
+<tr valign="top"><td><code>type</code></td>
+<td>
+<p>model type: one of (&quot;linear&quot;,&quot;logit&quot;, &quot;cox&quot;)</p>
+</td></tr>
+<tr valign="top"><td><code>maxit</code></td>
+<td>
+<p>Maximum number of iterations to convergence</p>
+</td></tr>
+<tr valign="top"><td><code>thresh</code></td>
+<td>
+<p>Convergence threshold for change in beta</p>
+</td></tr>
+<tr valign="top"><td><code>min.frac</code></td>
+<td>
+<p>The minimum value of the penalty parameter, as a fraction of the maximum value</p>
+</td></tr>
+<tr valign="top"><td><code>nlam</code></td>
+<td>
+<p>Number of lambda to use in the regularization path</p>
+</td></tr>
+<tr valign="top"><td><code>gamma</code></td>
+<td>
+<p>Fitting parameter used for tuning backtracking (between 0 and 1)</p>
+</td></tr>
+<tr valign="top"><td><code>standardize</code></td>
+<td>
+<p>Logical flag for variable standardization prior to fitting the model.</p>
+</td></tr>
+<tr valign="top"><td><code>verbose</code></td>
+<td>
+<p>Logical flag for whether or not step number will be output</p>
+</td></tr>
+<tr valign="top"><td><code>step</code></td>
+<td>
+<p>Fitting parameter used for inital backtracking step size (between 0 and 1)</p>
+</td></tr>
+<tr valign="top"><td><code>reset</code></td>
+<td>
+<p>Fitting parameter used for taking advantage of local strong convexity in nesterov momentum (number of iterations before momentum term is reset)</p>
+</td></tr>
+<tr valign="top"><td><code>alpha</code></td>
+<td>
+<p>The mixing parameter. <code>alpha</code> = 1 is the lasso penalty. <code>alpha</code> = 0 is the group lasso penalty.</p>
+</td></tr>
+<tr valign="top"><td><code>lambdas</code></td>
+<td>
+<p>A user specified sequence of lambda values for fitting. We recommend leaving this NULL and letting SGL self-select values</p>
+</td></tr>
+</table>
+
+
+<h3>Details</h3>
+
+<p>The sequence of models along the regularization path is fit by accelerated generalized gradient descent.
+</p>
+
+
+<h3>Value</h3>
+
+<p>An object with S3 class <code>"SGL"</code>
+</p>
+<table summary="R valueblock">
+<tr valign="top"><td><code>beta</code></td>
+<td>
+<p>A p by <code>nlam</code> matrix, giving the penalized MLEs for the nlam different models, where the index corresponds to the penalty parameter <code>lambda</code></p>
+</td></tr>
+<tr valign="top"><td><code>lambdas</code></td>
+<td>
+<p>The actual sequence of <code>lambda</code> values used (penalty parameter)</p>
+</td></tr>
+<tr valign="top"><td><code>type</code></td>
+<td>
+<p>Response type (linear/logic/cox)</p>
+</td></tr>
+<tr valign="top"><td><code>intercept</code></td>
+<td>
+<p>For some model types, an intercept is fit</p>
+</td></tr>
+<tr valign="top"><td><code>X.transform</code></td>
+<td>
+<p>A list used in <code>predict</code> which gives the empirical mean and variance of the x matrix used to build the model</p>
+</td></tr>
+<tr valign="top"><td><code>lambdas</code></td>
+<td>
+<p>A user specified sequence of lambda values for fitting. We recommend leaving this NULL and letting SGL self-select values</p>
+</td></tr>
+</table>
+
+
+<h3>Author(s)</h3>
+
+<p>Noah Simon, Jerry Friedman, Trevor Hastie, and Rob Tibshirani<br>
+Maintainer: Noah Simon <a href="mailto:nsimon@stanford.edu">nsimon@stanford.edu</a>
+</p>
+
+
+<h3>References</h3>
+
+<p>Simon, N., Friedman, J., Hastie, T., and Tibshirani, R. (2011)
+<EM>A Sparse-Group Lasso</EM>, <br>
+<a href="http://www-stat.stanford.edu/~nsimon/SGL.pdf">http://www-stat.stanford.edu/~nsimon/SGL.pdf</a>
+</p>
+
+
+<h3>See Also</h3>
+
+<p><code>cv.SGL</code></p>
+
+
+<h3>Examples</h3>
+
+<pre>
+n = 50; p = 100; size.groups = 10
+index &lt;- ceiling(1:p / size.groups)
+X = matrix(rnorm(n * p), ncol = p, nrow = n)
+beta = (-2:2)
+y = X[,1:5] %*% beta + 0.1*rnorm(n)
+data = list(x = X, y = y)
+fit = SGL(data, index, type = "linear")
+</pre>
+
+<hr><div align="center">[Package <em>SGL</em> version 1.1 <a href="00Index.html">Index</a>]</div>
+</body></html>

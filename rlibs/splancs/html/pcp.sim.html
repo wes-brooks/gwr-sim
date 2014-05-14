@@ -1,0 +1,101 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<html><head><title>R: Generate a Poisson Cluster Process</title>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+<link rel="stylesheet" type="text/css" href="R.css">
+</head><body>
+
+<table width="100%" summary="page for pcp.sim {splancs}"><tr><td>pcp.sim {splancs}</td><td align="right">R Documentation</td></tr></table>
+
+<h2>Generate a Poisson Cluster Process</h2>
+
+<h3>Description</h3>
+
+<p>The function generates a Poisson cluster process for a given polygon within
+a larger bounding region and given process parameters
+</p>
+
+
+<h3>Usage</h3>
+
+<pre>
+pcp.sim(rho, m, s2, region.poly, larger.region=NULL, vectorise.loop=TRUE)
+</pre>
+
+
+<h3>Arguments</h3>
+
+<table summary="R argblock">
+<tr valign="top"><td><code>rho</code></td>
+<td>
+<p>intensity of the parent process</p>
+</td></tr>
+<tr valign="top"><td><code>m</code></td>
+<td>
+<p>average number of offsprings per parent</p>
+</td></tr>
+<tr valign="top"><td><code>s2</code></td>
+<td>
+<p>variance of location of offsprings relative to their parent</p>
+</td></tr>
+<tr valign="top"><td><code>region.poly</code></td>
+<td>
+<p>a polygon defining the region in which the process is to be generated</p>
+</td></tr>
+<tr valign="top"><td><code>larger.region</code></td>
+<td>
+<p>a rectangle containing the region of interest given in the form (xl,xu,yl,yu), defaults to <code>sbox()</code> around region.poly</p>
+</td></tr>
+<tr valign="top"><td><code>vectorise.loop</code></td>
+<td>
+<p>if TRUE, use new vectorised code, if FALSE, use loop as before</p>
+</td></tr>
+</table>
+
+
+<h3>Details</h3>
+
+<p>The function generates the parents in the larger bounding region, generates
+their children also in the larger bounding region, and then returns those
+inside the given polygon.</p>
+
+
+<h3>Value</h3>
+
+<p>A point object with the simulated pattern
+</p>
+
+
+<h3>Author(s)</h3>
+
+<p>Giovanni Petris &lt;GPetris@uark.edu&gt;,  Roger.Bivand@nhh.no</p>
+
+
+<h3>References</h3>
+
+<p>Diggle, P. J. (1983) <EM>Statistical analysis of spatial point
+patterns</EM>, London: Academic Press, pp. 55-57 and 78-81; Bailey, T. C. and
+Gatrell, A. C. (1995) <EM>Interactive spatial data analysis</EM>, Harlow:
+Longman, pp. 106-109.</p>
+
+
+<h3>See Also</h3>
+
+<p><code><a href="pcp.html">pcp</a></code>, <code><a href="Kenv.pcp.html">Kenv.pcp</a></code>, <code><a href="khat.html">khat</a></code></p>
+
+
+<h3>Examples</h3>
+
+<pre>
+data(cardiff)
+polymap(cardiff$poly)
+pointmap(as.points(cardiff), add=TRUE)
+title("Locations of homes of 168 juvenile offenders")
+pcp.fit &lt;- pcp(as.points(cardiff), cardiff$poly, h0=30, n.int=30)
+pcp.fit
+m &lt;- npts(as.points(cardiff))/(areapl(cardiff$poly)*pcp.fit$par[2])
+sims &lt;- pcp.sim(pcp.fit$par[2], m, pcp.fit$par[1], cardiff$poly)
+pointmap(as.points(sims), add=TRUE, col="red")
+</pre>
+
+<hr><div align="center">[Package <em>splancs</em> version 2.01-34 <a href="00Index.html">Index</a>]</div>
+</body></html>

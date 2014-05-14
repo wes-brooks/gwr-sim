@@ -1,0 +1,166 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<html><head><title>R: Internal functions - do not use them directly</title>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+<link rel="stylesheet" type="text/css" href="R.css">
+</head><body>
+
+<table width="100%" summary="page for CheckXT {RandomFields}"><tr><td>CheckXT {RandomFields}</td><td align="right">R Documentation</td></tr></table>
+
+<h2>Internal functions &ndash; do not use them directly</h2>
+
+<h3>Description</h3>
+
+<p><code>CheckXT</code> checks whether the coordinates of the data and related
+parameters are specified correctly and transforms the coordinates into
+a standard format
+</p>
+<p><code>PrepareModel</code> checks whether the parameters of the covariance
+model and related parameters are specified correctly and transforms
+the parameters into a standard format
+</p>
+<p><code>plotWithCircles</code> displays data values of marked point processes
+by circles
+</p>
+<p><code>GetDistributionNames</code> returns the names of the currently
+available marginal distributions of the random fields
+</p>
+<p><code>GetrfParameters</code> returns some internal constants
+</p>
+
+
+<h3>Usage</h3>
+
+<pre>
+CheckXT(x, y, z, T, grid, gridtriple)
+PrepareModel(model, param, trend, method=NULL, nugget.remove=TRUE)
+plotWithCircles(data, factor=1.0, xlim=range(data[,1])+c(-maxr,maxr),
+                ylim=range(data[,2])+c(-maxr,maxr),col=1, fill=0, ...)
+GetDistributionNames()
+GetrfParameters(initcov)
+</pre>
+
+
+<h3>Arguments</h3>
+
+<table summary="R argblock">
+<tr valign="top"><td><code>x</code></td>
+<td>
+<p><code>x</code> coordinates</p>
+</td></tr>
+<tr valign="top"><td><code>y</code></td>
+<td>
+<p><code>y</code> coordinates</p>
+</td></tr>
+<tr valign="top"><td><code>z</code></td>
+<td>
+<p><code>z</code> coordinates</p>
+</td></tr>
+<tr valign="top"><td><code>T</code></td>
+<td>
+<p>time instances</p>
+</td></tr>
+<tr valign="top"><td><code>grid</code></td>
+<td>
+<p>logical; simulation on a grid; see <CODE><a href="GaussRF.html">GaussRF</a></CODE></p>
+</td></tr>
+<tr valign="top"><td><code>gridtriple</code></td>
+<td>
+<p>logical; grid is given in abbreviated form;
+see <CODE><a href="GaussRF.html">GaussRF</a></CODE></p>
+</td></tr>
+</table>
+<br> 
+<table summary="R argblock">
+<tr valign="top"><td><code>model</code></td>
+<td>
+<p>name of the covariance model; see <CODE><a href="GaussRF.html">GaussRF</a></CODE></p>
+</td></tr>
+<tr valign="top"><td><code>param</code></td>
+<td>
+<p>parameter for the covariance model; see <CODE><a href="GaussRF.html">GaussRF</a></CODE></p>
+</td></tr>
+</table>
+
+
+<table summary="R argblock">
+<tr valign="top"><td><code>trend</code></td>
+<td>
+<p>mean or trend of the random field</p>
+</td></tr>
+<tr valign="top"><td><code>method</code></td>
+<td>
+<p>simulation method</p>
+</td></tr>
+<tr valign="top"><td><code>nugget.remove</code></td>
+<td>
+<p>if nugget is 0, the nugget part be removed in the
+returned model?</p>
+</td></tr>
+</table>
+<br>
+<table summary="R argblock">
+<tr valign="top"><td><code>data</code></td>
+<td>
+<p>matrix of 3 columns; first two columns give the
+coordinates, the third the data</p>
+</td></tr>
+<tr valign="top"><td><code>factor</code></td>
+<td>
+<p>enlargement factor for data</p>
+</td></tr>
+<tr valign="top"><td><code>xlim</code></td>
+<td>
+<p>see <CODE><a href="../../graphics/html/plot.html">plot</a></CODE></p>
+</td></tr>
+<tr valign="top"><td><code>ylim</code></td>
+<td>
+<p>see <CODE><a href="../../graphics/html/plot.html">plot</a></CODE></p>
+</td></tr>
+<tr valign="top"><td><code>col</code></td>
+<td>
+<p>border colour of circles</p>
+</td></tr>
+<tr valign="top"><td><code>fill</code></td>
+<td>
+<p>filling colour of circles</p>
+</td></tr>
+<tr valign="top"><td><code>...</code></td>
+<td>
+<p>further graphical parameters in <CODE>plotWithCircles</CODE>
+and any variables to be printed in <CODE>Print</CODE></p>
+</td></tr>
+<tr valign="top"><td><code>initcov</code></td>
+<td>
+<p>boolean, whether to call the C function InitModelList</p>
+</td></tr>
+</table>
+
+
+<h3>Author(s)</h3>
+
+<p>Martin Schlather, <a href="mailto:schlather@math.uni-mannheim.de">schlather@math.uni-mannheim.de</a>
+<a href="http://ms.math.uni-mannheim.de">http://ms.math.uni-mannheim.de</a></p>
+
+
+<h3>See Also</h3>
+
+<p><CODE><a href="CovarianceFct.html">CovarianceFct</a></CODE></p>
+
+
+<h3>Examples</h3>
+
+<pre>
+
+
+model &lt;- list(model="whittle", param=c(1,2,3,4,5))
+Print(PrepareModel(model=model, me="ci"))
+
+model &lt;- list("+",
+              list("$", var=2, s=4, list(model="whi", kappa=5)),
+              list("$", var=3, s=0, list(model="whi", kappa=1)) )
+Print(PrepareModel(model=model, me="ci"))
+
+</pre>
+
+<hr><div align="center">[Package <em>RandomFields</em> version 2.0.71 <a href="00Index.html">Index</a>]</div>
+</body></html>
