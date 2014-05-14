@@ -15,4 +15,4 @@ Packaged: 2013-04-02 17:43:37 UTC; nsimon
 Repository: CRAN
 Date/Publication: 2013-04-02 20:51:39
 NeedsCompilation: yes
-Built: R 3.0.2; x86_64-redhat-linux-gnu; 2014-05-14 15:36:49 UTC; unix
+Built: R 2.15.3; x86_64-unknown-linux-gnu; 2014-05-14 17:30:23 UTC; unix
