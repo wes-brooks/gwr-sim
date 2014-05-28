@@ -1,0 +1,13 @@
+children                Functions for management of parallel children
+                        processes
+fork                    Fork a copy of the current R process
+mclapply                Parallel version of lapply
+multicore               multicore R package for parallel processing of
+                        R code
+parallel                Evaluate an expression asynchronously in a
+                        separate process
+processID               Function to query objects of the class process
+pvec                    Parallelize a vector map function
+sendMaster              Sends data from the child to to the master
+                        process
+signals                 Signal constants (subset)

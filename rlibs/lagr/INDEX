@@ -1,0 +1,17 @@
+gwglmnet                Fit a GW-GLM model using the LASSO for variable
+                        selection.
+gwglmnet                Fit a GW-GLM model using the LASSO for variable
+                        selection.
+gwglmnet.sel            Bandwidth selection in a GW-GLM model
+                        (bandwidth in terms of nearest neighbors or
+                        distance).
+gwr.matplot             Heatmap plotting function for gwrselect package
+gwselect-package        Variable selection for a geographically
+                        weighted regression model, using the LASSO
+lager                   Dates and times made easy with lubridate.
+lagr                    Fit a lagr model
+lagr.fit.inner          Fit a LAGR model
+lagr.sel                Estimate the bandwidth parameter for a LAGR
+                        model
+registerCores           Register multiple cores for parallelization via
+                        doMC

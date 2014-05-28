@@ -1,0 +1,9 @@
+Package: lagr
+Title: Local, adaptive, grouped regularization
+Description: 
+Version: 0.1
+Author: Wesley Brooks <brooks.wesley@gmail.com>
+Maintainer: Wesley Brooks <brooks.wesley@gmail.com>
+License: MIT
+Depends: SGL, Matrix, foreach
+Built: R 2.15.3; ; 2014-05-14 20:26:55 UTC; unix

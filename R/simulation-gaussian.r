@@ -1,10 +1,10 @@
 write.log = function(message, file, append=TRUE) {
     sink(file, append=append)
-    cat(message)
+    cat(paste(message, "\n", sep=""))
     sink()
 }
 
-write.log('entry\n', 'result.txt', append=FALSE)
+write.log('entry', 'result.txt', append=FALSE)
 
 #Set ourselves up to import the packages:
 r = getOption("repos")
@@ -14,26 +14,18 @@ rm(r)
 dir.create("rlibs")
 Sys.setenv(R_LIBS="rlibs")
 .libPaths(new="rlibs")
-install.packages("sp")
-install.packages("foreach")
-install.packages("iterators")
-install.packages("multicore")
-install.packages("doMC")
-install.packages("R-libs/RandomFields", repos=NULL, type='source')
-install.packages("geoR")
-install.packages("glmnet")
-install.packages("R-libs/SGL", repos=NULL, type='source')
-install.packages("R-libs/lagr", repos=NULL, type='source')
 
 require(sp)
+require(splancs)
 require(foreach)
 require(iterators)
 require(multicore)
 require(geoR)
 require(glmnet)
+require(SGL)
 require(lagr)
 
-write.log('installations complete\n', 'result.txt')
+write.log('installations complete', 'result.txt')
 
 seeds = as.vector(read.csv("seeds.txt", header=FALSE)[,1])
 B = 100
@@ -55,14 +47,14 @@ args = strsplit(args, '\\n', fixed=TRUE)[[1]]
 cluster = args[1]
 process = as.integer(args[2]) - 1
 
-write.log(paste('process:', process, "\n", sep=''), 'result.txt')
+write.log(paste('process:', process, sep=''), 'result.txt')
 
 #Simulation parameters are based on the value of process
 setting = process %/% B + 1
 parameters = params[setting,]
 set.seed(seeds[process+1])
 
-write.log(paste('seed:', seeds[process+1], "\n", sep=''), 'result.txt')
+write.log(paste('seed:', seeds[process+1], sep=''), 'result.txt')
 
 #Generate the covariates:
 if (parameters[['tau']] > 0) {
@@ -129,7 +121,6 @@ mu = X1*B1
 Y = mu + epsilon
 
 sim = data.frame(Y=as.vector(Y), X1=as.vector(X1), X2=as.vector(X2), X3=as.vector(X3), X4=as.vector(X4), X5=as.vector(X5), loc.x, loc.y)
-fitloc = cbind(rep(seq(0,1, length.out=N), each=N), rep(seq(0,1, length.out=N), times=N))
 
 vars = cbind(B1=as.vector(B1!=0))#, B2=as.vector(B2!=0), B3=as.vector(B3!=0))
 oracle = list()
@@ -138,11 +129,11 @@ for (i in 1:N**2) {
     if (vars[i,'B1']) { oracle[[i]] = c(oracle[[i]] , "X1") }
 }
 
-write.log('generated data\n', 'result.txt')
+write.log('generated data', 'result.txt')
 
 
 #MODELS:
-write.log('making lagr model.\n', 'result.txt')
+write.log('making lagr model.', 'result.txt')
 bw.lagr = lagr.sel(Y~X1+X2+X3+X4+X5-1, data=sim, family='gaussian', coords=sim[,c('loc.x','loc.y')], longlat=FALSE, varselect.method='AICc', kernel=epanechnikov, tol.bw=0.01, bw.type='knn', verbose=FALSE, bwselect.method='AICc', resid.type='pearson')
 
 #Make the bw distribution so we can draw from it.
@@ -172,11 +163,11 @@ for (bw in bws) {
 }
 
 
-#write.log('making oracular model.\n', 'result.txt')
+#write.log('making oracular model.', 'result.txt')
 #bw.oracular = gwglmnet.sel(Y~X1+X2+X3+X4+X5-1, data=sim, family='gaussian', oracle=oracle, coords=sim[,c('loc.x','loc.y')], longlat=FALSE, mode.select='BIC', gweight=spherical, tol.bw=0.01, bw.method='knn', parallel=FALSE, interact=TRUE, verbose=FALSE, shrunk.fit=FALSE, bw.select='AICc', resid.type='pearson')
 #model.oracular = gwglmnet(Y~X1+X2+X3+X4+X5-1, data=sim, family='gaussian', oracle=oracle, coords=sim[,c('loc.x','loc.y')], longlat=FALSE, N=1, mode.select='BIC', bw=bw.oracular[['bw']], gweight=spherical, bw.method='knn', simulation=TRUE, parallel=FALSE, interact=TRUE, verbose=FALSE, shrunk.fit=FALSE)
 
-#write.log('making gwr model.\n', 'result.txt')
+#write.log('making gwr model.', 'result.txt')
 #oracle2 = lapply(1:nrow(sim), function(x) {return(c("X1", "X2", "X3", "X4", "X5"))})
 #bw.gwr = gwglmnet.sel(Y~X1+X2+X3+X4+X5-1, data=sim, family='gaussian', oracle=oracle, coords=sim[,c('loc.x','loc.y')], longlat=FALSE, mode.select='BIC', gweight=spherical, tol.bw=0.01, bw.method='knn', parallel=FALSE, interact=TRUE, verbose=FALSE, shrunk.fit=FALSE, bw.select='AICc', resid.type='pearson')
 #model.gwr = gwglmnet(Y~X1+X2+X3+X4+X5-1, data=sim, family='gaussian', oracle=oracle2, coords=sim[,c('loc.x','loc.y')], longlat=FALSE, N=1, mode.select='BIC', bw=bw.oracular[['bw']], gweight=spherical, bw.method='knn', simulation=TRUE, parallel=FALSE, interact=TRUE, verbose=FALSE, shrunk.fit=FALSE)
@@ -186,13 +177,13 @@ for (bw in bws) {
 #OUTPUT:
 
 #First, write the data
-write.log('write the data.\n', 'result.txt')
+write.log('write the data.', 'result.txt')
 write.table(sim, file=paste("Data.", cluster, ".", process, ".csv", sep=""), sep=',', row.names=FALSE)
 
 
 #LAGR:
-write.log('summarize LAGR model.\n', 'result.txt')
-write.log(paste('LAGR bandwidth: ', bw.lagr[['bw']], '.\n', sep=''), 'result.txt')
+write.log('summarize LAGR model.', 'result.txt')
+write.log(paste('LAGR bandwidth: ', bw.lagr[['bw']], sep=''), 'result.txt')
 vars = c('(Intercept)', 'X1', 'X2', 'X3', 'X4', 'X5')
 
 coefs = t(sapply(model.lagr[['model']][['models']], function(x) as.vector(x[['coef']])))
@@ -201,7 +192,7 @@ write.table(coefs, file=paste("CoefEstimates.", cluster, ".", process, ".lagr.cs
 output = matrix(NA,0,2)
 output = t(sapply(model.lagr[['model']][['models']], function(x) c(x[['sigma2']][x[['s']]], x[['fitted']])))
 colnames(output) = c("s2", "fitted")
-write.table(output, file=paste("MiscParams.", cluster, ".", process, ".lagr.csv", sep=""), col.names=colnames(output), sep=',', row.names=FALSE)
+write.table(output, file=paste("MiscParams.", cluster, ".", process, ".lagr.csv", sep=""), sep=',', row.names=FALSE)
 
 
 
@@ -209,7 +200,7 @@ write.table(output, file=paste("MiscParams.", cluster, ".", process, ".lagr.csv"
 
 
 #For oracle property:
-#write.log('summarize oracle model.\n', 'result.txt')
+#write.log('summarize oracle model.', 'result.txt')
 #vars = c('(Intercept)', 'X1', 'X2', 'X3', 'X4', 'X5')
 
 #coefs = t(sapply(1:N**2, function(y) {as.vector(model.oracular[['model']][['models']][[y]][['coef']])}))
@@ -231,7 +222,7 @@ write.table(output, file=paste("MiscParams.", cluster, ".", process, ".lagr.csv"
 
 
 #For all vars:
-#write.log('summarize GWR-LLE model.\n', 'result.txt')
+#write.log('summarize GWR-LLE model.', 'result.txt')
 #vars = c('(Intercept)', 'X1', 'X2', 'X3', 'X4', 'X5')
 
 #coefs = t(sapply(1:N**2, function(y) {as.vector(model.gwr[['model']][['models']][[y]][['coef']])}))
@@ -247,4 +238,4 @@ write.table(output, file=paste("MiscParams.", cluster, ".", process, ".lagr.csv"
 #}
 #write.table(output, file=paste("MiscParams.", cluster, ".", process, ".gwr.csv", sep=""), #col.names=params, sep=',', row.names=FALSE)
 
-write.log('done.\n', 'result.txt')
+write.log('done.', 'result.txt')
