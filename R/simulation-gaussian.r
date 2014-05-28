@@ -144,7 +144,33 @@ write.log('generated data\n', 'result.txt')
 #MODELS:
 write.log('making lagr model.\n', 'result.txt')
 bw.lagr = lagr.sel(Y~X1+X2+X3+X4+X5-1, data=sim, family='gaussian', coords=sim[,c('loc.x','loc.y')], longlat=FALSE, varselect.method='AICc', kernel=epanechnikov, tol.bw=0.01, bw.type='knn', verbose=FALSE, bwselect.method='AICc', resid.type='pearson')
-model.lagr = lagr(Y~X1+X2+X3+X4+X5-1, data=sim, family='gaussian', coords=sim[,c('loc.x','loc.y')], longlat=FALSE, varselect.method='AICc', bw=bw.lagr[['bw']], kernel=epanechnikov, bw.type='knn', simulation=TRUE, verbose=FALSE)
+
+#Make the bw distribution so we can draw from it.
+#First, get the AICc-vs-bw results in order
+b = bw.lagr[['trace']][order(bw.lagr[['trace']][,1]),c(1,2)]
+
+#Fit a spline through the AICc-vs-bw observations and then use it to smooth AICc across the entire range of the tested bandwidths.
+spline = smooth.spline(b)
+xxx = seq(b[1,1], tail(b[,1],1), length.out=1001)
+smooth = predict(spline, xxx)
+
+#Now restrict our attention to the region of the densest 99.98% of bandwidth probability mass
+maxi = which(cumsum(exp(-0.5*smooth$y))/sum(exp(-0.5*smooth$y))>0.9999)[1]
+mini = tail(which(cumsum(exp(-0.5*smooth$y))/sum(exp(-0.5*smooth$y))<0.0001),1)
+xxx = seq(xxx[mini], xxx[maxi], length.out=1001)
+smooth = predict(spline, xxx)
+
+#Get the CDF of bandwidth within the region of greatest density
+pp = cumsum(exp(-0.5*smooth$y))/sum(exp(-0.5*smooth$y))
+
+#Draw some typical bandwidths from the CDF and produce a model with each.
+bws = xxx[sapply(runif(19), function(x) which(x<pp)[1])]
+models = list()
+models[[1]] = lagr(Y~X1+X2+X3+X4+X5-1, data=sim, family='gaussian', coords=sim[,c('loc.x','loc.y')], N=100, longlat=FALSE, varselect.method='AICc', bw=bw.lagr[['bw']], kernel=epanechnikov, bw.type='knn', simulation=TRUE, verbose=FALSE)
+for (bw in bws) {
+    models[[length(models)+1]] = lagr(Y~X1+X2+X3+X4+X5-1, data=sim, family='gaussian', coords=sim[,c('loc.x','loc.y')], N=100, longlat=FALSE, varselect.method='AICc', bw=bw, kernel=epanechnikov, bw.type='knn', simulation=TRUE, verbose=FALSE)
+}
+
 
 #write.log('making oracular model.\n', 'result.txt')
 #bw.oracular = gwglmnet.sel(Y~X1+X2+X3+X4+X5-1, data=sim, family='gaussian', oracle=oracle, coords=sim[,c('loc.x','loc.y')], longlat=FALSE, mode.select='BIC', gweight=spherical, tol.bw=0.01, bw.method='knn', parallel=FALSE, interact=TRUE, verbose=FALSE, shrunk.fit=FALSE, bw.select='AICc', resid.type='pearson')
