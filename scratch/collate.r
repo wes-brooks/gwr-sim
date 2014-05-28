@@ -1,4 +1,4 @@
-coefs = matrix(NA, nrow=0, ncol=8)
+coefs = matrix(NA, nrow=0, ncol=9)
 
 for (i in 1:length(models)) {
     coefs_temp = matrix(NA, nrow=0, ncol=7)
@@ -16,10 +16,10 @@ for (i in 1:length(models)) {
         coefs_temp = rbind(coefs_temp, coefs_loc)
     }
     
-    coefs_temp = cbind(i, coefs_temp)
+    coefs_temp = cbind(i, models[[i]][['bw']], coefs_temp)
     #colnames(coefs_temp) = NULL
     coefs = rbind(coefs, coefs_temp)
 }
 
 coefs = data.frame(coefs)
-colnames(coefs) = c("iteration", "location", "(Intercept)", "X1", "X2", "X3", "X4", "X5")
+colnames(coefs) = c("iteration", "bandwidth", "location", "(Intercept)", "X1", "X2", "X3", "X4", "X5")
