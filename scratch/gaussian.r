@@ -18,7 +18,7 @@ require(doMC)
 registerDoMC(3)
 write.log('installations complete', 'result.txt')
 
-source("R/interpolate.bws.r")
+source("R/interpolate.bw.r")
 
 B = 1 #number of replications for each setting
 N = 30 #number of width and length divisions in the domain
@@ -34,12 +34,8 @@ sigma = rep(c(0.5,1), settings/2) #sigma is the variance of the noise term
 params = data.frame(tau, rho, sigma.tau, sigma)
 
 #Read the cluster and process arguments
-#args = scan('jobid.txt', 'character')
-#args = strsplit(args, '\\n', fixed=TRUE)[[1]]
-#cluster = args[1]
-#process = as.integer(args[2]) - 1
-cluster=NA
-process=1
+cluster = NA
+process = 1
 write.log(paste('process:', process, sep=''), 'result.txt')
 
 #Simulation parameters are based on the value of process
