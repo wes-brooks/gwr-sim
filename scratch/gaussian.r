@@ -18,10 +18,9 @@ require(doMC)
 registerDoMC(3)
 write.log('installations complete', 'result.txt')
 
-#seeds = as.vector(read.csv("seeds.txt", header=FALSE)[,1])
-seeds = rpois(18, 100)
+source("R/interpolate.bws.r")
+
 B = 1 #number of replications for each setting
-S = 1 #number of draws from the bandwidth distribution for each replication
 N = 30 #number of width and length divisions in the domain
 settings = 18 #number of unique simulation settings
 functions = 3 #number of function types
@@ -46,8 +45,8 @@ write.log(paste('process:', process, sep=''), 'result.txt')
 #Simulation parameters are based on the value of process
 setting = process %/% B + 1
 parameters = params[setting,]
-set.seed(seeds[process+1])
-write.log(paste('seed:', seeds[process+1], sep=''), 'result.txt')
+set.seed(process)
+write.log(paste('seed:', process, sep=''), 'result.txt')
 
 #Generate the covariates:
 if (parameters[['tau']] > 0) {
@@ -110,17 +109,6 @@ Y = mu + epsilon
 sim = data.frame(Y=as.vector(Y), X1=as.vector(X1), X2=as.vector(X2), X3=as.vector(X3), X4=as.vector(X4), X5=as.vector(X5), loc.x, loc.y)
 write.log('generated data', 'result.txt')
 
-#Prep oracle:
-vars = cbind(B1=as.vector(B1!=0))
-oracle = list()
-for (i in 1:N**2) { 
-    oracle[[i]] = character(0)
-    if (vars[i,'B1']) { oracle[[i]] = c(oracle[[i]] , "X1") }
-}
-
-#Prep GWR:
-allvars = replicate(N**2, c('X1', 'X2', 'X3', 'X4', 'X5'), simplify=FALSE)
-
 
 
 #MODELS:
@@ -128,27 +116,8 @@ allvars = replicate(N**2, c('X1', 'X2', 'X3', 'X4', 'X5'), simplify=FALSE)
 write.log('making lagr model.', 'result.txt')
 bw.lagr = lagr.sel(Y~X1+X2+X3+X4+X5-1, data=sim, family='gaussian', coords=sim[,c('loc.x','loc.y')], longlat=FALSE, varselect.method='AICc', kernel=epanechnikov, tol.bw=0.01, bw.type='knn', verbose=TRUE, bwselect.method='AICc', resid.type='pearson')
 
-#Make the bw distribution so we can draw from it.
-#First, get the AICc-vs-bw results in order
-b = bw.lagr[['trace']][order(bw.lagr[['trace']][,1]),c(1,2)]
-
-#Fit a spline through the AICc-vs-bw observations and then use it to smooth AICc across the entire range of the tested bandwidths.
-spline = smooth.spline(b)
-xxx = seq(b[1,1], tail(b[,1],1), length.out=1001)
-smooth = predict(spline, xxx)
-smooth = smooth$y - mean(smooth$y)
-
-#Now restrict our attention to the region of the densest 99% of bandwidth probability mass
-maxi = which(cumsum(exp(-smooth / 2)) / sum(exp(-smooth / 2)) > 0.995)[1]
-mini = tail(which(cumsum(exp(-smooth / 2))/sum(exp(-smooth / 2)) < 0.005),1)
-xxx = seq(xxx[mini], xxx[maxi], length.out=1001)
-smooth = predict(spline, xxx)$y
-
-#Get the CDF of bandwidth within the region of greatest density
-pp = cumsum(exp(-smooth / 2)) / sum(exp(-smooth / 2))
-
 #Draw some typical bandwidths from the CDF and produce a model with each.
-bws = xxx[sapply(runif(S), function(x) which(x<pp)[1])]
+bws = interpolate.bw(bw.lagr[['trace']], S=100)
 models.lagr = list()
 models.lagr[[1]] = lagr(Y~X1+X2+X3+X4+X5-1, data=sim, family='gaussian', coords=sim[,c('loc.x','loc.y')], longlat=FALSE, varselect.method='AICc', bw=bw.lagr[['bw']], kernel=epanechnikov, bw.type='knn', verbose=TRUE)
 for (bw in bws) {
@@ -157,33 +126,26 @@ for (bw in bws) {
     models.lagr[[length(models.lagr)+1]] = lagr(Y~X1+X2+X3+X4+X5-1, data=boot, family='gaussian', fit.loc=sim[,c('loc.x','loc.y')], coords=boot[,c('loc.x','loc.y')], longlat=FALSE, varselect.method='AICc', bw=bw, kernel=epanechnikov, bw.type='knn', verbose=TRUE)
 }
 
+#save the lagr object:
+write.log('summarize LAGR model.', 'result.txt')
+save(bw.lagr, file=paste("bw.", cluster, ".", process, ".lagr.RData", sep=""))
+save(models.lagr, file=paste("models.", cluster, ".", process, ".lagr.RData", sep=""))
+
+
 
 
 #ORACLE:
 write.log('making oracular model.', 'result.txt')
+vars = cbind(B1=as.vector(B1!=0))
+oracle = list()
+for (i in 1:N**2) { 
+    oracle[[i]] = character(0)
+    if (vars[i,'B1']) { oracle[[i]] = c(oracle[[i]] , "X1") }
+}
 bw.oracle = lagr.sel(Y~X1+X2+X3+X4+X5-1, data=sim, family='gaussian', coords=sim[,c('loc.x','loc.y')], longlat=FALSE, oracle=oracle, kernel=epanechnikov, tol.bw=0.01, bw.type='knn', verbose=TRUE, bwselect.method='AICc', resid.type='pearson')
 
-#Make the bw distribution so we can draw from it.
-#First, get the AICc-vs-bw results in order
-b = bw.oracle[['trace']][order(bw.oracle[['trace']][,1]),c(1,2)]
-
-#Fit a spline through the AICc-vs-bw observations and then use it to smooth AICc across the entire range of the tested bandwidths.
-spline = smooth.spline(b)
-xxx = seq(b[1,1], tail(b[,1],1), length.out=1001)
-smooth = predict(spline, xxx)
-smooth = smooth$y - mean(smooth$y)
-
-#Now restrict our attention to the region of the densest 99% of bandwidth probability mass
-maxi = which(cumsum(exp(-smooth / 2)) / sum(exp(-smooth / 2)) > 0.995)[1]
-mini = tail(which(cumsum(exp(-smooth / 2))/sum(exp(-smooth / 2)) < 0.005),1)
-xxx = seq(xxx[mini], xxx[maxi], length.out=1001)
-smooth = predict(spline, xxx)$y
-
-#Get the CDF of bandwidth within the region of greatest density
-pp = cumsum(exp(-smooth / 2)) / sum(exp(-smooth / 2))
-
 #Draw some typical bandwidths from the CDF and produce a model with each.
-bws = xxx[sapply(runif(S), function(x) which(x<pp)[1])]
+bws = interpolate.bw(bw.oracle[['trace']], S=100)
 models.oracle = list()
 models.oracle[[1]] = lagr(Y~X1+X2+X3+X4+X5-1, data=sim, family='gaussian', coords=sim[,c('loc.x','loc.y')], longlat=FALSE, oracle=oracle, bw=bw.oracle[['bw']], kernel=epanechnikov, bw.type='knn', verbose=TRUE)
 for (bw in bws) {
@@ -192,33 +154,20 @@ for (bw in bws) {
     models.oracle[[length(models.oracle)+1]] = lagr(Y~X1+X2+X3+X4+X5-1, data=boot, family='gaussian', fit.loc=sim[,c('loc.x','loc.y')], coords=boot[,c('loc.x','loc.y')], longlat=FALSE, oracle=oracle, bw=bw, kernel=epanechnikov, bw.type='knn', verbose=TRUE)
 }
 
+#save the oracle object:
+write.log('summarize oracle model.', 'result.txt')
+save(bw.oracle, file=paste("bw.", cluster, ".", process, ".oracle.RData", sep=""))
+save(models.oracle, file=paste("models.", cluster, ".", process, ".oracle.RData", sep=""))
+
 
 
 #GWR:
 write.log('making gwr model.', 'result.txt')
+allvars = replicate(N**2, c('X1', 'X2', 'X3', 'X4', 'X5'), simplify=FALSE)
 bw.gwr = lagr.sel(Y~X1+X2+X3+X4+X5-1, data=sim, family='gaussian', coords=sim[,c('loc.x','loc.y')], longlat=FALSE, oracle=allvars, kernel=epanechnikov, tol.bw=0.01, bw.type='knn', verbose=TRUE, bwselect.method='AICc', resid.type='pearson')
 
-#Make the bw distribution so we can draw from it.
-#First, get the AICc-vs-bw results in order
-b = bw.gwr[['trace']][order(bw.gwr[['trace']][,1]),c(1,2)]
-
-#Fit a spline through the AICc-vs-bw observations and then use it to smooth AICc across the entire range of the tested bandwidths.
-spline = smooth.spline(b)
-xxx = seq(b[1,1], tail(b[,1],1), length.out=1001)
-smooth = predict(spline, xxx)
-smooth = smooth$y - mean(smooth$y)
-
-#Now restrict our attention to the region of the densest 99% of bandwidth probability mass
-maxi = which(cumsum(exp(-smooth / 2)) / sum(exp(-smooth / 2)) > 0.995)[1]
-mini = tail(which(cumsum(exp(-smooth / 2))/sum(exp(-smooth / 2)) < 0.005),1)
-xxx = seq(xxx[mini], xxx[maxi], length.out=1001)
-smooth = predict(spline, xxx)$y
-
-#Get the CDF of bandwidth within the region of greatest density
-pp = cumsum(exp(-smooth / 2)) / sum(exp(-smooth / 2))
-
 #Draw some typical bandwidths from the CDF and produce a model with each.
-bws = xxx[sapply(runif(S), function(x) which(x<pp)[1])]
+bws = interpolate.bw(bw.gwr[['trace']], S=100)
 models.gwr = list()
 models.gwr[[1]] = lagr(Y~X1+X2+X3+X4+X5-1, data=sim, family='gaussian', coords=sim[,c('loc.x','loc.y')], longlat=FALSE, oracle=allvars, bw=bw.gwr[['bw']], kernel=epanechnikov, bw.type='knn', verbose=TRUE)
 for (bw in bws) {
@@ -227,30 +176,11 @@ for (bw in bws) {
     models.gwr[[length(models.gwr)+1]] = lagr(Y~X1+X2+X3+X4+X5-1, data=boot, family='gaussian', fit.loc=sim[,c('loc.x','loc.y')], coords=boot[,c('loc.x','loc.y')], longlat=FALSE, oracle=allvars, bw=bw, kernel=epanechnikov, bw.type='knn', verbose=TRUE)
 }
 
-
-#OUTPUT:
-
-#LAGR:
-write.log('summarize LAGR model.', 'result.txt')
-save(bw.lagr, file=paste("bw.", cluster, ".", process, ".lagr.RData", sep=""))
-save(models.lagr, file=paste("models.", cluster, ".", process, ".lagr.RData", sep=""))
-
-
-
-
-
-#oracle:
-write.log('summarize oracle model.', 'result.txt')
-save(bw.oracle, file=paste("bw.", cluster, ".", process, ".oracle.RData", sep=""))
-save(models.oracle, file=paste("models.", cluster, ".", process, ".oracle.RData", sep=""))
-
-
-
-
-
-#GWR:
+#save the gwr object:
 write.log('summarize gwr model.', 'result.txt')
 save(bw.gwr, file=paste("bw.", cluster, ".", process, ".gwr.RData", sep=""))
 save(models.gwr, file=paste("models.", cluster, ".", process, ".gwr.RData", sep=""))
 
+
+#We're finished
 write.log('done.', 'result.txt')
