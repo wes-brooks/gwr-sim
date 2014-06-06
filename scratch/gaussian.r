@@ -4,9 +4,6 @@ write.log = function(message, file, append=TRUE) {
     sink()
 }
 
-Sys.setenv(R_LIBS="rlibs")
-.libPaths(new="rlibs")
-
 require(sp)
 require(splancs)
 require(foreach)
