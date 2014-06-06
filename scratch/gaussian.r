@@ -3,7 +3,6 @@ write.log = function(message, file, append=TRUE) {
     cat(paste(message, "\n", sep=""))
     sink()
 }
-write.log('entry', 'result.txt', append=FALSE)
 
 Sys.setenv(R_LIBS="rlibs")
 .libPaths(new="rlibs")
@@ -19,7 +18,14 @@ require(SGL)
 require(lagr)
 #require(doMC)
 #registerDoMC(7)
-write.log('installations complete', 'result.txt')
+
+#Read the process number from the command line
+args <- commandArgs(trailingOnly = TRUE)
+cluster = NA
+process = args[1]
+
+logfile = paste("result.", process, ".txt")
+write.log('installations complete', logfile, append=FALSE)
 
 source("R/interpolate.bw.r")
 
@@ -37,27 +43,24 @@ sigma = rep(c(0.5,1), settings/2) #sigma is the variance of the noise term
 params = data.frame(tau, rho, sigma.tau, sigma)
 
 #Read the cluster and process arguments
-args <- commandArgs(trailingOnly = TRUE)
-cluster = NA
-process = args[1]
-write.log(paste('process:', process, sep=''), 'result.txt')
+write.log(paste('process:', process, sep=''), logfile)
 
 #Simulation parameters are based on the value of process
 setting = process %/% B + 1
 parameters = params[setting,]
 set.seed(process)
-write.log(paste('seed:', process, sep=''), 'result.txt')
+write.log(paste('seed:', process, sep=''), logfile)
 
 #Generate the covariates:
 if (parameters[['tau']] > 0) {
-    write.log(paste('generating GRFs with tau of ', parameters[['tau']], sep=''), 'result.txt')
+    write.log(paste('generating GRFs with tau of ', parameters[['tau']], sep=''), logfile)
     d1 = grf(n=N**2, grid='reg', cov.model='exponential', cov.pars=c(1,parameters[['tau']]))$data
     d2 = grf(n=N**2, grid='reg', cov.model='exponential', cov.pars=c(1,parameters[['tau']]))$data
     d3 = grf(n=N**2, grid='reg', cov.model='exponential', cov.pars=c(1,parameters[['tau']]))$data
     d4 = grf(n=N**2, grid='reg', cov.model='exponential', cov.pars=c(1,parameters[['tau']]))$data
     d5 = grf(n=N**2, grid='reg', cov.model='exponential', cov.pars=c(1,parameters[['tau']]))$data
 } else {
-    write.log('generating GRFs with tau of 0', 'result.txt')
+    write.log('generating GRFs with tau of 0', logfile)
     d1 = rnorm(N**2, mean=0, sd=1)
     d2 = rnorm(N**2, mean=0, sd=1)
     d3 = rnorm(N**2, mean=0, sd=1)
@@ -66,13 +69,13 @@ if (parameters[['tau']] > 0) {
 }
 loc.x = rep(coord, times=N)
 loc.y = rep(coord, each=N)
-write.log('generated GRFs', 'result.txt')
+write.log('generated GRFs', logfile)
 
 #Use the Cholesky decomposition to correlate the random fields:
 S = matrix(parameters[['rho']], 5, 5)
 diag(S) = rep(1, 5)
 L = chol(S)
-write.log('generated correlation matrix', 'result.txt')
+write.log('generated correlation matrix', logfile)
 
 #Force correlation on the Gaussian random fields:
 D = as.matrix(cbind(d1, d2, d3, d4, d5)) %*% L
@@ -81,12 +84,12 @@ X2 = matrix(D[,2], N, N)
 X3 = matrix(D[,3], N, N)
 X4 = matrix(D[,4], N, N)
 X5 = matrix(D[,5], N, N)
-write.log('generated Xs', 'result.txt')
+write.log('generated Xs', logfile)
 
 #simulate the noise term, either with or without spatial correlation
 if (parameters[['sigma.tau']] == 0) {epsilon = rnorm(N**2, mean=0, sd=parameters[['sigma']])}
 if (parameters[['sigma.tau']] > 0) {epsilon = grf(n=N**2, grid='reg', cov.model='exponential', cov.pars=c(parameters[['sigma']]**2,parameters[['sigma.tau']]))$data}
-write.log('generated epsilon', 'result.txt')
+write.log('generated epsilon', logfile)
 
 #calculate the B1 coefficient surface for the appropriate function type
 if ((setting-1) %/% 6 == 0) {
@@ -101,19 +104,19 @@ if ((setting-1) %/% 6 == 0) {
     B1 = matrix(max(d)-d, N, N)
     B1 = B1 / max(B1)
 }
-write.log('generated B1 coefficient surface', 'result.txt')
+write.log('generated B1 coefficient surface', logfile)
 
 #Generate the response variable and set up the data.frame:
 mu = X1*B1
 Y = mu + epsilon
 sim = data.frame(Y=as.vector(Y), X1=as.vector(X1), X2=as.vector(X2), X3=as.vector(X3), X4=as.vector(X4), X5=as.vector(X5), loc.x, loc.y)
-write.log('generated data', 'result.txt')
+write.log('generated data', logfile)
 
 
 
 #MODELS:
 #LAGR:
-write.log('making lagr model.', 'result.txt')
+write.log('making lagr model.', logfile)
 bw.lagr = lagr.sel(Y~X1+X2+X3+X4+X5-1, data=sim, family='gaussian', coords=sim[,c('loc.x','loc.y')], longlat=FALSE, varselect.method='AICc', kernel=epanechnikov, tol.bw=0.01, bw.type='knn', verbose=TRUE, bwselect.method='AICc', resid.type='pearson')
 save(bw.lagr, file=paste("bw.", cluster, ".", process, ".lagr.RData", sep=""))
 
@@ -140,7 +143,7 @@ for (bw in bws) {
 
 
 #ORACLE:
-write.log('making oracular model.', 'result.txt')
+write.log('making oracular model.', logfile)
 vars = cbind(B1=as.vector(B1!=0))
 oracle = list()
 for (i in 1:N**2) { 
@@ -173,7 +176,7 @@ for (bw in bws) {
 
 
 #GWR:
-write.log('making gwr model.', 'result.txt')
+write.log('making gwr model.', logfile)
 allvars = replicate(N**2, c('X1', 'X2', 'X3', 'X4', 'X5'), simplify=FALSE)
 bw.gwr = lagr.sel(Y~X1+X2+X3+X4+X5-1, data=sim, family='gaussian', coords=sim[,c('loc.x','loc.y')], longlat=FALSE, oracle=allvars, kernel=epanechnikov, tol.bw=0.01, bw.type='knn', verbose=TRUE, bwselect.method='AICc', resid.type='pearson')
 save(bw.gwr, file=paste("bw.", cluster, ".", process, ".gwr.RData", sep=""))
@@ -198,4 +201,4 @@ for (bw in bws) {
 }
 
 #We're finished
-write.log('done.', 'result.txt')
+write.log('done.', logfile)
