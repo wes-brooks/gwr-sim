@@ -19,7 +19,7 @@ require(lagr)
 #Read the process number from the command line
 args <- commandArgs(trailingOnly = TRUE)
 cluster = NA
-process = args[1]
+process = as.numeric(args[1])
 
 logfile = paste("result.", process, ".txt", sep="")
 write.log('installations complete', logfile, append=FALSE)
