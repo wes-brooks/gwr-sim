@@ -24,7 +24,7 @@ args <- commandArgs(trailingOnly = TRUE)
 cluster = NA
 process = args[1]
 
-logfile = paste("result.", process, ".txt")
+logfile = paste("result.", process, ".txt", sep="")
 write.log('installations complete', logfile, append=FALSE)
 
 source("R/interpolate.bw.r")
