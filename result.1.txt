@@ -1,0 +1,12 @@
+installations complete
+process:1
+seed: 1
+parameters: 0.1,0,0,0.5
+generating GRFs with tau of 0.1
+generated GRFs
+generated correlation matrix
+generated Xs
+generated epsilon
+generated B1 coefficient surface
+generated data
+making oracular model.

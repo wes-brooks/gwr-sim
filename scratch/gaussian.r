@@ -26,7 +26,7 @@ write.log('installations complete', logfile, append=FALSE)
 
 source("R/interpolate.bw.r")
 
-B = 1 #number of replications for each setting
+B = 100 #number of replications for each setting
 N = 30 #number of width and length divisions in the domain
 settings = 18 #number of unique simulation settings
 functions = 3 #number of function types
@@ -46,7 +46,8 @@ write.log(paste('process:', process, sep=''), logfile)
 setting = process %/% B + 1
 parameters = params[setting,]
 set.seed(process)
-write.log(paste('seed:', process, sep=''), logfile)
+write.log(paste('seed: ', process, sep=''), logfile)
+write.log(paste("parameters: ", paste(parameters, collapse=","), sep=""), logfile)
 
 #Generate the covariates:
 if (parameters[['tau']] > 0) {
@@ -108,34 +109,38 @@ mu = X1*B1
 Y = mu + epsilon
 sim = data.frame(Y=as.vector(Y), X1=as.vector(X1), X2=as.vector(X2), X3=as.vector(X3), X4=as.vector(X4), X5=as.vector(X5), loc.x, loc.y)
 write.log('generated data', logfile)
-
+write.table(sim, file=paste("simdata", process, "csv", sep="."))
 
 
 #MODELS:
 #LAGR:
 write.log('making lagr model.', logfile)
 bw.lagr = lagr.sel(Y~X1+X2+X3+X4+X5-1, data=sim, family='gaussian', coords=sim[,c('loc.x','loc.y')], longlat=FALSE, varselect.method='AICc', kernel=epanechnikov, tol.bw=0.01, bw.type='knn', verbose=TRUE, bwselect.method='AICc', resid.type='pearson')
-save(bw.lagr, file=paste("bw.", cluster, ".", process, ".lagr.RData", sep=""))
+#save(bw.lagr, file=paste("bw.", cluster, ".", process, ".lagr.RData", sep=""))
 
 #Draw some typical bandwidths from the CDF and produce a model with each.
-bws = interpolate.bw(bw.lagr[['trace']], S=20)
+#bws = interpolate.bw(bw.lagr[['trace']], S=20)
 
-i = 0
+#i = 0
 model = lagr(Y~X1+X2+X3+X4+X5-1, data=sim, family='gaussian', coords=sim[,c('loc.x','loc.y')], longlat=FALSE, varselect.method='AICc', bw=bw.lagr[['bw']], kernel=epanechnikov, bw.type='knn', verbose=TRUE)
-save(model, file=paste("lagr.model.", i, ".RData", sep=""))
+coefs = t(sapply(model[['model']][['models']], function(x) x[['coef']]))
+write.table(coefs, file=paste("coefs", "lagr", process, "csv", sep="."))
+
+#save(model, file=paste("lagr.model.", i, ".RData", sep=""))
 rm(model)
+rm(coefs)
 gc()
 
-for (bw in bws) {
-    i = i+1
-    indx = sample(1:nrow(sim), replace=TRUE)
-    boot = sim[indx,]
-    model = lagr(Y~X1+X2+X3+X4+X5-1, data=boot, family='gaussian', fit.loc=sim[,c('loc.x','loc.y')], coords=boot[,c('loc.x','loc.y')], longlat=FALSE, varselect.method='AICc', bw=bw, kernel=epanechnikov, bw.type='knn', verbose=TRUE)
-
-    save(model, file=paste("lagr.model.", i, ".RData", sep=""))
-    rm(model)
-    gc()
-}
+#for (bw in bws) {
+#    i = i+1
+#    indx = sample(1:nrow(sim), replace=TRUE)
+#    boot = sim[indx,]
+#    model = lagr(Y~X1+X2+X3+X4+X5-1, data=boot, family='gaussian', fit.loc=sim[,c('loc.x','loc.y')], coords=boot[,c('loc.x','loc.y')], longlat=FALSE, varselect.method='AICc', bw=bw, kernel=epanechnikov, bw.type='knn', verbose=TRUE)
+#
+#    save(model, file=paste("lagr.model.", i, ".RData", sep=""))
+#    rm(model)
+#    gc()
+#}
 
 
 
@@ -148,27 +153,32 @@ for (i in 1:N**2) {
     if (vars[i,'B1']) { oracle[[i]] = c(oracle[[i]] , "X1") }
 }
 bw.oracle = lagr.sel(Y~X1+X2+X3+X4+X5-1, data=sim, family='gaussian', coords=sim[,c('loc.x','loc.y')], longlat=FALSE, oracle=oracle, kernel=epanechnikov, tol.bw=0.01, bw.type='knn', verbose=TRUE, bwselect.method='AICc', resid.type='pearson')
-save(bw.oracle, file=paste("bw.", cluster, ".", process, ".oracle.RData", sep=""))
+#save(bw.oracle, file=paste("bw.", cluster, ".", process, ".oracle.RData", sep=""))
 
 #Draw some typical bandwidths
-bws = interpolate.bw(bw.oracle[['trace']], S=20)
+#bws = interpolate.bw(bw.oracle[['trace']], S=20)
 
 #Generate the models
-i=0
+#i=0
 model = lagr(Y~X1+X2+X3+X4+X5-1, data=sim, family='gaussian', coords=sim[,c('loc.x','loc.y')], longlat=FALSE, oracle=oracle, bw=bw.oracle[['bw']], kernel=epanechnikov, bw.type='knn', verbose=TRUE)
-save(model, file=paste("oracle.model.", i, ".RData", sep=""))
-rm(model)
-gc()
-for (bw in bws) {
-    i = i+1
-    indx = sample(1:nrow(sim), replace=TRUE)
-    boot = sim[indx,]
-    model = lagr(Y~X1+X2+X3+X4+X5-1, data=boot, family='gaussian', fit.loc=sim[,c('loc.x','loc.y')], coords=boot[,c('loc.x','loc.y')], longlat=FALSE, oracle=oracle, bw=bw, kernel=epanechnikov, bw.type='knn', verbose=TRUE)
+coefs = t(sapply(model[['model']][['models']], function(x) x[['coef']]))
+write.table(coefs, file=paste("coefs", "oracle", process, "csv", sep="."))
 
-    save(model, file=paste("oracle.model.", i, ".RData", sep=""))
-    rm(model)
-    gc()
-}
+#save(model, file=paste("oracle.model.", i, ".RData", sep=""))
+rm(model)
+rm(coefs)
+gc()
+
+#for (bw in bws) {
+#    i = i+1
+#    indx = sample(1:nrow(sim), replace=TRUE)
+#    boot = sim[indx,]
+#    model = lagr(Y~X1+X2+X3+X4+X5-1, data=boot, family='gaussian', fit.loc=sim[,c('loc.x','loc.y')], coords=boot[,c('loc.x','loc.y')], longlat=FALSE, oracle=oracle, bw=bw, kernel=epanechnikov, bw.type='knn', verbose=TRUE)
+#
+#    save(model, file=paste("oracle.model.", i, ".RData", sep=""))
+#    rm(model)
+#    gc()
+#}
 
 
 
@@ -176,26 +186,31 @@ for (bw in bws) {
 write.log('making gwr model.', logfile)
 allvars = replicate(N**2, c('X1', 'X2', 'X3', 'X4', 'X5'), simplify=FALSE)
 bw.gwr = lagr.sel(Y~X1+X2+X3+X4+X5-1, data=sim, family='gaussian', coords=sim[,c('loc.x','loc.y')], longlat=FALSE, oracle=allvars, kernel=epanechnikov, tol.bw=0.01, bw.type='knn', verbose=TRUE, bwselect.method='AICc', resid.type='pearson')
-save(bw.gwr, file=paste("bw.", cluster, ".", process, ".gwr.RData", sep=""))
+#save(bw.gwr, file=paste("bw.", cluster, ".", process, ".gwr.RData", sep=""))
 
 #Draw some typical bandwidths from the CDF and produce a model with each.
-bws = interpolate.bw(bw.gwr[['trace']], S=20)
+#bws = interpolate.bw(bw.gwr[['trace']], S=20)
 
-i=0
+#i=0
 model = lagr(Y~X1+X2+X3+X4+X5-1, data=sim, family='gaussian', coords=sim[,c('loc.x','loc.y')], longlat=FALSE, oracle=allvars, bw=bw.gwr[['bw']], kernel=epanechnikov, bw.type='knn', verbose=TRUE)
-save(model, file=paste("gwr.model.", i, ".RData", sep=""))
-rm(model)
-gc()
-for (bw in bws) {
-    i = i+1
-    indx = sample(1:nrow(sim), replace=TRUE)
-    boot = sim[indx,]
-    model = lagr(Y~X1+X2+X3+X4+X5-1, data=boot, family='gaussian', fit.loc=sim[,c('loc.x','loc.y')], coords=boot[,c('loc.x','loc.y')], longlat=FALSE, oracle=allvars, bw=bw, kernel=epanechnikov, bw.type='knn', verbose=TRUE)
+coefs = t(sapply(model[['model']][['models']], function(x) x[['coef']]))
+write.table(coefs, file=paste("coefs", "gwr", process, "csv", sep="."))
 
-    save(model, file=paste("gwr.model.", i, ".RData", sep=""))
-    rm(model)
-    gc()
-}
+#save(model, file=paste("gwr.model.", i, ".RData", sep=""))
+rm(model)
+rm(coefs)
+gc()
+
+#for (bw in bws) {
+#    i = i+1
+#    indx = sample(1:nrow(sim), replace=TRUE)
+#    boot = sim[indx,]
+#    model = lagr(Y~X1+X2+X3+X4+X5-1, data=boot, family='gaussian', fit.loc=sim[,c('loc.x','loc.y')], coords=boot[,c('loc.x','loc.y')], longlat=FALSE, oracle=allvars, bw=bw, kernel=epanechnikov, bw.type='knn', verbose=TRUE)
+#
+#    save(model, file=paste("gwr.model.", i, ".RData", sep=""))
+#    rm(model)
+#    gc()
+#}
 
 #We're finished
 write.log('done.', logfile)
