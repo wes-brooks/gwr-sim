@@ -1,0 +1,63 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<html><head><title>R: Convenience functions to set the limits of the x and y axis.</title>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+<link rel="stylesheet" type="text/css" href="R.css">
+</head><body>
+
+<table width="100%" summary="page for xlim {ggplot2}"><tr><td>xlim {ggplot2}</td><td align="right">R Documentation</td></tr></table>
+
+<h2>Convenience functions to set the limits of the x and y axis.</h2>
+
+<h3>Description</h3>
+
+<p>Observations not in this range will be dropped completely
+and not passed to any other layers.
+</p>
+
+
+<h3>Usage</h3>
+
+<pre>
+  xlim(...)
+
+  ylim(...)
+</pre>
+
+
+<h3>Arguments</h3>
+
+<table summary="R argblock">
+<tr valign="top"><td><code>...</code></td>
+<td>
+<p>if numeric, will create a continuous scale, if
+factor or character, will create a discrete scale.</p>
+</td></tr>
+</table>
+
+
+<h3>See Also</h3>
+
+<p>For changing x or y axis limits <STRONG>without</STRONG> dropping
+data observations, see <code><a href="coord_cartesian.html">coord_cartesian</a></code>.
+</p>
+
+
+<h3>Examples</h3>
+
+<pre>
+# xlim
+xlim(15, 20)
+xlim(20, 15)
+xlim(c(10, 20))
+xlim("a", "b", "c")
+qplot(mpg, wt, data=mtcars) + xlim(15, 20)
+
+# ylim
+ylim(15, 20)
+ylim(c(10, 20))
+ylim("a", "b", "c")
+qplot(mpg, wt, data=mtcars) + ylim(15, 20)
+</pre>
+
+<hr><div align="center">[Package <em>ggplot2</em> version 0.9.3.1 <a href="00Index.html">Index</a>]</div>
+</body></html>

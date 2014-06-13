@@ -1,0 +1,322 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<html><head><title>R: Read and write ESRI shapefiles</title>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+<link rel="stylesheet" type="text/css" href="R.css">
+</head><body>
+
+<table width="100%" summary="page for shapefiles {shapefiles}"><tr><td>shapefiles {shapefiles}</td><td align="right">R Documentation</td></tr></table>
+
+<h2>Read and write ESRI shapefiles</h2>
+
+<h3>Description</h3>
+
+<p>This package includes functions to read and write ESRI shapefiles.</p>
+
+
+<h3>Usage</h3>
+
+<pre>
+read.shapefile(shape.name)
+read.shp(shp.name)
+read.shx(shx.name) 
+read.dbf(dbf.name, header=FALSE) 
+write.shapefile(shapefile, out.name, arcgis=FALSE)
+write.shp(shp, out.name)
+write.shx(shx, out.name)
+write.dbf(dbf, out.name, arcgis=FALSE)
+calc.header(shapefile)
+add.xy(shapefile)
+scaleXY(shapefile, scale.factor)
+convert.to.shapefile(shpTable, attTable, field, type)
+convert.to.simple(shp)
+change.id(shpTable, newFieldAsVector)
+dp(points, tolerance)
+
+</pre>
+
+
+<h3>Arguments</h3>
+
+<table summary="R argblock">
+<tr valign="top"><td><code>shape.name</code></td>
+<td>
+<p>String of the shapefile file name without an extension</p>
+</td></tr>
+<tr valign="top"><td><code>shp.name</code></td>
+<td>
+<p>String of the shp file name with an extension</p>
+</td></tr>
+<tr valign="top"><td><code>shx.name</code></td>
+<td>
+<p>String of the shx file name with an extension</p>
+</td></tr>
+<tr valign="top"><td><code>dbf.name</code></td>
+<td>
+<p>String of the dbf file name with an extension</p>
+</td></tr>
+<tr valign="top"><td><code>shapefile</code></td>
+<td>
+<p>The shapefile object of lists created by read.shapefile</p>
+</td></tr>
+<tr valign="top"><td><code>out.name</code></td>
+<td>
+<p>Filename to write the data to</p>
+</td></tr>
+<tr valign="top"><td><code>shp</code></td>
+<td>
+<p>shp portion (list) of the shapefile object of lists</p>
+</td></tr>
+<tr valign="top"><td><code>shx</code></td>
+<td>
+<p>shx portion (list) of the shapefile object of lists</p>
+</td></tr>
+<tr valign="top"><td><code>dbf</code></td>
+<td>
+<p>dbf portion (list) of the shapefile object of lists</p>
+</td></tr>
+<tr valign="top"><td><code>scale.factor</code></td>
+<td>
+<p>Number to divide the shapefile geography by</p>
+</td></tr>
+<tr valign="top"><td><code>arcgis</code></td>
+<td>
+<p>Replace &quot;.&quot; with &quot;\_&quot; in column names for ArcGIS</p>
+</td></tr>
+<tr valign="top"><td><code>shpTable</code></td>
+<td>
+<p>data.frame with columns in order Id, X, and Y</p>
+</td></tr>
+<tr valign="top"><td><code>attTable</code></td>
+<td>
+<p>data.frame with first column names &quot;Id&quot; - polygon id (key)</p>
+</td></tr>
+<tr valign="top"><td><code>type</code></td>
+<td>
+<p>ESRI Shape type 1=point, 3=polyLine, 5=polygon</p>
+</td></tr>
+<tr valign="top"><td><code>field</code></td>
+<td>
+<p>A field name in the attTable</p>
+</td></tr>
+<tr valign="top"><td><code>newFieldAsVector</code></td>
+<td>
+<p>A vector of Ids to replace to the Ids in the shpTable</p>
+</td></tr>
+<tr valign="top"><td><code>points</code></td>
+<td>
+<p>A named list of two vectors (x and y) representing points</p>
+</td></tr>
+<tr valign="top"><td><code>tolerance</code></td>
+<td>
+<p>A tolerance setting for the DP polyLine simplification algorithm</p>
+</td></tr>
+<tr valign="top"><td><code>header</code></td>
+<td>
+<p>Should read.dbf return the header?</p>
+</td></tr>
+</table>
+
+
+<h3>Details</h3>
+
+<p>ESRI shapefiles consist of three files.  The first file (*.shp) contains the geography 
+of each shape.  The second file (*.shx) is an index file which contains record offsets.
+The third file (*.dbf) contains feature attributes with one record per feature.  
+<br> <br>
+<code>read.shapefile</code> calls <code>read.shp, read.shx</code>, and <code>read.dbf</code> to read
+in an entire shapefile.  The result of <code>read.shapefile</code> is a list of many more
+lists.  The sublists are <code>shp</code>, <code>shx</code>, and <code>dbf</code>.  Each sublist contains
+a header list and some sort of data list.  The shp list is a list of 
+<code>$shp$header</code> and <code>$shp$shp</code>.  The shx list is a list of 
+<code>$shx$header</code> and <code>$shx$index</code>.  The dbf list is a list of 
+<code>$dbf$header</code> and <code>$dbf$dbf</code>.  
+<br> <br>
+The write functions write out a shp, shx, and dbf file from the shapefile list structure.
+To write out a shapefile from simple R data, you need to run <code>convert.to.shapefile</code>.  
+The inputs to this function are a simple data frame of points (for points, polyLines, or
+polygons) and a data frame representing the dbf file.  Examples are below.
+<br><br>
+The package reads shape types 1 (point), 3 (polyLine), 5 (polygon), 13 (polyLineZ), 
+and 15 (polygonZ).  Reading of shape type 13 and 15 from Don MacQueen, <a href="mailto:macq@llnl.gov">macq@llnl.gov</a>
+<br><br>
+The package writes shape types 1 (point), 3 (polyLine), 5 (polygon), 13 (polyLineZ), 
+and 15 (polygonZ).  Conversion of simple polygons to shapefile format from Manuel 
+Chirouze, <a href="mailto:Manuel.Chirouze@benfieldgroup.com">Manuel.Chirouze@benfieldgroup.com</a>
+<br><br>
+For simple features, the only difference between polyLines and polygons is that the first 
+and last point is the same for a polygon.  The <code>convert.to.simple</code> function
+can be used to simplify the shp file to a simple data.frame.  The <code>change.id</code> function
+can then be used to change the Id field for the simple shp data.frame to a field from
+a data.frame (dbf).
+<br> <br>
+For details about the ESRI shapefile structure refer to 
+<a href="http://www.esri.com/library/whitepapers/pdfs/shapefile.pdf">http://www.esri.com/library/whitepapers/pdfs/shapefile.pdf</a>.  A detailed description
+of DBF files can be found at <a href="http://www.e-bachmann.dk/docs/xbase.htm">http://www.e-bachmann.dk/docs/xbase.htm</a>.  The <code>arcgis</code>
+argument to <code>write.dbf</code> replaces &quot;.&quot; with &quot;\_&quot; in field names since ArcGIS does not allow
+the former.  Note that the <code>read.dbf</code> and <code>write.dbf</code> functions in the foreign
+package are now used for reading and writing dbfs, which greatly improves the speed of 
+reading/writing dbfs.
+<br><br>
+Function <code>dp</code> is an implementation of the Douglas-Peucker polyLine simplification
+algorithm.  Douglas, D. and Peucker, T. (1973). &quot;Algorithms for the reduction of the number
+of points required to represent a digitized line or its caricature.&quot; The Canadian
+Cartographer 10(2). 112-122.  <code>dp</code> currently uses the line, not the line segment to determine
+the distance of the points from the line. This can result in the omission of extreme
+&quot;outlier-like&quot; points. See <a href="http://www.lgc.com/resources/Doug_Peucker.pdf">http://www.lgc.com/resources/Doug_Peucker.pdf</a> for more information.
+</p>
+
+
+<h3>Value</h3>
+
+
+<table summary="Rd table">
+<tr>
+ <td align="left">
+	<code>read.shapefile</code> </td><td align="left"> list </td><td align="left"> shapefile list object </td>
+</tr>
+<tr>
+ <td align="left">
+	<code>read.shp</code> </td><td align="left"> list </td><td align="left"> shp list object </td>
+</tr>
+<tr>
+ <td align="left">
+	<code>read.shx</code> </td><td align="left"> list </td><td align="left"> shx list object </td>
+</tr>
+<tr>
+ <td align="left">
+	<code>read.dbf</code> </td><td align="left"> list </td><td align="left"> DBF list object </td>
+</tr>
+<tr>
+ <td align="left">
+	<code>write.shapefile</code> </td><td align="left"> NA </td><td align="left"> Nothing returned </td>
+</tr>
+<tr>
+ <td align="left">
+	<code>write.shp</code> </td><td align="left"> NA </td><td align="left"> Nothing returned </td>
+</tr>
+<tr>
+ <td align="left">
+	<code>write.shx</code> </td><td align="left"> NA </td><td align="left"> Nothing returned </td>
+</tr>
+<tr>
+ <td align="left">
+	<code>write.dbf</code> </td><td align="left"> NA </td><td align="left"> Nothing returned </td>
+</tr>
+<tr>
+ <td align="left">
+	<code>calc.header</code> </td><td align="left"> list </td><td align="left"> shapefile list object </td>
+</tr>
+<tr>
+ <td align="left">
+	<code>add.xy</code> </td><td align="left"> list </td><td align="left"> shapefile list object </td>
+</tr>
+<tr>
+ <td align="left">
+	<code>scaleXY</code> </td><td align="left"> list </td><td align="left"> shapefile list object </td>
+</tr>
+<tr>
+ <td align="left">
+	<code>convert.to.shapefile</code> </td><td align="left"> list </td><td align="left"> shapefile list object </td>
+</tr>
+<tr>
+ <td align="left">
+	<code>convert.to.simple</code> </td><td align="left"> list </td><td align="left"> data.frame list data.frame </td>
+</tr>
+<tr>
+ <td align="left">
+	<code>change.id</code> </td><td align="left"> list </td><td align="left"> data.frame list data.frame </td>
+</tr>
+<tr>
+ <td align="left">
+	<code>dp</code> </td><td align="left"> list </td><td align="left"> data.frame list data.frame </td>
+</tr>
+<tr>
+ <td align="left">
+ 	</td>
+</tr>
+
+</table>
+ 
+
+
+<h3>Author(s)</h3>
+
+<p>Ben Stabler &lt;<a href="mailto:benstabler@yahoo.com">benstabler@yahoo.com</a>&gt; <br>
+</p>
+
+
+<h3>Examples</h3>
+
+<pre>
+## Not run: 
+#Read entire shapefile
+shapefile &lt;- read.shapefile("links")
+
+#Write entire shapefile
+write.shapefile(shapefile, "temp", T)
+
+#Read shp, shx, or dbf file
+dbf &lt;- read.dbf("links.dbf")
+
+#Write shp, shx, or dbf file
+write.dbf(dbf, "links.dbf", T)
+
+#Calculate header (to clean up GeoMedia shapefile exports)
+shapefile &lt;- calc.header(shapefile)
+
+#Add the X and Y coordinates to the dbf list of the shapefile list object
+shapefile &lt;- add.xy(shapefile)
+
+#Scale the shapefile by scale.factor
+shapefile &lt;- scaleXY(shapefile, scale.factor)
+
+#Samples of using the convert.to.shapefile function to write out simple shapefiles
+#from basic R data.frames
+
+#Point
+dd &lt;- data.frame(Id=c(1,2),X=c(3,5),Y=c(9,6))
+ddTable &lt;- data.frame(Id=c(1,2),Name=c("Item1","Item2"))
+ddShapefile &lt;- convert.to.shapefile(dd, ddTable, "Id", 1)
+write.shapefile(ddShapefile, "c:/test", arcgis=T)
+
+#PolyLine
+dd &lt;- data.frame(Id=c(1,1,1,2,2,2),X=c(3,5,8,6,7,8),Y=c(9,8,3,6,7,4))
+ddTable &lt;- data.frame(Id=c(1,2),Name=c("Item1","Item2"))
+ddShapefile &lt;- convert.to.shapefile(dd, ddTable, "Id", 3)
+write.shapefile(ddShapefile, "c:/test", arcgis=T)
+
+#Polygon
+dd &lt;- data.frame(Id=c(1,1,1,1,2,2,2,2),X=c(3,5,8,3,6,7,8,6),Y=c(9,8,3,9,6,7,4,6))
+ddTable &lt;- data.frame(Id=c(1,2),Name=c("Item1","Item2"))
+ddShapefile &lt;- convert.to.shapefile(dd, ddTable, "Id", 5)
+write.shapefile(ddShapefile, "c:/test", arcgis=T)
+
+#Convert to list of shapes
+ddAsList &lt;- by(dd,dd$Id, function(x) x)
+
+#Convert to data.frame
+dd &lt;- do.call(rbind, ddAsList)
+
+#Read in shp file and convert to simple format
+shpTest &lt;- read.shp("c:/test.shp")
+simpleShpFormat &lt;- convert.to.simple(shpTest)
+simpleShpFormat &lt;- change.id(simpleShpFormat, c("a","b"))
+simpleAsList &lt;- by(simpleShpFormat, simpleShpFormat[,1], function(x) x)
+backToShape &lt;- convert.to.shapefile(simpleShpFormat, 
+	data.frame(index=c("a","b")), "index", 5)
+write.shapefile(backToShape, "c:/test", arcgis=T)
+
+#Polyline simplification with dp algorithm
+x &lt;- c(5,3,4,1,8,9,10,11)
+y &lt;- c(6,4,2,1,1,5,2,3)
+points &lt;- list(x=x,y=y)
+plot(points, type="l")
+simpleLine &lt;- dp(points, 2)
+lines(simpleLine, type="l", col="blue")
+
+
+## End(Not run)
+</pre>
+
+<hr><div align="center">[Package <em>shapefiles</em> version 0.7 <a href="00Index.html">Index</a>]</div>
+</body></html>

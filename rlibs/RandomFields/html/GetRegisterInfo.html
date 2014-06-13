@@ -1,0 +1,200 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<html><head><title>R: Internal information</title>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+<link rel="stylesheet" type="text/css" href="R.css">
+</head><body>
+
+<table width="100%" summary="page for GetRegisterInfo {RandomFields}"><tr><td>GetRegisterInfo {RandomFields}</td><td align="right">R Documentation</td></tr></table>
+
+<h2>Internal information</h2>
+
+<h3>Description</h3>
+
+<p>The function returns internal information about the simulation
+of a random field and the calculation of covariance functions
+</p>
+
+
+<h3>Usage</h3>
+
+<pre>
+GetRegisterInfo(register, ignore.active = FALSE, max.elements=10^6,
+                meth=NULL, modelname=NULL)
+GetModelInfo(register, modelreg, level=3, gatter=FALSE)
+GetModel(register, modelreg, modus=0)
+</pre>
+
+
+<h3>Arguments</h3>
+
+<table summary="R argblock">
+<tr valign="top"><td><code>register</code></td>
+<td>
+<p>-2, -1, 0:9; (-1 and -2 only work with <CODE>GetModelInfo</CODE>)
+place where intermediate calculations are stored;
+the numbers <code>0:9</code> are aliases for 10 internal registers, see also
+<CODE><a href="GaussRF.html">GaussRF</a></CODE></p>
+</td></tr>
+<tr valign="top"><td><code>modelreg</code></td>
+<td>
+<p>value in  0..4 with the following meaning:
+</p>
+
+<ul>
+<li><p> 0 : register for the functions <CODE>Covariance</CODE>,
+<CODE>CovarianceFct</CODE>, ect
+</p>
+</li>
+<li><p> 1 : register for simulation
+</p>
+</li>
+<li><p> 2 : register for covariance calculation within Kriging
+</p>
+</li>
+<li><p> 3 : register for MLE (likelihood)
+</p>
+</li>
+<li><p> 4 : register for MLE (bounds)
+</p>
+</li></ul>
+
+<p>Positive values refer to the registers, see <CODE><a href="GaussRF.html">GaussRF</a></CODE>.
+</p>
+</td></tr>
+<tr valign="top"><td><code>ignore.active</code></td>
+<td>
+<p>logical. If <code>FALSE</code> and the register has
+non-active flag (because of an error or it is deleted) then a list
+is returned that contains only the element <code>active=FALSE</code>.
+Otherwise, a more complete list is returned &ndash; only for internal
+debugging purposes.
+<B>Warning:</B> <code>ignore.active=TRUE</code> may cause failure of R.    
+</p>
+</td></tr>
+<tr valign="top"><td><code>max.elements</code></td>
+<td>
+<p>integer; since <CODE>GetRegisterInfo</CODE>
+might be a dump of simulation that needs a huge amount of
+memory and since all entries are copied, the maximal amount
+of available memory might be easily exceeded.  Therefore,
+only the size of the critical parts are returned and not the
+vector or matrix itself, if the number of elements exceeds
+<code>max.elements</code>. 
+</p>
+</td></tr>
+<tr valign="top"><td><code>meth</code></td>
+<td>
+
+<p>vector of strings. If <code>meth</code> is given
+<CODE>GetRegisterInfo</CODE> returns not the whole register info but
+only part method part.
+</p>
+</td></tr>
+<tr valign="top"><td><code>modelname</code></td>
+<td>
+
+<p>string. If <code>modelname</code>  is given then
+<CODE>GetRegisterInfo</CODE> returns the first appearance of the
+covariance model with name <code>modelname</code>.
+If <code>meth</code> is given then the model within the method is returned.
+</p>
+</td></tr>
+<tr valign="top"><td><code>level</code></td>
+<td>
+<p>integer; level of details</p>
+</td></tr>
+<tr valign="top"><td><code>modus</code></td>
+<td>
+<p>integer; see details</p>
+</td></tr>
+<tr valign="top"><td><code>gatter</code></td>
+<td>
+<p>boolean; only for very advanced interests.</p>
+</td></tr>
+</table>
+
+
+<h3>Details</h3>
+
+<p><code>GetRegisterInfo(register, ignore.active=TRUE)</code> is
+useful for debugging and specialists' need to control
+the algorithm, see the examples in <code><a href="RFparameters.html">RFparameters</a></code>
+and <code><a href="GaussRF.html">GaussRF</a></code>.
+</p>
+<p>If <CODE><a href="RFparameters.html">RFparameters</a></CODE><code>()$Storage=FALSE</code> then values of
+the internal registers are not kept if <CODE><a href="GaussRF.html">GaussRF</a></CODE> or
+<CODE><a href="SimulateRF.html">DoSimulateRF</a></CODE> has been called.
+Hence <code>GetRegisterInfo</code> cannot
+provide any information.
+</p>
+<p><code>GetModelInfo</code> returns the complete information on the internal
+model structure. It allows for <code>register=-1</code> returning the
+model structure for the last use of <CODE><a href="CovarianceFct.html">CovarianceFct</a></CODE>,
+<a href="Covariance.html">sophisticated</a> models
+or <CODE><a href="CovarianceFct.html">Variogram</a></CODE> or similar commands.
+<code>register=-2</code> is for internal use only.
+</p>
+<p><code>GetModel</code> returns only the parts of the internal model structure
+that have been defined by the user.
+The <code>modus</code> is ignored if <code>PracticalRange=FALSE</code>
+in <CODE><a href="RFparameters.html">RFparameters</a></CODE>. In case <code>PracticalRange=TRUE</code>
+the <code>modus</code> has the following effects
+</p>
+
+<ol>
+<li><p>0the model is returned without the explicite scale transformation
+</p>
+</li>
+<li><p>1the model is returned the way it is stored, including the
+scale transformation
+</p>
+</li>
+<li><p>2the scale
+transformation of the the practical range is included,
+but a simplified model will be returned
+
+</p>
+</li></ol>
+
+
+
+<h3>Value</h3>
+
+<p>List of internal information is returned.
+</p>
+
+
+<h3>Note</h3>
+
+<p>Put <code>Storing=TRUE</code>, see <CODE><a href="RFparameters.html">RFparameters</a></CODE>
+if you like to have more
+internal information in case of an expected failure of an initialisation of
+a random field simulation.
+</p>
+
+
+<h3>Author(s)</h3>
+
+<p>Martin Schlather, <a href="mailto:schlather@math.uni-mannheim.de">schlather@math.uni-mannheim.de</a>
+<a href="http://ms.math.uni-mannheim.de">http://ms.math.uni-mannheim.de</a></p>
+
+
+<h3>See Also</h3>
+
+<p><CODE><a href="GaussRF.html">GaussRF</a></CODE></p>
+
+
+<h3>Examples</h3>
+
+<pre>
+GaussRF(1:4, grid=TRUE, model="exp", param=c(1,2,3,4), Storing=TRUE)
+Print(GetRegisterInfo(0))
+
+# finally, a register that could not be successfully initialised
+try(GaussRF(runif(4), grid=FALSE, model="exp", param=c(1,2,3,4),
+            me="ci", Storing=TRUE))
+if (interactive()) Print(GetRegisterInfo(0, TRUE))
+</pre>
+
+<hr><div align="center">[Package <em>RandomFields</em> version 2.0.66 <a href="00Index.html">Index</a>]</div>
+</body></html>

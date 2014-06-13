@@ -1,0 +1,97 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<html><head><title>R: Cancer cases in Chorley-Ribble</title>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+<link rel="stylesheet" type="text/css" href="R.css">
+</head><body>
+
+<table width="100%" summary="page for southlancs {splancs}"><tr><td>southlancs {splancs}</td><td align="right">R Documentation</td></tr></table>
+
+<h2>Cancer cases in Chorley-Ribble</h2>
+
+<h3>Description</h3>
+
+<p>Locations of cases of cancer of lung and larynx in
+Chorley-Ribble, Lancashire. The data set is split into a points object <code>southlancs.pts</code> and a
+case/control 0/1 vector <code>southlancs.cc</code>. There are 917 controls and 57
+cases in this data set - these numbers differ from 978 and 58 in Diggle (1990)
+and Diggle and Rowlingson (1994). The data set also includes the approximate
+location of an old incinerator <code>old.incinerator</code>, as well as
+<code>southlancs.bdy</code>, the study area boundary.
+</p>
+
+
+<h3>Usage</h3>
+
+<pre>data(southlancs)</pre>
+
+
+<h3>Format</h3>
+
+<p>A data frame with 974 observations
+</p>
+
+<table summary="Rd table">
+<tr>
+ <td align="right">
+    [,1]  </td><td align="left"> x  </td><td align="left"> numeric  </td><td align="left"> grid eastings (metres)</td>
+</tr>
+<tr>
+ <td align="right">
+    [,2]  </td><td align="left"> y   </td><td align="left"> numeric  </td><td align="left"> grid northings (metres)</td>
+</tr>
+<tr>
+ <td align="right">
+    [,3]  </td><td align="left"> cc  </td><td align="left"> numeric  </td><td align="left"> case/control, lung=0, larynx=1</td>
+</tr>
+<tr>
+ <td align="right">
+  </td>
+</tr>
+
+</table>
+
+
+
+<h3>Source</h3>
+
+<p>Diggle, Gatrell and Lovett, 1990, - Bailey and Gatrell 1995, ch. 3.
+</p>
+
+
+<h3>References</h3>
+
+<p>Bailey and Gatrell 1995, ch. 3; Diggle, P. (1990) A point process
+modelling approach to raised incidence of a rare phenomenon in the viscinity
+of a prespecified point. Journal of the Royal Statistical Society, A, 153,
+349-362; Diggle, P. and Rowlingson, B. (1994) A conditional approach to point
+process modelling of elevated risk. Journal of the Royal Statistical Society,
+A, 157, 433-440.
+</p>
+
+
+<h3>Examples</h3>
+
+<pre>
+data(southlancs)
+op &lt;- par(mfrow=c(2,1))
+pointmap(southlancs.pts[southlancs.cc == 0,])
+pointmap(old.incinerator, add=TRUE, col="red", pch=19)
+title("Lung cancer controls")
+pointmap(southlancs.pts[southlancs.cc == 1,])
+pointmap(old.incinerator, add=TRUE, col="red", pch=19)
+title("Larynx cancer cases")
+par(op)
+polymap(southlancs.bdy,border="grey")
+contour(kernel2d(southlancs.pts[southlancs.cc == 0,], 
+	southlancs.bdy, h=500, nx=100, ny=100), nlevels=20, 
+	add=TRUE,drawlabels=FALSE)
+pointmap(southlancs.pts[southlancs.cc == 1,], add=TRUE, pch=19,
+	 col="green")
+pointmap(old.incinerator, add=TRUE, pch=19, col="red")
+title(xlab="h=500, quartic kernel")
+title("Density map of control, green case points, red old incinerator")
+
+</pre>
+
+<hr><div align="center">[Package <em>splancs</em> version 2.01-33 <a href="00Index.html">Index</a>]</div>
+</body></html>

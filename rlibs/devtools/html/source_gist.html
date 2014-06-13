@@ -1,0 +1,77 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<html><head><title>R: Run a script on gist</title>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+<link rel="stylesheet" type="text/css" href="R.css">
+</head><body>
+
+<table width="100%" summary="page for source_gist {devtools}"><tr><td>source_gist {devtools}</td><td align="right">R Documentation</td></tr></table>
+
+<h2>Run a script on gist</h2>
+
+<h3>Description</h3>
+
+<p>&ldquo;Gist is a simple way to share snippets and pastes
+with others.  All gists are git repositories, so they are
+automatically versioned, forkable and usable as a git
+repository.&rdquo; <a href="https://gist.github.com/">https://gist.github.com/</a>
+</p>
+
+
+<h3>Usage</h3>
+
+<pre>
+  source_gist(entry, ..., sha1 = NULL)
+</pre>
+
+
+<h3>Arguments</h3>
+
+<table summary="R argblock">
+<tr valign="top"><td><code>entry</code></td>
+<td>
+<p>either full url (character), gist ID
+(numeric or character of numeric). If a gist ID is
+specified and the entry has multiple files, only the
+first file in the gist is sourced.</p>
+</td></tr>
+<tr valign="top"><td><code>...</code></td>
+<td>
+<p>other options passed to <code><a href="../../base/html/source.html">source</a></code></p>
+</td></tr>
+<tr valign="top"><td><code>sha1</code></td>
+<td>
+<p>The SHA-1 hash of the file at the remote URL.
+See <code><a href="source_url.html">source_url</a></code> for more information on
+using a SHA-1 hash.</p>
+</td></tr>
+</table>
+
+
+<h3>Details</h3>
+
+<p>A gist can have multiple files. Gist is based on git, so
+a gist has commit histories (i.e., revisions). You can
+specify a commit by giving a SHA of the commit.
+</p>
+
+
+<h3>Examples</h3>
+
+<pre>
+## Not run: 
+source_gist(1654919)
+source_gist("1654919")
+source_gist("https://gist.github.com/1654919")
+source_gist("https://gist.github.com/kohske/1654919")
+source_gist("gist.github.com/1654919")
+source_gist("https://raw.github.com/gist/1654919/8161f74fb0ec26d1ba9fd54473a96f768ed76f56/test2.r")
+
+# With hash to make sure remote file hasn't changed:
+source_gist("https://gist.github.com/1654919",
+  sha1 = "aa303f6a9608d7ba2cbee3e28a1191b3caf10b59")
+
+## End(Not run)
+</pre>
+
+<hr><div align="center">[Package <em>devtools</em> version 1.3 <a href="00Index.html">Index</a>]</div>
+</body></html>

@@ -1,0 +1,93 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<html><head><title>R: Extract substrings from a character vector.</title>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+<link rel="stylesheet" type="text/css" href="R.css">
+</head><body>
+
+<table width="100%" summary="page for str_sub {stringr}"><tr><td>str_sub {stringr}</td><td align="right">R Documentation</td></tr></table>
+
+<h2>Extract substrings from a character vector.</h2>
+
+<h3>Description</h3>
+
+<p><code>str_sub</code> will recycle all arguments to be the same
+length as the longest argument. If any arguments are of
+length 0, the output will be a zero length character
+vector.
+</p>
+
+
+<h3>Usage</h3>
+
+<pre>
+  str_sub(string, start = 1L, end = -1L)
+</pre>
+
+
+<h3>Arguments</h3>
+
+<table summary="R argblock">
+<tr valign="top"><td><code>string</code></td>
+<td>
+<p>input character vector.</p>
+</td></tr>
+<tr valign="top"><td><code>start</code></td>
+<td>
+<p>integer vector giving position of first
+charater in substring, defaults to first character. If
+negative, counts backwards from last character.</p>
+</td></tr>
+<tr valign="top"><td><code>end</code></td>
+<td>
+<p>integer vector giving position of last
+character in substring, defaults to last character. If
+negative, counts backwards from last character.</p>
+</td></tr>
+</table>
+
+
+<h3>Details</h3>
+
+<p>Substrings are inclusive - they include the characters at
+both start and end positions. <code>str_sub(string, 1,
+  -1)</code> will return the complete substring, from the first
+character to the last.
+</p>
+
+
+<h3>Value</h3>
+
+<p>character vector of substring from <code>start</code> to
+<code>end</code> (inclusive). Will be length of longest input
+argument.
+</p>
+
+
+<h3>See Also</h3>
+
+<p><code><a href="../../base/html/substr.html">substring</a></code> which this function wraps, and
+<code>link{str_sub_replace}</code> for the replacement version
+</p>
+
+
+<h3>Examples</h3>
+
+<pre>
+hw &lt;- "Hadley Wickham"
+
+str_sub(hw, 1, 6)
+str_sub(hw, end = 6)
+str_sub(hw, 8, 14)
+str_sub(hw, 8)
+str_sub(hw, c(1, 8), c(6, 14))
+
+str_sub(hw, -1)
+str_sub(hw, -7)
+str_sub(hw, end = -7)
+
+str_sub(hw, seq_len(str_length(hw)))
+str_sub(hw, end = seq_len(str_length(hw)))
+</pre>
+
+<hr><div align="center">[Package <em>stringr</em> version 0.6.2 <a href="00Index.html">Index</a>]</div>
+</body></html>

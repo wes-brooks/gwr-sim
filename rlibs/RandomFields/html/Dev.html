@@ -1,0 +1,155 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<html><head><title>R: Choosing the device</title>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+<link rel="stylesheet" type="text/css" href="R.css">
+</head><body>
+
+<table width="100%" summary="page for Dev {RandomFields}"><tr><td>Dev {RandomFields}</td><td align="right">R Documentation</td></tr></table>
+
+<h2>Choosing the device</h2>
+
+<h3>Description</h3>
+
+<p><code>Dev</code> chooses between the graphical devices
+screen, postscript and pdf
+</p>
+
+
+<h3>Usage</h3>
+
+<pre>
+Dev(on, dev, ps=NULL, cur.cex=TRUE, paper="special", width=5, height=5,
+    quiet=FALSE, innerwidth, innerheight, mai,  horizontal = FALSE, ...)
+</pre>
+
+
+<h3>Arguments</h3>
+
+<table summary="R argblock">
+<tr valign="top"><td><code>on</code></td>
+<td>
+<p>logical. Indicates whether <code>dev</code> should be switched on
+or off</p>
+</td></tr>
+<tr valign="top"><td><code>dev</code></td>
+<td>
+<p>see Details</p>
+</td></tr>
+<tr valign="top"><td><code>ps</code></td>
+<td>
+<p>name of the pdf or postscript file</p>
+</td></tr>
+<tr valign="top"><td><code>cur.cex</code></td>
+<td>
+<p>logical.  If <code>TRUE</code> the par parameters of the current
+device are used, not the standard parameters</p>
+</td></tr>
+<tr valign="top"><td><code>paper</code></td>
+<td>
+<p>kind of paper. Postscript parameter</p>
+</td></tr>
+<tr valign="top"><td><code>width</code></td>
+<td>
+<p>width of figure. Postscript and pdf parameter</p>
+</td></tr>
+<tr valign="top"><td><code>height</code></td>
+<td>
+<p>height of figure. Postscript and pdf parameter</p>
+</td></tr>
+<tr valign="top"><td><code>quiet</code></td>
+<td>
+<p>logical.  If <code>FALSE</code> additional information is
+given.</p>
+</td></tr>
+<tr valign="top"><td><code>innerwidth</code></td>
+<td>
+<p>height of graphic without the margins; overwrites
+<code>height</code> if given &ndash; experimental state</p>
+</td></tr>
+<tr valign="top"><td><code>innerheight</code></td>
+<td>
+<p>width of graphic without the margins; overwrites
+<code>width</code> if given &ndash; experimental state</p>
+</td></tr>
+<tr valign="top"><td><code>mai</code></td>
+<td>
+<p>parameters of function <CODE><a href="../../graphics/html/par.html">par</a></CODE> &ndash;
+experimental state</p>
+</td></tr>
+<tr valign="top"><td><code>horizontal</code></td>
+<td>
+<p>logical. If <code>FALSE</code> the picture is not
+automatically turned if height is larger than width</p>
+</td></tr>
+<tr valign="top"><td><code>...</code></td>
+<td>
+<p>further parameters for pdf or postscript</p>
+</td></tr>
+</table>
+
+
+<h3>Details</h3>
+
+<p>The parameter <code>dev</code> might be
+</p>
+
+<dl>
+<dt>logical</dt><dd><p>If suffix of <code>ps</code> is either &quot;eps&quot;, &quot;ps&quot; or &quot;pdf&quot;
+the respective file is created. Otherwise, a postscript file ending
+with suffix &quot;eps&quot; is created if <code>dev=TRUE</code> and a pdf file with
+suffix &quot;pdf&quot; if <code>dev=FALSE</code></p>
+</dd>
+<dt>character</dt><dd><p>A function with name <code>dev</code> is called, and the
+suffix <code>dev</code> is added to <code>ps</code></p>
+</dd>
+<dt>numeric</dt><dd><p><code>Dev</code> switches to the device with number <code>dev</code>;
+if such a device does not exist, a new X11 device is created.
+If <code>dev&lt;2</code> the device opened by <code>Dev(on=TRUE,...)</code> is
+closed by <code>Dev(on=FALSE)</code>; otherwise only
+<CODE><a href="../../graphics/html/par.html">par</a></CODE><code>(new=F)</code> 
+is applied to the device.
+</p>
+</dd>
+</dl>
+<p>The parameters <code>dev</code>, <code>ps</code>, <code>cur.cex</code>, <code>paper</code>,
+<code>width</code>, <code>height</code> and <code>...</code> are ignored if <code>on=FALSE</code>.
+
+</p>
+
+
+<h3>Value</h3>
+
+<p><code>NULL</code>. Side effect is that the global variable <code>.dev.orig</code>
+is created when <code>Dev(on=TRUE,...)</code> is called.
+</p>
+
+
+<h3>Author(s)</h3>
+
+<p>Martin Schlather, <a href="mailto:schlather@math.uni-mannheim.de">schlather@math.uni-mannheim.de</a>
+<a href="http://ms.math.uni-mannheim.de">http://ms.math.uni-mannheim.de</a></p>
+
+
+<h3>Examples</h3>
+
+<pre>
+  ## first an eps-file test.eps is created, then a jpeg-file,
+  ## finally the figure is plotted on the screen
+  dir(pattern="test*")
+  dev.list &lt;- list(TRUE, 1)
+  if (interactive()) dev.list &lt;- c(dev.list, "jpeg")
+  for (dev in dev.list) {
+    Print(dev)
+    size &lt;- if (dev=="jpeg") 450 else 5
+    err &lt;- class(try(Dev(TRUE, dev, ps="test", height=size, width=size)))
+    if (err!="try-error") {
+      plot(0, 0, main=paste("dev=", dev))
+      # readline("press return")
+      Dev(FALSE)
+    }
+  }
+  dir(pattern="test*")
+</pre>
+
+<hr><div align="center">[Package <em>RandomFields</em> version 2.0.66 <a href="00Index.html">Index</a>]</div>
+</body></html>

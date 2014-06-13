@@ -1,0 +1,187 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<html><head><title>R: coercion between sp objects and spatstat objects</title>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+<link rel="stylesheet" type="text/css" href="R.css">
+</head><body>
+
+<table width="100%" summary="page for as.ppp {maptools}"><tr><td>as.ppp {maptools}</td><td align="right">R Documentation</td></tr></table>
+
+<h2>coercion between sp objects and spatstat objects</h2>
+
+<h3>Description</h3>
+
+<p>S4-style as() coercion works between objects of S4 sp classes to spatstat S3 classes; direct function calls may also be used.
+</p>
+
+
+<h3>Usage</h3>
+
+<pre>
+as.SpatialPoints.ppp(from)
+as.SpatialPointsDataFrame.ppp(from)
+as.SpatialGridDataFrame.ppp(from)
+as.SpatialGridDataFrame.im(from)
+as.psp.Line(from, ..., window=NULL, marks=NULL, fatal)
+as.psp.Lines(from, ..., window=NULL, marks=NULL, fatal)
+as.psp.SpatialLines(from, ..., window=NULL, marks=NULL, characterMarks
+                 = FALSE, fatal)
+as.psp.SpatialLinesDataFrame(from, ..., window=NULL, marks=NULL, fatal)
+as.SpatialLines.psp(from)
+as.SpatialPolygons.tess(x)
+as.SpatialPolygons.owin(x)
+</pre>
+
+
+<h3>Arguments</h3>
+
+<table summary="R argblock">
+<tr valign="top"><td><code>from, x</code></td>
+<td>
+<p>object to coerce from</p>
+</td></tr>
+<tr valign="top"><td><code>...</code></td>
+<td>
+<p>other arguments to be passed through</p>
+</td></tr>
+<tr valign="top"><td><code>window</code></td>
+<td>
+<p>window as defined in the spatstat package</p>
+</td></tr>
+<tr valign="top"><td><code>marks</code></td>
+<td>
+<p>marks as defined in the spatstat package</p>
+</td></tr>
+<tr valign="top"><td><code>characterMarks</code></td>
+<td>
+<p>default FALSE, if TRUE, do not convert NULL narks to factor from character</p>
+</td></tr>
+<tr valign="top"><td><code>fatal</code></td>
+<td>
+<p>formal coercion argument</p>
+</td></tr>
+</table>
+
+
+<h3>Methods</h3>
+
+
+<dl>
+<dt>coerce</dt><dd><p><code>signature(from = "SpatialPoints", to = "ppp")</code></p>
+</dd>
+<dt>coerce</dt><dd><p><code>signature(from = "SpatialPointsDataFrame", to = "ppp")</code></p>
+</dd>
+<dt>coerce</dt><dd><p><code>signature(from = "Line", to = "psp")</code></p>
+</dd>
+<dt>coerce</dt><dd><p><code>signature(from = "Lines", to = "psp")</code></p>
+</dd>
+<dt>coerce</dt><dd><p><code>signature(from = "SpatialLines", to = "psp")</code></p>
+</dd>
+<dt>coerce</dt><dd><p><code>signature(from = "SpatialLinesDataFrame", to = "psp")</code></p>
+</dd>
+<dt>coerce</dt><dd><p><code>signature(from = "psp", to = "SpatialLines")</code></p>
+</dd>
+<dt>coerce</dt><dd><p><code>signature(from = "SpatialGridDataFrame", to = "ppp")</code></p>
+</dd>
+<dt>coerce</dt><dd><p><code>signature(from = "SpatialPolygons", to = "owin")</code></p>
+</dd>
+<dt>coerce</dt><dd><p><code>signature(from = "SpatialPixelsDataFrame", to = "owin")</code></p>
+</dd>
+<dt>coerce</dt><dd><p><code>signature(from = "SpatialGridDataFrame", to = "owin")</code></p>
+</dd>
+<dt>coerce</dt><dd><p><code>signature(from = "SpatialGridDataFrame", to = "im")</code></p>
+</dd>
+<dt>coerce</dt><dd><p><code>signature(from = "im", to = "SpatialGridDataFrame")</code></p>
+</dd>
+<dt>coerce</dt><dd><p><code>signature(from = "ppp", to = "SpatialGridDataFrame")</code></p>
+</dd>
+<dt>coerce</dt><dd><p><code>signature(from = "ppp", to = "SpatialPointsDataFrame")</code></p>
+</dd>
+<dt>coerce</dt><dd><p><code>signature(from = "ppp", to = "SpatialPoints")</code></p>
+</dd>
+<dt>coerce</dt><dd><p><code>signature(from = "owin", to = "SpatialPolygons")</code></p>
+</dd>
+<dt>coerce</dt><dd><p><code>signature(from = "tess", to = "SpatialPolygons")</code></p>
+</dd>
+</dl>
+
+
+
+<h3>Note</h3>
+
+<p>When coercing a SpatialPolygons object to an owin object, full 
+topology checking is enabled by default. To avoid checking, set 
+<code>spatstat.options(checkpolygons=FALSE)</code> (from spatstat (1.14-6)). 
+To perform the checking later, <code>owinpolycheck(W, verbose=TRUE)</code>.</p>
+
+
+<h3>Author(s)</h3>
+
+<p>Edzer Pebesma <a href="mailto:edzer.pebesma@uni-muenster.de">edzer.pebesma@uni-muenster.de</a>, Roger Bivand</p>
+
+
+<h3>Examples</h3>
+
+<pre>
+library(spatstat)
+data(meuse)
+coordinates(meuse) = ~x+y
+zn1 &lt;- as(meuse["zinc"], "ppp")
+zn1
+plot(zn1)
+as(as(meuse, "SpatialPoints"), "ppp")
+data(meuse.grid)
+gridded(meuse.grid) = ~x+y
+mg_owin &lt;- as(meuse.grid, "owin")
+zn1a &lt;- ppp(x=zn1$x, y=zn1$y, marks=zn1$marks, window=mg_owin)
+zn1a
+plot(zn1a)
+rev_ppp_SP &lt;- as.SpatialPoints.ppp(zn1a)
+summary(rev_ppp_SP)
+rev_ppp_SPDF &lt;- as.SpatialPointsDataFrame.ppp(zn1a)
+summary(rev_ppp_SPDF)
+rev_ppp_SGDF &lt;- as.SpatialGridDataFrame.ppp(zn1a)
+summary(rev_ppp_SGDF)
+data(meuse.riv)
+mr &lt;- Line(meuse.riv)
+mr_psp &lt;- as(mr, "psp")
+mr_psp
+plot(mr_psp)
+xx_back &lt;- as(mr_psp, "SpatialLines")
+plot(xx_back)
+xx &lt;- readShapeLines(system.file("shapes/fylk-val.shp", package="maptools")[1],
+ proj4string=CRS("+proj=utm +zone=33 +datum=WGS84"))
+xx_psp &lt;- as(xx, "psp")
+xx_psp
+plot(xx_psp)
+xx_back &lt;- as(xx_psp, "SpatialLines")
+plot(xx_back)
+mg_owin &lt;- as(as(meuse.grid["ffreq"], "SpatialPixelsDataFrame"), "owin")
+mg_owin
+ho_sp &lt;- SpatialPolygons(list(Polygons(list(Polygon(cbind(c(0,1,1,0,0),
+  c(0,0,1,1,0))), Polygon(cbind(c(0.6,0.4,0.4,0.6,0.6), 
+  c(0.2,0.2,0.4,0.4,0.2)), hole=TRUE)), ID="ho")))
+plot(ho_sp, col="red", pbg="pink")
+ho &lt;- as(ho_sp, "owin")
+plot(ho)
+pp &lt;- runifpoint(500, win=ho)
+plot(pp)
+ho_orig &lt;- owin(poly=list(list(x=c(0,1,1,0), y=c(0,0,1,1)),
+  list(x=c(0.6,0.4,0.4,0.6), y=c(0.2,0.2,0.4,0.4))))
+identical(ho, ho_orig)
+ho_sp1 &lt;- as(ho, "SpatialPolygons")
+all.equal(ho_sp, ho_sp1, check.attributes=FALSE)
+A &lt;- tess(xgrid=0:4,ygrid=0:4)
+A_sp &lt;- as(A, "SpatialPolygons")
+plot(A_sp)
+text(coordinates(A_sp), labels=row.names(A_sp), cex=0.6)
+mg_dist &lt;- meuse.grid["dist"]
+fullgrid(mg_dist) &lt;- TRUE
+image(mg_dist, axes=TRUE)
+mg_im &lt;- as(mg_dist, "im")
+plot(mg_im)
+mg2 &lt;- as.SpatialGridDataFrame.im(mg_im)
+image(mg2, axes=TRUE)
+</pre>
+
+<hr><div align="center">[Package <em>maptools</em> version 0.8-25 <a href="00Index.html">Index</a>]</div>
+</body></html>

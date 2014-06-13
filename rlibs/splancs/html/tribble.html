@@ -1,0 +1,157 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<html><head><title>R: Diggle-Rowlingson Raised Incidence Model</title>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+<link rel="stylesheet" type="text/css" href="R.css">
+</head><body>
+
+<table width="100%" summary="page for tribble {splancs}"><tr><td>tribble {splancs}</td><td align="right">R Documentation</td></tr></table>
+
+<h2>
+Diggle-Rowlingson Raised Incidence Model
+</h2>
+
+<h3>Description</h3>
+
+<p>Fits the Diggle-Rowlingson Raised Incidence Model.
+</p>
+
+
+<h3>Usage</h3>
+
+<pre>
+tribble(ccflag, vars=NULL, alphas=NULL, betas=NULL, rho, 
+ which=1:length(alphas), covars=NULL, thetas=NULL, 
+ steps=NULL, reqmin=0.001, icount=50, hessian=NULL)
+</pre>
+
+
+<h3>Arguments</h3>
+
+<table summary="R argblock">
+<tr valign="top"><td><code>ccflag</code></td>
+<td>
+
+<p>Case-control flag : a vector of ones and zeroes.
+</p>
+</td></tr>
+<tr valign="top"><td><code>vars</code></td>
+<td>
+
+<p>A matrix where <code>vars[i,j]</code> is the distance squared from point <code>i</code> 
+to source <code>j</code>.
+</p>
+</td></tr>
+<tr valign="top"><td><code>alphas</code></td>
+<td>
+
+<p>Initial value of the <code>alpha</code> parameters.
+</p>
+</td></tr>
+<tr valign="top"><td><code>betas</code></td>
+<td>
+
+<p>Initial value of the <code>beta</code> parameters.
+</p>
+</td></tr>
+<tr valign="top"><td><code>rho</code></td>
+<td>
+
+<p>Initial value of the <code>rho</code> parameter.
+</p>
+</td></tr>
+<tr valign="top"><td><code>which</code></td>
+<td>
+
+<p>Defines the mapping from sources to parameters.
+</p>
+</td></tr>
+<tr valign="top"><td><code>covars</code></td>
+<td>
+
+<p>A matrix of covariates to be modelled as log-linear terms. The element 
+<code>covars[i,j]</code> is the value of covariate <code>j</code> for case/control <code>i</code>.
+</p>
+</td></tr>
+<tr valign="top"><td><code>thetas</code></td>
+<td>
+
+<p>Initial values of covariate parameters.
+</p>
+</td></tr>
+<tr valign="top"><td><code>steps</code></td>
+<td>
+
+<p>Step sizes for the Nelder-Mead simplex algorithm.
+</p>
+</td></tr>
+<tr valign="top"><td><code>reqmin</code></td>
+<td>
+
+<p>Tolerance for simplex algorithm
+</p>
+</td></tr>
+<tr valign="top"><td><code>icount</code></td>
+<td>
+
+<p>Iteration count for simplex algorithm
+</p>
+</td></tr>
+<tr valign="top"><td><code>hessian</code></td>
+<td>
+<p>by default NULL, any other value causes hessian to be computed and returned</p>
+</td></tr>
+</table>
+
+
+<h3>Value</h3>
+
+<p>The return value is a list with many components, and class <code>ribfit</code>. 
+</p>
+<table summary="R valueblock">
+<tr valign="top"><td><code>alphas</code></td>
+<td>
+<p>A vector of the alpha parameters at the maximum</p>
+</td></tr>
+<tr valign="top"><td><code>betas</code></td>
+<td>
+<p>A vector of the beta values at the maximum</p>
+</td></tr>
+<tr valign="top"><td><code>rho</code></td>
+<td>
+<p>The value of rho at the maximum</p>
+</td></tr>
+<tr valign="top"><td><code>logl</code></td>
+<td>
+<p>The maximised log-likelihood</p>
+</td></tr>
+<tr valign="top"><td><code>null.logl</code></td>
+<td>
+<p>The null log-likelihood</p>
+</td></tr>
+<tr valign="top"><td><code>call</code></td>
+<td>
+<p>The function call to <code>tribble</code></p>
+</td></tr>
+</table>
+<p>For further information see Diggle and Rowlingson (1993).
+</p>
+
+
+<h3>References</h3>
+
+<p>Rowlingson, B. and Diggle, P. 1993 Splancs: spatial point pattern analysis
+code in S-Plus.  Computers and Geosciences, 19, 627-655;
+the original sources can be accessed at:
+<a href="http://www.maths.lancs.ac.uk/~rowlings/Splancs/">http://www.maths.lancs.ac.uk/~rowlings/Splancs/</a>. See also Bivand, R. and
+Gebhardt, A. 2000 Implementing functions for spatial statistical analysis
+using the R language. Journal of Geographical Systems, 2, 307-317.
+</p>
+
+
+<h3>See Also</h3>
+
+<p><code><a href="triblik.html">triblik</a></code>, <code><a href="dsquare.html">dsquare</a></code>
+</p>
+
+<hr><div align="center">[Package <em>splancs</em> version 2.01-33 <a href="00Index.html">Index</a>]</div>
+</body></html>

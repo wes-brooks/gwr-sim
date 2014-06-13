@@ -6,7 +6,6 @@ useDynLib(sp,
 	Polygons_c,
 	R_point_in_polygon_sp,
 	sp_zerodist,
-	sp_duplicates,
 	SpatialPolygons_c,
 	SpatialPolygons_getIDs_c,
 	SpatialPolygons_plotOrder_c,
@@ -90,12 +89,9 @@ export(
 	sp.panel.layout,
 	degreeLabelsEW,
 	degreeLabelsNS,
-	longlat.scales,
-	bbexpand,
 
 	as.image.SpatialGridDataFrame,
 	image2Grid,
-	imageScale,
 	
 	gridparameters,
 	SpatialPixels,
@@ -160,8 +156,6 @@ export(
 	loadMeuse,
 
 	makegrid,
-
-	overDF_for_rgeos, # for rgeos only!
 
 	read.asciigrid, 
 
@@ -234,7 +228,6 @@ exportMethods(
 	gridded,
 	"gridded<-",
 	is.projected,
-	merge,
 	over,
 	overlay, 
 	plot,

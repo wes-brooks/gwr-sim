@@ -1,0 +1,64 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<html><head><title>R: Split SpatialLines components at offset</title>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+<link rel="stylesheet" type="text/css" href="R.css">
+</head><body>
+
+<table width="100%" summary="page for nowrapSpatialLines {sp}"><tr><td>nowrapSpatialLines {sp}</td><td align="right">R Documentation</td></tr></table>
+
+<h2>Split SpatialLines components at offset</h2>
+
+<h3>Description</h3>
+
+<p>When recentering a world map, most often from the &quot;Atlantic&quot; view with longitudes with range -180 to 180, to the &quot;pacific&quot; view with longitudes with range 0 to 360, lines crossing the offset (0 for this conversion) get stretched horizonally. This function breaks Line objects at the offset (usually Greenwich), inserting a very small gap, and reassembling the Line objects created as Lines. A similar function for polygons is found in the <span class="pkg">spgpc</span> package.
+</p>
+
+
+<h3>Usage</h3>
+
+<pre>
+nowrapSpatialLines(obj, offset = 0, eps = rep(.Machine$double.eps, 2))
+</pre>
+
+
+<h3>Arguments</h3>
+
+<table summary="R argblock">
+<tr valign="top"><td><code>obj</code></td>
+<td>
+<p>A Spatial Lines object</p>
+</td></tr>
+<tr valign="top"><td><code>offset</code></td>
+<td>
+<p>default 0, untried for other values</p>
+</td></tr>
+<tr valign="top"><td><code>eps</code></td>
+<td>
+<p>vector of two fuzz values, both default double.eps</p>
+</td></tr>
+</table>
+
+
+<h3>Value</h3>
+
+<p>A Spatial Lines object
+</p>
+
+
+<h3>Author(s)</h3>
+
+<p>Roger Bivand</p>
+
+
+<h3>Examples</h3>
+
+<pre>
+Sl &lt;- SpatialLines(list(Lines(list(Line(cbind(sin(seq(-4,4,0.4)),
+ seq(1,21,1)))), "1")), proj4string=CRS("+proj=longlat"))
+summary(Sl)
+nwSL &lt;- nowrapSpatialLines(Sl)
+summary(nwSL)
+</pre>
+
+<hr><div align="center">[Package <em>sp</em> version 1.0-11 <a href="00Index.html">Index</a>]</div>
+</body></html>

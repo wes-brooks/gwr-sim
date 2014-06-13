@@ -1,0 +1,68 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<html><head><title>R: Extract first piece of a string that matches a pattern.</title>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+<link rel="stylesheet" type="text/css" href="R.css">
+</head><body>
+
+<table width="100%" summary="page for str_extract {stringr}"><tr><td>str_extract {stringr}</td><td align="right">R Documentation</td></tr></table>
+
+<h2>Extract first piece of a string that matches a pattern.</h2>
+
+<h3>Description</h3>
+
+<p>Vectorised over <code>string</code>.  <code>pattern</code> should be
+a single pattern, i.e. a character vector of length one.
+</p>
+
+
+<h3>Usage</h3>
+
+<pre>
+  str_extract(string, pattern)
+</pre>
+
+
+<h3>Arguments</h3>
+
+<table summary="R argblock">
+<tr valign="top"><td><code>string</code></td>
+<td>
+<p>input vector. This must be an atomic
+vector, and will be coerced to a character vector</p>
+</td></tr>
+<tr valign="top"><td><code>pattern</code></td>
+<td>
+<p>pattern to look for, as defined by a POSIX
+regular expression.  See the &ldquo;Extended Regular
+Expressions&rdquo; section of <code><a href="../../base/html/regex.html">regex</a></code> for details.
+See <code><a href="fixed.html">fixed</a></code>, <code><a href="ignore.case.html">ignore.case</a></code> and
+<code><a href="perl.html">perl</a></code> for how to use other types of
+matching: fixed, case insensitive and perl-compatible.</p>
+</td></tr>
+</table>
+
+
+<h3>Value</h3>
+
+<p>character vector.
+</p>
+
+
+<h3>See Also</h3>
+
+<p><code><a href="str_extract_all.html">str_extract_all</a></code> to extract all matches
+</p>
+
+
+<h3>Examples</h3>
+
+<pre>
+shopping_list &lt;- c("apples x4", "flour", "sugar", "milk x2")
+str_extract(shopping_list, "\\d")
+str_extract(shopping_list, "[a-z]+")
+str_extract(shopping_list, "[a-z]{1,4}")
+str_extract(shopping_list, "\\b[a-z]{1,4}\\b")
+</pre>
+
+<hr><div align="center">[Package <em>stringr</em> version 0.6.2 <a href="00Index.html">Index</a>]</div>
+</body></html>

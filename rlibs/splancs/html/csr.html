@@ -1,0 +1,101 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<html><head><title>R: Generate completely spatially random points on a polygon</title>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+<link rel="stylesheet" type="text/css" href="R.css">
+</head><body>
+
+<table width="100%" summary="page for csr {splancs}"><tr><td>csr {splancs}</td><td align="right">R Documentation</td></tr></table>
+
+<h2>
+Generate completely spatially random points on a polygon
+</h2>
+
+<h3>Description</h3>
+
+<p>Generate completely spatially random points on a polygon.
+</p>
+
+
+<h3>Usage</h3>
+
+<pre>
+csr(poly,npoints)
+</pre>
+
+
+<h3>Arguments</h3>
+
+<table summary="R argblock">
+<tr valign="top"><td><code>poly</code></td>
+<td>
+
+<p>A polygon data set.
+</p>
+</td></tr>
+<tr valign="top"><td><code>npoints</code></td>
+<td>
+
+<p>The number of points to generate.
+</p>
+</td></tr></table>
+
+
+<h3>Details</h3>
+
+<p><code>csr</code> generates points randomly in the bounding box of <code>poly,</code> then uses 
+<code>pip</code> to extract those in the polygon. If the number of points remaining is
+less than that required, <code>csr</code> generates some more points in the
+bounding box until at least <code>npoints</code> remain inside the polygon. If too many
+points are generated then the list of points is truncated.
+</p>
+<p>Uses <code>runif()</code> to generate random numbers and so updates <code>.Random.seed</code>,
+the standard S random number generator seed.
+</p>
+
+
+<h3>Value</h3>
+
+<p>A point data set consisting of <code>npoints</code> points distributed randomly,
+i.e. as an independent random sample from the uniform distribution
+in the polygon defined by <code>poly</code>.
+</p>
+
+
+<h3>References</h3>
+
+<p>Rowlingson, B. and Diggle, P. 1993 Splancs: spatial point pattern analysis
+code in S-Plus.  Computers and Geosciences, 19, 627-655;
+the original sources can be accessed at:
+<a href="http://www.maths.lancs.ac.uk/~rowlings/Splancs/">http://www.maths.lancs.ac.uk/~rowlings/Splancs/</a>. See also Bivand, R. and
+Gebhardt, A. 2000 Implementing functions for spatial statistical analysis
+using the R language. Journal of Geographical Systems, 2, 307-317.
+</p>
+
+
+<h3>Examples</h3>
+
+<pre>
+data(cardiff)
+nsim &lt;- 29
+emp.Ghat &lt;- Ghat(as.points(cardiff), seq(0,30,1))
+av.Ghat &lt;- numeric(length(emp.Ghat))
+U.Ghat &lt;- numeric(length(emp.Ghat))
+L.Ghat &lt;- numeric(length(emp.Ghat))
+U.Ghat &lt;- -99999
+L.Ghat &lt;- 99999
+for(i in 1:nsim) {
+S.Ghat &lt;- Ghat(csr(cardiff$poly, length(cardiff$x)), seq(0,30,1))
+av.Ghat &lt;- av.Ghat + S.Ghat
+L.Ghat &lt;- pmin(S.Ghat, L.Ghat)
+U.Ghat &lt;- pmax(S.Ghat, U.Ghat)
+}
+av.Ghat &lt;- av.Ghat/nsim
+plot(av.Ghat, emp.Ghat, type="l", xlim=c(0,1), ylim=c(0,1), 
+xlab="Simulated average G", ylab="Empirical G")
+lines(c(0,1),c(0,1),lty=2)
+lines(U.Ghat,emp.Ghat,lty=3)
+lines(L.Ghat,emp.Ghat,lty=3)
+</pre>
+
+<hr><div align="center">[Package <em>splancs</em> version 2.01-33 <a href="00Index.html">Index</a>]</div>
+</body></html>

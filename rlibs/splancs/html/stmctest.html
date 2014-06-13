@@ -1,0 +1,154 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<html><head><title>R: Monte-Carlo test of space-time clustering</title>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+<link rel="stylesheet" type="text/css" href="R.css">
+</head><body>
+
+<table width="100%" summary="page for stmctest {splancs}"><tr><td>stmctest {splancs}</td><td align="right">R Documentation</td></tr></table>
+
+<h2>
+Monte-Carlo test of space-time clustering
+</h2>
+
+<h3>Description</h3>
+
+<p>Perform a Monte-Carlo test of space-time clustering.
+</p>
+
+
+<h3>Usage</h3>
+
+<pre>
+stmctest(pts, times, poly, tlimits, s, tt, nsim, quiet=FALSE, returnSims=FALSE)
+</pre>
+
+
+<h3>Arguments</h3>
+
+<table summary="R argblock">
+<tr valign="top"><td><code>pts</code></td>
+<td>
+
+<p>A set of points as used by Splancs.
+</p>
+</td></tr>
+<tr valign="top"><td><code>times</code></td>
+<td>
+
+<p>A vector of times, the same length as the number of points in <code>pts</code>.
+</p>
+</td></tr>
+<tr valign="top"><td><code>poly</code></td>
+<td>
+
+<p>A polygon enclosing the points.
+</p>
+</td></tr>
+<tr valign="top"><td><code>tlimits</code></td>
+<td>
+
+<p>A vector of length 2, specifying the upper and lower temporal domain.
+</p>
+</td></tr>
+<tr valign="top"><td><code>s</code></td>
+<td>
+
+<p>A vector of spatial distances for the analysis.
+</p>
+</td></tr>
+<tr valign="top"><td><code>tt</code></td>
+<td>
+
+<p>A vector of times for the analysis.
+</p>
+</td></tr>
+<tr valign="top"><td><code>nsim</code></td>
+<td>
+
+<p>The number of simulations to do.
+</p>
+</td></tr>
+<tr valign="top"><td><code>quiet</code></td>
+<td>
+
+<p>If <code>quiet=TRUE</code> then no output is produced, otherwise the function
+prints the number of simulations completed so far, and also how the
+test statistic for the data ranks with the simulations.
+</p>
+</td></tr>
+<tr valign="top"><td><code>returnSims</code></td>
+<td>
+<p>default FALSE, if TRUE, return the <code>stkhat</code> output for the observed data and each simulation as attributes <code>obs</code> and <code>sims</code></p>
+</td></tr>
+</table>
+
+
+<h3>Details</h3>
+
+<p>The function  uses a sum of residuals as a test statistic, 
+randomly permutes the times of the set of points and recomputes the
+test statistic for a number of simulations.
+See Diggle, Chetwynd, Haggkvist and Morris (1995) for details.
+</p>
+
+
+<h3>Value</h3>
+
+<p>A list with components:
+</p>
+<table summary="R valueblock">
+<tr valign="top"><td><code>t0</code></td>
+<td>
+<p>The observed value of the statistic</p>
+</td></tr>
+<tr valign="top"><td><code>t</code></td>
+<td>
+<p>A single column matrix with <code>nsim</code> values each of which is a simulated value of the statistic</p>
+</td></tr>
+</table>
+
+
+
+
+<h3>Note</h3>
+
+<p>The example of using returned simulated values is included only to show how the values might be used, not to indicate that this constitutes a way of examining which observed values of the space-time measure are exceptional.</p>
+
+
+<h3>References</h3>
+
+<p>Diggle, P., Chetwynd, A., Haggkvist, R. and Morris, S. 1995 Second-order analysis of space-time clustering. Statistical Methods in Medical Research, 4, 124-136;Bailey, T. C. and Gatrell, A. C. 1995, Interactive spatial data analysis. Longman, Harlow, pp. 122-125;
+Rowlingson, B. and Diggle, P. 1993 Splancs: spatial point pattern analysis
+code in S-Plus.  Computers and Geosciences, 19, 627-655;
+the original sources can be accessed at:
+<a href="http://www.maths.lancs.ac.uk/~rowlings/Splancs/">http://www.maths.lancs.ac.uk/~rowlings/Splancs/</a>. See also Bivand, R. and
+Gebhardt, A. 2000 Implementing functions for spatial statistical analysis
+using the R language. Journal of Geographical Systems, 2, 307-317.
+</p>
+
+
+<h3>See Also</h3>
+
+<p><code><a href="stkhat.html">stkhat</a></code>, <code><a href="stsecal.html">stsecal</a></code>, <code><a href="stvmat.html">stvmat</a></code>, <code><a href="stdiagn.html">stdiagn</a></code>
+</p>
+
+
+<h3>Examples</h3>
+
+<pre>
+example(stkhat)
+bur1mc &lt;- stmctest(burpts, burkitt$t, burbdy, c(400, 5800),
+  seq(1,40,2), seq(100, 1500, 100), nsim=49, quiet=TRUE, returnSims=TRUE)
+plot(density(bur1mc$t), xlim=range(c(bur1mc$t0, bur1mc$t)))
+abline(v=bur1mc$t0)
+r0 &lt;- attr(bur1mc, "obs")$kst-outer(attr(bur1mc, "obs")$ks, attr(bur1mc, "obs")$kt)
+rsimlist &lt;- lapply(attr(bur1mc, "sims"), function(x) x$kst - outer(x$ks, x$kt))
+rarray &lt;- array(do.call("cbind", rsimlist), dim=c(20, 15, 49))
+rmin &lt;- apply(rarray, c(1,2), min)
+rmax &lt;- apply(rarray, c(1,2), max)
+r0 &lt; rmin
+r0 &gt; rmax
+</pre>
+
+<hr><div align="center">[Package <em>splancs</em> version 2.01-33 <a href="00Index.html">Index</a>]</div>
+</body></html>

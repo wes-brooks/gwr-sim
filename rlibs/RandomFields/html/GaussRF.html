@@ -1,0 +1,650 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<html><head><title>R: Gaussian Random Fields</title>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+<link rel="stylesheet" type="text/css" href="R.css">
+</head><body>
+
+<table width="100%" summary="page for GaussRF {RandomFields}"><tr><td>GaussRF {RandomFields}</td><td align="right">R Documentation</td></tr></table>
+
+<h2>Gaussian Random Fields</h2>
+
+<h3>Description</h3>
+
+<p>These functions simulate stationary spatial and spatio-temporal
+Gaussian random fields using turning bands/layers, circulant embedding,
+direct methods, and the random coin method.
+</p>
+
+
+<h3>Usage</h3>
+
+<pre>GaussRF(x, y=NULL, z=NULL, T=NULL, grid=!missing(gridtriple), model, param,
+       trend=NULL, method=NULL, n=1, register=0, gridtriple,
+       paired=FALSE, ...)
+
+InitGaussRF(x, y=NULL, z=NULL, T=NULL, grid=!missing(gridtriple), model,
+            param, trend=NULL, method=NULL, register=0, gridtriple)
+</pre>
+
+
+<h3>Arguments</h3>
+
+<table summary="R argblock">
+<tr valign="top"><td><code>x</code></td>
+<td>
+<p>matrix of coordinates, or vector of x coordinates</p>
+</td></tr>
+<tr valign="top"><td><code>y</code></td>
+<td>
+<p>vector of y coordinates</p>
+</td></tr>
+<tr valign="top"><td><code>z</code></td>
+<td>
+<p>vector of z coordinates</p>
+</td></tr>
+<tr valign="top"><td><code>T</code></td>
+<td>
+<p>vector of time coordinates, may only be given if
+the random field is defined as an anisotropic random field,
+i.e. if <code>model=list(list(model=,var=,k=,aniso=),...)</code>.
+<code>T</code> must always be given in the <code>gridtriple</code> format,
+independently how the spatial part is defined.
+</p>
+</td></tr>
+<tr valign="top"><td><code>grid</code></td>
+<td>
+<p>logical; determines whether the vectors <code>x</code>,
+<code>y</code>, and <code>z</code> should be
+interpreted as a grid definition, see Details.  <code>grid</code>
+does not apply for <code>T</code>.</p>
+</td></tr>
+<tr valign="top"><td><code>model</code></td>
+<td>
+<p>string or list; covariance or variogram model,
+see <CODE><a href="CovarianceFct.html">CovarianceFct</a></CODE>, or
+type <CODE><a href="PrintModelList.html">PrintModelList</a></CODE><code>()</code> to get the list of all implemented
+models; see Details.</p>
+</td></tr>
+<tr valign="top"><td><code>param</code></td>
+<td>
+<p>vector or matrix of parameters or missing, see Details
+and <CODE><a href="CovarianceFct.html">CovarianceFct</a></CODE>; 
+The simplest form is that <code>param</code> is vector of the form
+<code>param=c(NA,variance,nugget,scale,...)</code>, in this order;<br>
+The dots <code>...</code> stand for additional parameters of the
+model.</p>
+</td></tr>
+<tr valign="top"><td><code>trend</code></td>
+<td>
+<p>trend surface: number (mean) or a vector of length
+<i>d+1</i> (linear trend <i>
+      a_0 +a_1 x_1 + ... + a_d x_d</i>), or function; you have the choice
+of using either x, y, z or X1, X2, X3, ... as spatial variables, as
+time variable T should be chosen</p>
+</td></tr>
+<tr valign="top"><td><code>method</code></td>
+<td>
+<p><code>NULL</code> or string; method used for simulating,
+see <CODE><a href="RFMethods.html">RFMethods</a></CODE>, or
+type <CODE><a href="RFMethods.html">PrintMethodList</a></CODE><code>()</code> to get all options.
+If <code>model</code> is given as list then <code>method</code> may not be
+set if <code>model[[i]]$method</code>, <i>i=1,3,..</i> is given, and vice
+versa. However, a global parameter <code>method</code> and
+specific <code>method</code>s may be given, e.g.
+<code>list(list(model=..., method="TBM3"), ..., method="ci")</code>;
+then the specific ones overwrite the global <code>method</code>.
+</p>
+</td></tr>
+<tr valign="top"><td><code>n</code></td>
+<td>
+<p>number of realisations to generate</p>
+</td></tr>
+<tr valign="top"><td><code>register</code></td>
+<td>
+<p>0:9; place where intermediate calculations are stored;
+the numbers are aliases for 10 internal registers</p>
+</td></tr>
+<tr valign="top"><td><code>gridtriple</code></td>
+<td>
+<p>logical. Only relevant if <code>grid=TRUE</code>.
+If <code>gridtriple=TRUE</code>
+then <code>x</code>, <code>y</code>, and <code>z</code> are of the
+form <code>c(start,end,step)</code>; if
+<code>gridtriple=FALSE</code> then <code>x</code>, <code>y</code>, and <code>z</code>
+must be vectors of ascending values
+</p>
+</td></tr>
+<tr valign="top"><td><code>paired</code></td>
+<td>
+
+<p>logical. If <code>TRUE</code> then the second half of the simulations is
+obtained by
+only changing the signs of all the standard Gaussian random variables,
+on which the first half of the 
+simulations is based. (&ldquo;Antithetic pairs&rdquo;.)
+</p>
+</td></tr>
+<tr valign="top"><td><code>...</code></td>
+<td>
+<p><CODE><a href="RFparameters.html">RFparameters</a></CODE> that are locally used only.</p>
+</td></tr>
+</table>
+
+
+<h3>Details</h3>
+
+<p><code>GaussRF</code> can use different methods for the simulation,
+i.e., circulant embedding, turning bands, direct methods, and random
+coin method. 
+If <code>method=NULL</code> then <code>GaussRF</code> searches for a
+valid method.  <code>GaussRF</code> may not find the fastest method neither the
+most precise one.  It just finds any method among the available
+methods. (However it guesses what is a good choice.) See
+<a href="RFMethods.html">RFMethods</a> for further information.
+Note that some of the methods do not work for all covariance 
+or variogram models.
+</p>
+
+<ul>
+<li>
+<p>An isotropic random field is created by 
+<code>GaussRF</code> where
+<code>model</code> is the covariance or variogram model and the
+parameter is <code>param=c(mean,variance,nugget,scale, ...)</code>.
+Alternatively the <code>trend</code> can be given; then
+<code>param=c(variance,nugget,scale, ...)</code>.
+</p>
+</li>
+<li>
+<p>Nested models can be defined in the same way as a nested
+<CODE><a href="CovarianceFct.html">CovarianceFct</a></CODE>.  If the <code>trend</code> is not given
+it is set to 0.
+</p>
+</li>
+<li>
+<p>An anisotropic random field (i.e. zonal anisotropy, geometrical
+anisotropy, separable models, non-separable space-time models)
+and a random field based on multiplicative or nested models
+is defined as in the case of
+an anisotropic <CODE><a href="CovarianceFct.html">CovarianceFct</a></CODE>. 
+If the <code>trend</code> is not given it is set to 0.
+The <code>method</code> may be specified by the global <code>method</code>
+or for each model separately, as additional parameter
+<code>method</code> for each entry of the list;
+note that methods can not be mixed within a multiplicative part.
+</p>
+<p>If <code>model=list(list(model=,var=,k=,aniso=),...)</code> then a time
+component might be given.  In case of <code>model="nugget"</code>,
+<code>aniso</code> must still be given as a matrix.  Namely if
+<code>aniso</code> is a singular matrix then a zonal nugget effect
+is obtained.
+</p>
+</li></ul>
+  
+<p><code>GaussRF</code> calls initially <code>InitGaussRF</code>,
+which does some basic checks on the validity of the parameters.  Then,
+<code>InitGaussRF</code> performs some first calculations, like the first
+Fourier transform in the circulant embedding method or the matrix
+decomposition for the direct methods.  Random numbers are not involved. 
+<code>GaussRF</code> then calls <CODE><a href="SimulateRF.html">DoSimulateRF</a></CODE> which uses the
+intermediate results and random numbers to create a simulation.
+</p>
+<p>When <code>InitGaussRF</code> checks the validity of the parameters, it
+also checks whether the previous simulation has had the same
+specification of the random field.  If so (and if
+<CODE><a href="RFparameters.html">RFparameters</a></CODE><code>()$STORING==TRUE</code>), the stored intermediate
+results are used instead of being recalculated. 
+</p>
+<p>Comments on specific parameters:
+</p>
+
+<ul>
+<li> <p><code>grid=FALSE</code> : the vectors <code>x</code>, <code>y</code>,
+and <code>z</code> are interpreted as vectors of coordinates
+</p>
+</li>
+<li> <p><code>(grid=TRUE) &amp;&amp; (gridtriple=FALSE)</code> : the vectors
+<code>x</code>, <code>y</code>, and <code>z</code>
+are increasing sequences with identical lags for each sequence. 
+A corresponding
+grid is created (as given by <code>expand.grid</code>). 
+</p>
+</li>
+<li> <p><code>(grid=TRUE) &amp;&amp; (gridtriple=TRUE)</code> : the vectors
+<code>x</code>, <code>y</code>, and <code>z</code>
+are triples of the form (start,end,step) defining a grid
+(as given by <code>expand.grid(seq(x$start,x$end,x$step),
+                          seq(y$start,y$end,y$step),
+                          seq(z$start,z$end,z$step))</code>)
+</p>
+
+
+
+
+
+
+
+
+
+</li>
+<li> <p><code>register</code> is a parameter which may never be
+used by most of the users (please let me know if you use it!).  In
+other words,
+the package will work fine if you ignore this parameter. 
+The parameter <code>register</code> is of interest in the following
+situation.  Assume you wish to create sequentially
+several realisations of two random fields <i>Z1</i> and
+<i>Z2</i> that have different
+specifications of the covariance/variogram models, i.e.
+<i>Z1</i>, <i>Z2</i>, <i>Z1</i>, <i>Z2</i>,...
+Then, without using different registers, the algorithm
+will not be able to profit from already calculated intermediate
+results, as the specifications of the covariance/variogram model
+change every time. 
+However, using different registers allows for profiting from
+up to 10 stored intermediate results. 
+</p>
+</li>
+<li><p> The strings for <code>model</code> and <code>method</code> may
+be abbreviated as long as the abbreviations match only one
+option.  See also <CODE><a href="PrintModelList.html">PrintModelList</a></CODE><code>()</code> and
+<CODE><a href="RFMethods.html">PrintMethodList</a></CODE><code>()</code>
+</p>
+</li>
+<li><p> Further control parameters for the simulation are set by means of
+<CODE><a href="RFparameters.html">RFparameters</a></CODE><code>(...)</code>.
+</p>
+</li></ul>
+
+
+
+<h3>Value</h3>
+
+<p><code>InitGaussRF</code> returns 0 if no error has occurred and a positive value
+if failed.<br>
+</p>
+<p>The object returned <code>GaussRF</code> and <CODE><a href="SimulateRF.html">DoSimulateRF</a></CODE>
+depends on the parameters <code>n</code> and <code>grid</code>:<br>
+</p>
+<p>if <code>vdim &gt; 1</code> the <code>vdim</code>-variate vector makes the first dimension
+</p>
+<p>if <code>grid=TRUE</code> an array of the dimension of the
+random field makes the next dimensions.
+Else if no time component is given, then the values are passed as a
+single vector. Else if the time component is given the next 2
+dimensions give space and time.
+</p>
+<p>if <code>n &gt; 1</code> the repetitions make the last dimension
+</p>
+
+
+<h3>Note</h3>
+
+<p>The algorithms for all the simulation methods are controlled by
+additional parameters, see <CODE><a href="RFparameters.html">RFparameters</a></CODE><code>()</code>.  These
+parameters have an influence on the speed of the algorithm
+and the precision of the result. 
+The default parameters are chosen such that
+the simulations are fine for many models and their parameters. 
+If in doubt modify the example in <CODE><a href="EmpiricalVariogram.html">EmpiricalVariogram</a></CODE><code>()</code>
+to check the precision.
+</p>
+
+
+<h3>Author(s)</h3>
+
+<p>Martin Schlather, <a href="mailto:schlather@math.uni-mannheim.de">schlather@math.uni-mannheim.de</a>
+<a href="http://ms.math.uni-mannheim.de">http://ms.math.uni-mannheim.de</a>
+</p>
+<p>Yindeng Jiang <a href="mailto:jiangyindeng@gmail.com">jiangyindeng@gmail.com</a> (circulant embedding
+methods &lsquo;cutoff&rsquo; and &lsquo;intrinsic&rsquo;)</p>
+
+
+<h3>References</h3>
+
+<p>See <a href="RFMethods.html">RFMethods</a> for the references.
+</p>
+
+
+<h3>See Also</h3>
+
+<p><CODE><a href="CovarianceFct.html">Covariance</a></CODE>,
+<CODE><a href="CovarianceFct.html">CovarianceFct</a></CODE>,
+<CODE><a href="Registers.html">DeleteRegister</a></CODE>,
+<CODE><a href="SimulateRF.html">DoSimulateRF</a></CODE>,
+<CODE><a href="GetPracticalRange.html">GetPracticalRange</a></CODE>,
+<CODE><a href="EmpiricalVariogram.html">EmpiricalVariogram</a></CODE>,
+<CODE><a href="fitvario.html">fitvario</a></CODE>,
+<CODE><a href="MaxStableRF.html">MaxStableRF</a></CODE>,
+<CODE><a href="RFMethods.html">RFMethods</a></CODE>,
+<code><a href="RandomFields.html">RandomFields</a></code>,
+<CODE><a href="RFparameters.html">RFparameters</a></CODE>,
+<CODE><a href="ShowModels.html">ShowModels</a></CODE>,
+
+</p>
+
+
+<h3>Examples</h3>
+
+<pre>
+
+
+ #############################################################
+ ##                                                         ##
+ ## Examples using the symmetric stable model, also called  ##
+ ## "powered exponential model"                             ## 
+ ##                                                         ##
+ #############################################################
+ PrintModelList()    ## the complete list of implemented models
+ model &lt;- "stable"   
+ mean &lt;- 0
+ variance &lt;- 4
+ nugget &lt;- 1
+ scale &lt;- 10
+ alpha &lt;- 1   ## see help("CovarianceFct") for additional
+              ## parameters of the covariance functions
+ step &lt;- 1    ## nicer, but also time consuming if step &lt;- 0.1
+ x &lt;- seq(0, 20, step) 
+ y &lt;- seq(0, 20, step)     
+ f &lt;- GaussRF(x=x, y=y, model=model, grid=TRUE,
+              param=c(mean, variance, nugget, scale, alpha))
+ image(x, y, f)
+
+
+ #############################################################
+ ## ... using gridtriple
+ step &lt;- 1    ## nicer, but also time consuming if step &lt;- 0.1
+ x &lt;- c(0, 20, step)  ## note: vectors of three values, not a 
+ y &lt;- c(0, 20, step)  ##       sequence
+ f &lt;- GaussRF(grid=TRUE, gridtriple=TRUE,
+               x=x ,y=y, model=model,  
+               param=c(mean, variance, nugget, scale, alpha))
+ image(seq(x[1],x[2],x[3]), seq(y[1],y[2],y[3]), f)
+
+
+ #############################################################
+ ## arbitrary points
+ x &lt;- runif(100, max=20) 
+ y &lt;- runif(100, max=20)
+ z &lt;- runif(100, max=20) # 100 points in 3 dimensional space
+(f &lt;- GaussRF(grid=FALSE, Print=5,
+              x=x, y=y, z=z, model=model, 
+              param=c(mean, variance, nugget, scale, alpha)))
+
+
+ #############################################################
+ ## usage of a specific method
+ ## -- the complete list can be obtained by PrintMethodList()
+ x &lt;- runif(100, max=20) # arbitrary points
+ y &lt;- runif(100, max=20)
+ (f &lt;- GaussRF(method="dir",  # direct matrix decomposition
+              x=x, y=y, model=model, grid=FALSE, 
+              param=c(mean, variance, nugget, scale, alpha)))
+
+
+ #############################################################
+ ## simulating several random fields at once
+ step &lt;- 1    ## nicer, but also time consuming if step &lt;- 0.1
+ x &lt;- seq(0, 20, step)  # grid
+ y &lt;- seq(0, 20, step)
+ f &lt;- GaussRF(n=3,  # three simulations at once
+              x=x, y=y, model=model, grid=TRUE,  
+              param=c(mean, variance, nugget, scale, alpha))
+ image(x, y, f[,,1])
+ image(x, y, f[,,2])
+ image(x, y, f[,,3])
+
+
+        
+
+ #############################################################
+ ##                                                         ##
+ ##      Examples using the extended definition form        ##
+ ##                                                         ##
+ ##                                                         ##  
+ #############################################################
+
+
+#% library(RandomFields, lib="~/TMP"); RFparameters(Print=6)
+x &lt;- (0:100)/10
+m &lt;- matrix(c(1,2,3,4),ncol=2)/5
+model &lt;- list("$", aniso=m,
+              list("*",              
+                   list("power", k=2),
+                   list("sph"))
+              )
+z &lt;- GaussRF(x=x, y=x, grid=TRUE, model=model, me="TBM3")
+Print(c(mean(as.double(z)),var(as.double(z))))
+image(z,zlim=c(-3,3))
+
+## to know more what GaussRF does, use Print
+## TMB can be very slow. To trace the iteration, use every
+##
+z &lt;- GaussRF(x=x, y=x, grid=TRUE, model=model, me="TBM3",
+             Print=3, every=100)
+image(z,zlim=c(-3,3))
+## here, GaussRF uses `direct decomp' to simulate on the line
+##       and the square root of the covariance matrix is
+##       calculated by the Cholesky decomposition
+
+
+
+## non-separable space-time model applied for two space dimensions
+## note that tbm method works in some special cases.
+#%    library(RandomFields, lib="~/TMP")
+x &lt;- y &lt;- seq(0, 7, if (interactive()) 0.05 else 0.2) 
+T &lt;- c(1,32,1) * 10        ## note necessarily gridtriple definition
+model &lt;- list("$", aniso=diag(c(3, 3, 0.02)),
+             list("nsst", k1=2,
+                  list("gauss"),
+                  list("genB", k=c(1, 0.5))
+              ))
+z &lt;- GaussRF(x=x, y=y, T=T, grid=TRUE, model=model,
+             method="ci", CE.strategy=1,
+             CE.trials=if (interactive()) 4 else 1)
+rl &lt;- function() if (interactive()) readline("Press return")
+for (i in 1:dim(z)[3]) { image(z[,,i], zlim=range(z)); rl();}
+for (i in 1:dim(z)[2]) { image(z[,i,], zlim=range(z)); rl();}
+for (i in 1:dim(z)[1]) { image(z[i,,], zlim=range(z)); rl();}
+
+
+
+
+ #############################################################
+ ##                                                         ##
+ ##      Example of a 2d random field based on              ##
+ ##      covariance functions valid in 1d only              ##
+ ##                                                         ##
+ #############################################################
+
+x &lt;- seq(0, 10, 1/10)
+model &lt;- list("*",
+              list("$",  aniso=matrix(nr=2, c(1, 0)),
+                   list("fractgauss", k=0.5)),
+              list("$",  aniso=matrix(nr=2, c(0, 1)),
+                   list("fractgauss", k=0.9))
+              )
+z &lt;- GaussRF(x, x,  grid=TRUE, gridtriple=FALSE, model=model)
+image(x, x, z)
+
+
+
+
+ #############################################################
+ ##                                                         ##
+ ##                    Brownian motion                      ##
+ ##                (using Stein's method)                   ##
+ ##                                                         ##  
+ #############################################################
+# 1d
+kappa &lt;- 1   # in [0,2)
+z &lt;- GaussRF(x=c(0, 10, 0.001), grid=TRUE, Print=5,
+             model=list("fractalB", kappa))
+plot(z, type="l")
+
+# 2d
+step &lt;- 0.3  ## nicer, but also time consuming if step = 0.1
+x &lt;- seq(0, 10, step)
+kappa &lt;- 1   # in [0,2)
+z &lt;- GaussRF(x=x, y=x, grid=TRUE, model=list("fractalB", kappa))
+image(z,zlim=c(-3,3))
+
+# 3d
+x &lt;- seq(0, 3, step)
+kappa &lt;- 1   # in [0,2)
+z &lt;- GaussRF(x=x, y=x, z=x, grid=TRUE,
+             model=list("fractalB", kappa)) 
+rl &lt;- function() if (interactive()) readline("Press return")
+for (i in 1:dim(z)[1]) { image(z[i,,]); rl();}
+
+
+
+ #############################################################
+ ## This example shows the benefits from stored,            ##
+ ## intermediate results: in case of the circulant          ##
+ ## embedding method, the speed is doubled in the second    ##
+ ## simulation.                                             ##  
+ #############################################################
+
+RFparameters(Storing=TRUE)
+y &lt;- x &lt;- seq(0, 50, 0.2)
+(p &lt;- c(runif(3), runif(1)+1))
+ut &lt;- system.time(f &lt;- GaussRF(x=x,y=y,grid=TRUE,model="exponen",
+                              method="circ", param=p))
+image(x, y, f)
+
+
+cat("system time (first call)", format(ut,dig=3),"\n")
+
+# second call with the same parameters can be much faster:
+ut &lt;- system.time(f &lt;- DoSimulateRF()) 
+image(x, y, f)
+
+
+cat("system time (second call)", format(ut,dig=3),"\n")
+
+
+ #############################################################
+ ##                                                         ##
+ ##     Example how the cutoff method can be set            ##
+ ##        explicitly using hypermodels                     ##
+ ##                                                         ##
+ #############################################################
+
+## NOTE: this feature is still in an experimental stage
+##       which has not been yet tested intensively;
+## further: parameters and algorithms may change in
+##       future.
+
+#% library(RandomFields, lib="~/TMP");source("~/R/cran/RandomFields/tests/source.R")
+## simuation of the stable model using the cutoff method
+#RFparameters(Print=8, Storing=FALSE)
+x &lt;- seq(0, 1, 1/24) # nicer pictures with 1/240
+scale &lt;- 1.0
+model1 &lt;- list("$", scale=scale, list("stable", alpha=1.0))
+rs &lt;- get(".Random.seed", envir=.GlobalEnv, inherits = FALSE)
+z1 &lt;- GaussRF(x, x,  grid=TRUE, gridtriple=FALSE,
+             model=model1, n=1, meth="cutoff", Storing=TRUE)
+(size &lt;- GetRegisterInfo(meth=c("cutoff", "circ"))$S$size)
+(cut.off.param &lt;-
+   GetRegisterInfo(meth=c("cutoff", "circ"), modelname="cutoff")$param)
+
+image(x, x, z1)
+
+
+## simulation of the same random field using the circulant
+## embedding method and defining the hypermodel explicitely
+model2 &lt;- list("$", scale = scale,
+               list("cutoff", diam=cut.off.param$diam, a=cut.off.param$a,       
+                    list("stable", alpha=1.0))
+              )
+assign(".Random.seed", rs, envir=.GlobalEnv)
+z2 &lt;- GaussRF(x, x,  grid=TRUE, gridtriple=FALSE, model=model2,
+              meth="circulant", n=1, CE.mmin=size, Storing=TRUE)
+image(x, x, z2)
+Print(range(z1-z2)) ## essentially no difference between the fields!
+
+
+
+
+#% library(RandomFields)
+
+ #############################################################
+ ## The cutoff method simulates on a torus and a (small)    ##
+ ## rectangle is taken as the required simulation.          ##
+ ##                                                         ##
+ ## The following code shows a whole such torus.            ##
+ ## The main part of the code sets local.dependent=TRUE and ##
+ ## local.mmin to multiples of the basic rectangle lengths  ##
+ #############################################################
+
+
+# definition of the realisation
+RFparameters(CE.useprimes=FALSE)
+x &lt;- seq(0, 2, len=4) # better 20
+y &lt;- seq(0, 1, len=5) # better 40
+grid.size &lt;- c(length(x), length(y))
+model &lt;- list("$", var=1.1, aniso=matrix(nc=2, c(2, 1, 0.5, 1)),
+              list(model="exp"))
+
+# determination of the (minimal) size of the torus
+InitGaussRF(x, y, model=model, grid=TRUE, method="cu")
+ce.info.size &lt;- GetRegisterInfo(meth=c("cutoff", "circ"))$S$size
+blocks &lt;- ceiling(ce.info.size / grid.size / 4) *4
+(size &lt;- blocks * grid.size)
+
+# simulation and plot of the torus 
+z &lt;- GaussRF(x, y, model=model, grid=TRUE, method="cu", n=prod(blocks) * 2,
+             local.dependent=TRUE, local.mmin=size)[,,c(TRUE, FALSE)]
+hei &lt;- 8
+do.call(getOption("device"),
+        list(hei=hei, wid=hei / blocks[2] / diff(range(y)) *
+                         blocks[1] * diff(range(x))))
+
+close.screen(close.screen())
+sc &lt;- matrix(nc=blocks[1], split.screen(rev(blocks)), byrow=TRUE)
+sc &lt;- as.vector(t(sc[nrow(sc):1, ]))
+
+for (i in 1:prod(blocks)) {
+  screen(sc[i])
+  par(mar=rep(1, 4) * 0.0)
+  image(z[,, i], zlim=c(-3, 3), axes=FALSE, col=rainbow(100)) 
+}
+
+
+
+##############################################################
+##	  Simulating with trend (as function)       	    ##
+##############################################################
+
+x &lt;- seq(-5,5,0.1)
+z &lt;- GaussRF(x=x, y=x, model = "exponential", param=c(1,0,1), grid=TRUE,
+             trend=function(x,y) 3*sin(x)*cos(y))
+colors=heat.colors(1000)
+image(x,x,z,col=colors)
+
+
+
+
+##############################################################
+##	  Simulating with linear trend surface    	    ##
+##############################################################
+
+x &lt;- seq(-5,5,0.1)
+##trend surface: 3x - y
+z &lt;- GaussRF(x=x, y=x, model = "cubic", param=c(1,0,2), grid=TRUE,
+             trend=c(0,1,-1))
+colors=heat.colors(1000)
+persp(x,x,z, phi=30, theta=-3)
+
+
+
+
+
+
+
+
+</pre>
+
+<hr><div align="center">[Package <em>RandomFields</em> version 2.0.66 <a href="00Index.html">Index</a>]</div>
+</body></html>

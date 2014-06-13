@@ -1,0 +1,173 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<html><head><title>R: Simulation of Random Fields</title>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+<link rel="stylesheet" type="text/css" href="R.css">
+</head><body>
+
+<table width="100%" summary="page for SimulateRF {RandomFields}"><tr><td>SimulateRF {RandomFields}</td><td align="right">R Documentation</td></tr></table>
+
+<h2>Simulation of Random Fields</h2>
+
+<h3>Description</h3>
+
+<p><code>DoSimulateRF</code> performs an already initialised simulation.
+</p>
+<p><code>InitSimulateRF</code> internal function;
+use <CODE><a href="GaussRF.html">InitGaussRF</a></CODE> and <CODE><a href="MaxStableRF.html">InitMaxStableRF</a></CODE>, instead.
+</p>
+
+
+
+<h3>Usage</h3>
+
+<pre>
+DoSimulateRF(n=1, register=0, paired=FALSE, trend=NULL)
+
+InitSimulateRF(x, y=NULL, z=NULL, T=NULL, grid=!missing(gridtriple),
+               model, param, trend, method=NULL, register=0, gridtriple,
+               distribution=NA)
+</pre>
+
+
+<h3>Arguments</h3>
+
+<table summary="R argblock">
+<tr valign="top"><td><code>x</code></td>
+<td>
+<p>matrix of coordinates, or vector of x coordinates</p>
+</td></tr>
+<tr valign="top"><td><code>y</code></td>
+<td>
+<p>vector of y coordinates</p>
+</td></tr>
+<tr valign="top"><td><code>z</code></td>
+<td>
+<p>vector of z coordinates</p>
+</td></tr>
+<tr valign="top"><td><code>T</code></td>
+<td>
+<p>time instances</p>
+</td></tr>
+<tr valign="top"><td><code>grid</code></td>
+<td>
+<p>logical; determines whether the vectors <code>x</code>,
+<code>y</code>, and <code>z</code> should be
+interpreted as a grid definition, see Details.</p>
+</td></tr>
+<tr valign="top"><td><code>model</code></td>
+<td>
+<p>string; covariance or variogram model,
+see <CODE><a href="CovarianceFct.html">CovarianceFct</a></CODE>, or
+type <CODE><a href="PrintModelList.html">PrintModelList</a></CODE><code>()</code> to get all options</p>
+</td></tr>
+<tr valign="top"><td><code>param</code></td>
+<td>
+<p>vector or list. 
+<code>param=c(mean, variance, nugget, scale, ...)</code>, 
+<code>param=list(c(variance, scale,
+      ...), ..., c(variance,scale,...))</code>,
+<code>param=matrix(...)</code>, or
+<code>param=list(list(variance, anisotropy, kappa),...,
+      list(variance, anisotropy, kappa))</code>;
+the parameters must be given
+in this order; further parameters are to be added in case of a
+parametrised class of models, see <CODE><a href="CovarianceFct.html">CovarianceFct</a></CODE></p>
+</td></tr>
+</table>
+
+
+
+
+<table summary="R argblock">
+<tr valign="top"><td><code>method</code></td>
+<td>
+<p><code>NULL</code> or string; Method used for simulating,
+see <CODE><a href="RFMethods.html">RFMethods</a></CODE>, or
+type <CODE><a href="RFMethods.html">PrintMethodList</a></CODE><code>()</code> to get all options</p>
+</td></tr>
+<tr valign="top"><td><code>register</code></td>
+<td>
+<p>0:9; place where intermediate calculations are stored;
+the numbers are aliases for 10 internal registers</p>
+</td></tr>
+<tr valign="top"><td><code>gridtriple</code></td>
+<td>
+<p>logical;  if <code>gridtriple=FALSE</code> ascending
+sequences for the parameters 
+<code>x</code>, <code>y</code>, and <code>z</code> are
+expected; if <code>gridtriple=TRUE</code> triples of form
+<code>c(start,end,step)</code> 
+expected; this parameter is used only
+if <code>grid=TRUE</code></p>
+</td></tr>
+<tr valign="top"><td><code>distribution</code></td>
+<td>
+<p>marginal distribution:<br>
+'Gauss', 'Poisson', or 'MaxStable'</p>
+</td></tr>
+<tr valign="top"><td><code>n</code></td>
+<td>
+<p>number of realisations to generate; if <code>paired=TRUE</code>
+then <code>n</code> must be even.</p>
+</td></tr>
+<tr valign="top"><td><code>paired</code></td>
+<td>
+
+<p>logical. <code>paired</code> may be <code>TRUE</code> only for the simulation of
+Gaussian random fields.
+If <code>TRUE</code> then every second simulation is obtained by
+only changing the signs of the standard Gaussian random variables, the
+simulation is based on (&ldquo;antithetic pairs&rdquo;).
+</p>
+</td></tr>
+<tr valign="top"><td><code>trend</code></td>
+<td>
+<p>only used for universal and intrinsic kriging. In case of
+universal kriging <code>trend</code> is a non-negative integer (monomials
+up to order k as trend functions), a list of functions or a formula (the
+summands are the trend functions); you have the choice of using either
+x, y, z or X1, X2, X3,... as spatial variables;
+in case of intrinsic kriging trend should be a nonnegative integer which
+is the order of the underlying model.
+</p>
+</td></tr>
+</table>
+
+
+<h3>Value</h3>
+
+<p><code>InitSimulateRF</code> returns 0 if no error has occurred during the
+initialisation process, and a positive value if failed.<br>
+</p>
+<p><code>DoSimulateRF</code> returns <code>NULL</code>
+if an error has occurred; otherwise the returned object
+depends on the parameters <code>n</code> and <code>grid</code>:<br>
+<code>n=1</code>:<br>
+* <code>grid=FALSE</code>.  A vector of simulated values is
+returned (independent of the dimension of the random field)<br>
+* <code>grid=TRUE</code>.  An array of the dimension of the
+random field is returned.<br>
+</p>
+<p><code>n&gt;1</code>:<br>
+* <code>grid=FALSE</code>.  A matrix is returned.  The columns
+contain the realisations.<br>
+* <code>grid=TRUE</code>.  An array of dimension
+<i>d+1</i>, where <i>d</i> is the dimension of
+the random field, is returned.  The last
+dimension contains the realisations.    
+</p>
+
+
+<h3>Author(s)</h3>
+
+<p>Martin Schlather, <a href="mailto:schlather@math.uni-mannheim.de">schlather@math.uni-mannheim.de</a>
+<a href="http://ms.math.uni-mannheim.de">http://ms.math.uni-mannheim.de</a></p>
+
+
+<h3>See Also</h3>
+
+<p><CODE><a href="GaussRF.html">GaussRF</a></CODE>, <CODE><a href="MaxStableRF.html">MaxStableRF</a></CODE>, <code><a href="RandomFields.html">RandomFields</a></code>
+</p>
+
+<hr><div align="center">[Package <em>RandomFields</em> version 2.0.66 <a href="00Index.html">Index</a>]</div>
+</body></html>

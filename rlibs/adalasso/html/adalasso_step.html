@@ -1,0 +1,130 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<html><head><title>R: The glmnet step (shrinks and selects model coefficients) for...</title>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+<link rel="stylesheet" type="text/css" href="R.css">
+</head><body>
+
+<table width="100%" summary="page for adalasso_step {adalasso}"><tr><td>adalasso_step {adalasso}</td><td align="right">R Documentation</td></tr></table>
+
+<h2>
+The glmnet step (shrinks and selects model coefficients) for adaptive lasso shrinkage and selection in a generalized linear model
+</h2>
+
+<h3>Description</h3>
+
+<p>The glmnet step (shrinks and selects model coefficients) for adaptive lasso shrinkage and selection in a generalized linear model
+</p>
+
+
+<h3>Usage</h3>
+
+<pre>
+adalasso_step(y, x, family, weights, adaptive.object = NULL, s = NULL, ...)
+</pre>
+
+
+<h3>Arguments</h3>
+
+<table summary="R argblock">
+<tr valign="top"><td><code>y</code></td>
+<td>
+
+
+</td></tr>
+<tr valign="top"><td><code>x</code></td>
+<td>
+
+
+</td></tr>
+<tr valign="top"><td><code>family</code></td>
+<td>
+
+
+</td></tr>
+<tr valign="top"><td><code>weights</code></td>
+<td>
+
+
+</td></tr>
+<tr valign="top"><td><code>adaptive.object</code></td>
+<td>
+
+
+</td></tr>
+<tr valign="top"><td><code>s</code></td>
+<td>
+
+
+</td></tr>
+<tr valign="top"><td><code>...</code></td>
+<td>
+
+
+</td></tr>
+</table>
+
+
+<h3>Examples</h3>
+
+<pre>
+##---- Should be DIRECTLY executable !! ----
+##-- ==&gt;  Define data, use random,
+##--	or do  help(data=index)  for the standard data sets.
+
+## The function is currently defined as
+function (y, x, family, weights, adaptive.object = NULL, s = NULL, 
+    ...) 
+{
+    result = list()
+    m &lt;- ncol(x)
+    n &lt;- nrow(x)
+    one &lt;- rep(1, n)
+    result[["meanx"]] = (meanx &lt;- drop(one %*% x)/n)
+    x.centered &lt;- scale(x, meanx, FALSE)
+    normx &lt;- sqrt(drop(one %*% (x.centered^2)))
+    names(normx) &lt;- NULL
+    xs = x.centered
+    for (k in 1:dim(x.centered)[2]) {
+        if (normx[k] != 0) {
+            xs[, k] = xs[, k]/normx[k]
+        }
+        else {
+            xs[, k] = rep(0, dim(xs)[1])
+            normx[k] = Inf
+        }
+    }
+    if (is.null(adaptive.object)) {
+        result[["coef.scale"]] = coef.scale = 1/normx
+    }
+    else {
+        ada.weight = adaptive.object[["adaweight"]]
+        for (k in 1:dim(x.centered)[2]) {
+            if (!is.na(ada.weight[k])) {
+                xs[, k] = xs[, k] * ada.weight[k]
+            }
+            else {
+                xs[, k] = rep(0, dim(xs)[1])
+                ada.weight[k] = 0
+            }
+        }
+        result[["coef.scale"]] = coef.scale = ada.weight/normx
+    }
+    result[["model"]] = model = glmnet(x = xs, y = y, family = family, 
+        weights = weights, lambda = s, ...)
+    result[["cv.model"]] = cv.model = cv.glmnet(y = y, x = xs, 
+        nfolds = dim(x)[1], family = family, weights = weights, 
+        lambda = s, ...)
+    result[["lambda"]] = lambda = cv.model$lambda.min
+    nonzero = as.vector(predict(model, type = "nonzero", s = lambda))
+    print(nonzero)
+    coefs = coef(model, s = lambda)
+    result[["coef"]] = as.list(coefs)[nonzero + 1]
+    names(result[["coef"]]) = rownames(coefs)[nonzero + 1]
+    result[["intercept"]] = intercept = coefs[1]
+    result[["vars"]] = names(result[["coef"]])
+    return(result)
+  }
+</pre>
+
+<hr><div align="center">[Package <em>adalasso</em> version 0.1 <a href="00Index.html">Index</a>]</div>
+</body></html>

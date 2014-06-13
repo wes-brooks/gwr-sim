@@ -1,0 +1,117 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<html><head><title>R: Display a sort of box plot</title>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+<link rel="stylesheet" type="text/css" href="R.css">
+</head><body>
+
+<table width="100%" summary="page for box.heresy {plotrix}"><tr><td>box.heresy {plotrix}</td><td align="right">R Documentation</td></tr></table>
+
+<h2>Display a sort of box plot</h2>
+
+<h3>Description</h3>
+
+<p><span class="samp">box.heresy</span> displays a box plot in which a symbol represents a measure of
+central tendency, a surrounding box that represents an &quot;inner&quot; measure of dispersion
+(e.g. standard error) and whiskers that represent an &quot;outer&quot; measure of dispersion
+(e.g. standard deviation). The function is pretty basic at this time and will 
+probably change a bit.
+</p>
+
+
+<h3>Usage</h3>
+
+<pre>
+ box.heresy(x,y,uinner,linner=uinner,ulim,llim=ulim,intervals=FALSE,
+ arrow.cap=NA,pch=22,main="",xlab="",ylab="",xaxlab=NA,col="white",do.first=NULL,...)
+</pre>
+
+
+<h3>Arguments</h3>
+
+<table summary="R argblock">
+<tr valign="top"><td><code>x,y</code></td>
+<td>
+<p>Vectors of numeric values representing measures of central tendency.</p>
+</td></tr>
+<tr valign="top"><td><code>uinner,linner</code></td>
+<td>
+<p>Vectors of numeric values representing &quot;inner&quot; measures of
+dispersion.</p>
+</td></tr>
+<tr valign="top"><td><code>ulim,llim</code></td>
+<td>
+<p>Vectors of numeric values representing &quot;outer&quot; measures of
+dispersion.</p>
+</td></tr>
+<tr valign="top"><td><code>intervals</code></td>
+<td>
+<p>Whether the values for dispersion are intervals (TRUE) or
+absolute limits (FALSE).</p>
+</td></tr>
+<tr valign="top"><td><code>arrow.cap</code></td>
+<td>
+<p>The width of the cap on the &quot;whiskers&quot; relative to the width
+of the plot. Defaults to the same width as the outer box.</p>
+</td></tr>
+<tr valign="top"><td><code>pch</code></td>
+<td>
+<p>The symbol to be used to represent the measure(s) of central tencency
+in the box.</p>
+</td></tr>
+<tr valign="top"><td><code>main</code></td>
+<td>
+<p>The title for the plot (i.e. <span class="samp">main</span>).</p>
+</td></tr>
+<tr valign="top"><td><code>xlab,ylab</code></td>
+<td>
+<p>The x and y axis labels.</p>
+</td></tr>
+<tr valign="top"><td><code>xaxlab</code></td>
+<td>
+<p>Optional labels for the boxes.</p>
+</td></tr>
+<tr valign="top"><td><code>col</code></td>
+<td>
+<p>The fill colors for the &quot;inner&quot; rectangles.</p>
+</td></tr>
+<tr valign="top"><td><code>do.first</code></td>
+<td>
+<p>An expression that will be evaluated before anything is displayed.</p>
+</td></tr>
+<tr valign="top"><td><code>...</code></td>
+<td>
+<p>additional arguments passed to the <span class="samp">dispersion</span> function.</p>
+</td></tr>
+</table>
+
+
+<h3>Value</h3>
+
+<p>nil</p>
+
+
+<h3>Author(s)</h3>
+
+<p>Jim Lemon - thanks to Gianni Lavaredo for the suggestion</p>
+
+
+<h3>See Also</h3>
+
+<p><a href="../../graphics/html/plot.html">plot</a>, <a href="../../graphics/html/boxplot.html">boxplot</a></p>
+
+
+<h3>Examples</h3>
+
+<pre>
+ y&lt;-runif(5)
+ ulim&lt;-runif(5)
+ llim&lt;-runif(5)
+ uinner&lt;-ulim/2
+ linner&lt;-llim/2
+ box.heresy(y,uinner=uinner,linner=linner,ulim=ulim,llim=llim,
+  intervals=TRUE,main="The heretical boxplot",
+  xlab="Number of observations",ylab="Value")
+</pre>
+
+<hr><div align="center">[Package <em>plotrix</em> version 3.5-2 <a href="00Index.html">Index</a>]</div>
+</body></html>

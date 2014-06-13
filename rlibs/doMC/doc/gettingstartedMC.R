@@ -4,7 +4,7 @@
 ### code chunk number 1: loadLibs
 ###################################################
 library(doMC)
-registerDoMC(2)
+registerDoMC()
 foreach(i=1:3) %dopar% sqrt(i)
 
 
@@ -58,10 +58,19 @@ foreach(i=1:3, .options.multicore=mcoptions) %dopar% sqrt(i)
 
 
 ###################################################
-### code chunk number 7: coreoptions2
+### code chunk number 7: coreoptions
 ###################################################
-registerDoMC(2)
-options(cores=4)
+options(cores=2)
+getDoParWorkers()
+options(cores=3)
+getDoParWorkers()
+
+
+###################################################
+### code chunk number 8: coreoptions2
+###################################################
+registerDoMC(4)
+options(cores=2)
 getDoParWorkers()
 
 

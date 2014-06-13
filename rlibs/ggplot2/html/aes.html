@@ -1,0 +1,66 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<html><head><title>R: Generate aesthetic mappings that describe how variables in...</title>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+<link rel="stylesheet" type="text/css" href="R.css">
+</head><body>
+
+<table width="100%" summary="page for aes {ggplot2}"><tr><td>aes {ggplot2}</td><td align="right">R Documentation</td></tr></table>
+
+<h2>Generate aesthetic mappings that describe how variables in the data are
+mapped to visual properties (aesthetics) of geoms.</h2>
+
+<h3>Description</h3>
+
+<p><code>aes</code> creates a list of unevaluated expressions.
+This function also performs partial name matching,
+converts color to colour, and old style R names to ggplot
+names (eg. pch to shape, cex to size)
+</p>
+
+
+<h3>Usage</h3>
+
+<pre>
+  aes(x, y, ...)
+</pre>
+
+
+<h3>Arguments</h3>
+
+<table summary="R argblock">
+<tr valign="top"><td><code>x</code></td>
+<td>
+<p>x value</p>
+</td></tr>
+<tr valign="top"><td><code>y</code></td>
+<td>
+<p>y value</p>
+</td></tr>
+<tr valign="top"><td><code>...</code></td>
+<td>
+<p>List of name value pairs giving aesthetics to
+map.</p>
+</td></tr>
+</table>
+
+
+<h3>See Also</h3>
+
+<p><code><a href="aes_string.html">aes_string</a></code> for passing quoted variable
+names.  <code><a href="aes_colour_fill_alpha.html">aes_colour_fill_alpha</a></code>,
+<code><a href="aes_group_order.html">aes_group_order</a></code>,
+<code><a href="aes_linetype_size_shape.html">aes_linetype_size_shape</a></code> and
+<code><a href="aes_position.html">aes_position</a></code> for more specific examples
+with different aesthetics.
+</p>
+
+
+<h3>Examples</h3>
+
+<pre>
+aes(x = mpg, y = wt)
+aes(x = mpg ^ 2, y = wt / cyl)
+</pre>
+
+<hr><div align="center">[Package <em>ggplot2</em> version 0.9.3.1 <a href="00Index.html">Index</a>]</div>
+</body></html>

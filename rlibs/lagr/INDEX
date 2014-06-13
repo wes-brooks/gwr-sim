@@ -1,0 +1,4 @@
+lagr                    Fit a lagr model
+lagr.fit.inner          Fit a LAGR model
+lagr.sel                Estimate the bandwidth parameter for a LAGR
+                        model

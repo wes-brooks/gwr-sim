@@ -1,0 +1,70 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<html><head><title>R: Install a single package from a git repository</title>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+<link rel="stylesheet" type="text/css" href="R.css">
+</head><body>
+
+<table width="100%" summary="page for install_git_single {devtools}"><tr><td>install_git_single {devtools}</td><td align="right">R Documentation</td></tr></table>
+
+<h2>Install a single package from a git repository</h2>
+
+<h3>Description</h3>
+
+<p>This function allows you to install a single package from
+a git repository.
+</p>
+
+
+<h3>Usage</h3>
+
+<pre>
+  install_git_single(git_url, name = NULL, subdir = NULL,
+    branch = NULL, git_args = character(),
+    git_binary = NULL, ...)
+</pre>
+
+
+<h3>Arguments</h3>
+
+<table summary="R argblock">
+<tr valign="top"><td><code>git_url</code></td>
+<td>
+<p>Location of package. The url should point
+to a public or private repository.</p>
+</td></tr>
+<tr valign="top"><td><code>name</code></td>
+<td>
+<p>Optional package name, used to provide more
+informative messages.</p>
+</td></tr>
+<tr valign="top"><td><code>subdir</code></td>
+<td>
+<p>A sub-directory withing a git repository
+that may contain the package we are interested in
+installing.</p>
+</td></tr>
+<tr valign="top"><td><code>git_args</code></td>
+<td>
+<p>A character vector providing extra
+arguments to pass on to</p>
+</td></tr>
+<tr valign="top"><td><code>git_binary</code></td>
+<td>
+<p>A custom git-binary to use instead of
+default system's git version.</p>
+</td></tr>
+<tr valign="top"><td><code>...</code></td>
+<td>
+<p>passed on to <code><a href="install.html">install</a></code></p>
+</td></tr>
+</table>
+
+
+<h3>Details</h3>
+
+<p>See <code><a href="install_git.html">install_git</a></code> for more information about
+the paraemeters.
+</p>
+
+<hr><div align="center">[Package <em>devtools</em> version 1.3 <a href="00Index.html">Index</a>]</div>
+</body></html>

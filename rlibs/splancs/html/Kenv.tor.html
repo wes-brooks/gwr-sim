@@ -1,0 +1,119 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<html><head><title>R: Envelope of K12hat from random toroidal shifts of two point...</title>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+<link rel="stylesheet" type="text/css" href="R.css">
+</head><body>
+
+<table width="100%" summary="page for Kenv.tor {splancs}"><tr><td>Kenv.tor {splancs}</td><td align="right">R Documentation</td></tr></table>
+
+<h2>
+Envelope of K12hat from random toroidal shifts of two point patterns
+</h2>
+
+<h3>Description</h3>
+
+<p>Compute envelope of K12hat from random toroidal shifts of two point patterns.
+</p>
+
+
+<h3>Usage</h3>
+
+<pre>
+Kenv.tor(pts1,pts2,poly,nsim,s,quiet=FALSE)
+</pre>
+
+
+<h3>Arguments</h3>
+
+<table summary="R argblock">
+<tr valign="top"><td><code>pts1</code></td>
+<td>
+
+<p>First point data set.
+</p>
+</td></tr>
+<tr valign="top"><td><code>pts2</code></td>
+<td>
+
+<p>Second point data set.
+</p>
+</td></tr>
+<tr valign="top"><td><code>poly</code></td>
+<td>
+
+<p>Polygon containing the points.
+</p>
+</td></tr>
+<tr valign="top"><td><code>nsim</code></td>
+<td>
+
+<p>Number of random toroidal shifts to do.
+</p>
+</td></tr>
+<tr valign="top"><td><code>s</code></td>
+<td>
+
+<p>Vector of distances at which to calculate the envelope.
+</p>
+</td></tr>
+<tr valign="top"><td><code>quiet</code></td>
+<td>
+
+<p>If FALSE, print a message after every simulation for progress monitoring. If
+true, print no messages.
+</p>
+</td></tr></table>
+
+
+<h3>Details</h3>
+
+<p>The second point data set is randomly shifted using <code>rtor.shift</code>
+in the rectangle defined by <code>poly</code>. Then <code>k12hat</code> is called 
+to compute K12hat for the two patterns. 
+The upper and lower values of K12hat over the <code>ntor</code>
+toroidal shifts are returned.
+</p>
+
+
+<h3>Value</h3>
+
+<p>A list with two components, called <code>$upper</code> and <code>$lower</code>. Each
+component is a vector like <code>s</code>.
+</p>
+
+
+<h3>References</h3>
+
+<p>Rowlingson, B. and Diggle, P. 1993 Splancs: spatial point pattern analysis
+code in S-Plus.  Computers and Geosciences, 19, 627-655;
+the original sources can be accessed at:
+<a href="http://www.maths.lancs.ac.uk/~rowlings/Splancs/">http://www.maths.lancs.ac.uk/~rowlings/Splancs/</a>. See also Bivand, R. and
+Gebhardt, A. 2000 Implementing functions for spatial statistical analysis
+using the R language. Journal of Geographical Systems, 2, 307-317.
+</p>
+
+
+<h3>See Also</h3>
+
+<p><code><a href="rtor.shift.html">rtor.shift</a></code>,<code><a href="k12hat.html">k12hat</a></code>
+</p>
+
+
+<h3>Examples</h3>
+
+<pre>
+data(okwhite)
+data(okblack)
+okpoly &lt;- list(x=c(okwhite$x, okblack$x), y=c(okwhite$y, okblack$y))
+plot(seq(5,80,5), sqrt(k12hat(as.points(okwhite), as.points(okblack), 
+bboxx(bbox(as.points(okpoly))), seq(5,80,5))/pi) - seq(5,80,5), xlab="distance", 
+ylab=expression(hat(L)[12]), ylim=c(-35,35), type="l",
+main="Simulation envelopes, random toroidal shifts")
+env.ok &lt;- Kenv.tor(as.points(okwhite), as.points(okblack), 
+bboxx(bbox(as.points(okpoly))), nsim=29, s=seq(5,80,5))
+lines(seq(5,80,5), sqrt(env.ok$upper/pi)-seq(5,80,5), lty=2)
+lines(seq(5,80,5), sqrt(env.ok$lower/pi)-seq(5,80,5), lty=2)
+</pre>
+
+<hr><div align="center">[Package <em>splancs</em> version 2.01-33 <a href="00Index.html">Index</a>]</div>
+</body></html>

@@ -1,0 +1,113 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<html><head><title>R: Perform a nested breakdown of numeric values</title>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+<link rel="stylesheet" type="text/css" href="R.css">
+</head><body>
+
+<table width="100%" summary="page for brkdnNest {plotrix}"><tr><td>brkdnNest {plotrix}</td><td align="right">R Documentation</td></tr></table>
+
+<h2>Perform a nested breakdown of numeric values</h2>
+
+<h3>Description</h3>
+
+<p>Breaks down a numeric or categorical element of a data frame
+by one or more categorical elements.</p>
+
+
+<h3>Usage</h3>
+
+<pre>
+ brkdnNest(formula,data,FUN=c("mean","sd"),label1="Overall",trueval=NA)
+</pre>
+
+
+<h3>Arguments</h3>
+
+<table summary="R argblock">
+<tr valign="top"><td><code>formula</code></td>
+<td>
+<p>A formula with a numeric element of a data frame on the left and
+one or more categorical elements on the right.</p>
+</td></tr>
+<tr valign="top"><td><code>data</code></td>
+<td>
+<p>A data frame containing the elements in <span class="samp">formula</span>.</p>
+</td></tr>
+<tr valign="top"><td><code>FUN</code></td>
+<td>
+<p>The functions to be applied to successive breakdowns.</p>
+</td></tr>
+<tr valign="top"><td><code>label1</code></td>
+<td>
+<p>The label to use for the overall value of the first function.</p>
+</td></tr>
+<tr valign="top"><td><code>trueval</code></td>
+<td>
+<p>The value to use in calculating proportions or sums of a
+categorical response variable. See Details.</p>
+</td></tr>
+</table>
+
+
+<h3>Details</h3>
+
+<p><span class="samp">brkdnNest</span> performs a nested breakdown of an element of a data frame
+by one or more categorical elements. For each category and optionally
+subcategories, the variable on the left of the formula is summarized as
+specified by the functions named in <span class="samp">FUN</span>.
+</p>
+<p>If <span class="samp">trueval</span> is not NA, brkdnNest will calculate the proportion of
+<span class="samp">trueval</span> values in the response variable out of the total valid
+responses. If the function <span class="samp">valid.n</span> is the first function in <span class="samp">FUN</span>,
+the counts of the groups and subgroups will be returned.
+</p>
+<p>Two specialized summary functions are defined within <span class="samp">brkdnNest</span> for use
+when the <span class="samp">trueval</span> argument is not NA. <span class="samp">sumbrk</span> returns the count of 
+values in a factor equal to <span class="samp">trueval</span>, while <span class="samp">propbrk</span> returns the
+proportion of values equal to <span class="samp">trueval</span>.
+</p>
+<p>The user should take care when specifying different summary functions.
+<span class="samp">barNest</span> expects a measure of central tendency or counting function as 
+the first function and measures of dispersion as the second and optionally third,
+if &quot;error bars&quot; are to be displayed. If two confidence interval functions are
+passed, the first must calculate the upper and the second the lower CI. The user
+must also decide whether the &quot;error bars&quot; have any useful meaning.
+</p>
+
+
+<h3>Value</h3>
+
+<p>A list with as many elements as there are functions in <span class="samp">FUN</span>.
+This function is similar to <span class="samp">brkdn</span> in the <span class="pkg">prettyR</span> package, but
+is structured to be used with the <span class="samp">barNest</span> function. It produces one
+or more measures for the overall data, then the subsets of the data defined by
+the first variable to the right of the tilde, then the subsets defined by
+the first and second variable, and so on.
+</p>
+
+
+<h3>Author(s)</h3>
+
+<p>Jim Lemon</p>
+
+
+<h3>See Also</h3>
+
+<p><a href="../../base/html/by.html">by</a></p>
+
+
+<h3>Examples</h3>
+
+<pre>
+ brkdntest&lt;-data.frame(Age=rnorm(100,25,10),
+  Sex=sample(c("M","F"),100,TRUE),
+  Marital=sample(c("M","X","S","W"),100,TRUE),
+  Employ=sample(c("FT","PT","NO"),100,TRUE))
+ brkdnNest(formula=Age~Sex+Marital+Employ,data=brkdntest)
+ # show the proportion of unemployed with binomial confidence intervals
+ brkdnNest(formula=Employ~Sex+Marital,data=brkdntest,
+  FUN=c("propbrk","binciWu","binciWl"),trueval="NO")
+</pre>
+
+<hr><div align="center">[Package <em>plotrix</em> version 3.5-2 <a href="00Index.html">Index</a>]</div>
+</body></html>

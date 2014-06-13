@@ -1,0 +1,128 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<html><head><title>R: Master function to use the adaptive lasso for shrinkage and...</title>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+<link rel="stylesheet" type="text/css" href="R.css">
+</head><body>
+
+<table width="100%" summary="page for adalasso {adalasso}"><tr><td>adalasso {adalasso}</td><td align="right">R Documentation</td></tr></table>
+
+<h2>
+Master function to use the adaptive lasso for shrinkage and selection in a generalized linear model
+</h2>
+
+<h3>Description</h3>
+
+<p>Master function to use the adaptive lasso for shrinkage and selection in a generalized linear model
+</p>
+
+
+<h3>Usage</h3>
+
+<pre>
+adalasso(formula, data, family, weights, max.iter = 20, tol = 1e-25, s = NULL)
+</pre>
+
+
+<h3>Arguments</h3>
+
+<table summary="R argblock">
+<tr valign="top"><td><code>formula</code></td>
+<td>
+
+<p>The model formula
+</p>
+</td></tr>
+<tr valign="top"><td><code>data</code></td>
+<td>
+
+<p>Model data frame
+</p>
+</td></tr>
+<tr valign="top"><td><code>family</code></td>
+<td>
+
+<p>To which exponential-family distribution does the GLM belong?
+</p>
+</td></tr>
+<tr valign="top"><td><code>weights</code></td>
+<td>
+
+<p>Observation weights
+</p>
+</td></tr>
+<tr valign="top"><td><code>max.iter</code></td>
+<td>
+
+<p>How many times to iterate the adaptive-lasso cycle
+</p>
+</td></tr>
+<tr valign="top"><td><code>tol</code></td>
+<td>
+
+<p>Tolerance for conversion
+</p>
+</td></tr>
+<tr valign="top"><td><code>s</code></td>
+<td>
+
+<p>Values of the lasso tuning parameter at which to fit models
+</p>
+</td></tr>
+</table>
+
+
+<h3>Examples</h3>
+
+<pre>
+##---- Should be DIRECTLY executable !! ----
+##-- ==&gt;  Define data, use random,
+##--	or do  help(data=index)  for the standard data sets.
+
+## The function is currently defined as
+function (formula, data, family, weights, max.iter = 20, tol = 1e-25, 
+    s = NULL) 
+{
+    result = list()
+    class(result) = "adalasso"
+    result[["formula"]] = as.formula(formula, env = data)
+    model.data = data
+    na.rows = (which(is.na(model.data)) - 1)%%dim(model.data)[1] + 
+        1
+    if (length(na.rows) &gt; 0) 
+        model.data = model.data[-na.rows, ]
+    response.name = rownames(attr(terms(formula, data = data), 
+        "factors"))[1]
+    predictor.names = attr(terms(formula, data = data), "term.labels")
+    response.col = which(names(model.data) == response.name)
+    y = as.matrix(model.data[, response.col])
+    x = as.matrix(model.data[, -response.col])
+    result[["lasso"]] = lasso_step(y = y, x = x, family = family, 
+        weights = weights, s = s)
+    iter = 1
+    change = tol + 1
+    lambda.former = result[["lasso"]][["lambda"]]
+    result[["lambda"]] = c(lambda.former)
+    while (iter &lt;= max.iter &amp;&amp; change &gt; tol) {
+        cat(paste("Iteration: ", iter, "\n", sep = ""))
+        f = as.formula(paste(paste(response.name, "~", sep = ""), 
+            paste(result[["lasso"]][["vars"]], collapse = "+"), 
+            sep = ""))
+        result[["adapt"]] = adapt = adaptive_step(formula = f, 
+            data = model.data, family = family, weights = weights)
+        result[["lasso"]] = lasso_step(y = y, x = as.matrix(model.data[, 
+            -response.col]), family = family, weights = weights, 
+            adaptive.object = adapt, s = s)
+        result[["lambda"]] = c(result[["lambda"]], result[["lasso"]][["lambda"]])
+        change = abs(lambda.former - tail(result[["lambda"]], 
+            1))
+        lambda.former = tail(result[["lambda"]], 1)
+        iter = iter + 1
+        cat(paste("Change in lambda: ", change, "\n", sep = ""))
+    }
+    result[["iter"]] = iter - 1
+    return(result)
+  }
+</pre>
+
+<hr><div align="center">[Package <em>adalasso</em> version 0.1 <a href="00Index.html">Index</a>]</div>
+</body></html>
