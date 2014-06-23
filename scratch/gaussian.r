@@ -11,21 +11,20 @@ require(foreach)
 require(iterators)
 require(multicore)
 require(geoR)
-require(glmnet)
 require(SGL)
 require(lagr)
 require(doMC)
-registerDoMC(3)
+registerDoMC(1)
 write.log('installations complete', 'result.txt')
 
-#seeds = as.vector(read.csv("seeds.txt", header=FALSE)[,1])
-seeds = rpois(18, 100)
-B = 1 #number of replications for each setting
-S = 1 #number of draws from the bandwidth distribution for each replication
+process = 1
+cluster = NA
 N = 30 #number of width and length divisions in the domain
 settings = 18 #number of unique simulation settings
 functions = 3 #number of function types
 coord = seq(0, 1, length.out=N) #coordinates of the generated observations
+
+write.log(paste('process:', process, sep=''), 'result.txt')
 
 #Establish the simulation parameters
 tau = rep(0.1, settings) #tau is the spatial autocorrelation range parameter for the covariates
@@ -34,20 +33,12 @@ sigma.tau = rep(0, settings) #sigma.tau is the spatial autocorrelation range par
 sigma = rep(c(0.5,1), settings/2) #sigma is the variance of the noise term
 params = data.frame(tau, rho, sigma.tau, sigma)
 
-#Read the cluster and process arguments
-#args = scan('jobid.txt', 'character')
-#args = strsplit(args, '\\n', fixed=TRUE)[[1]]
-#cluster = args[1]
-#process = as.integer(args[2]) - 1
-cluster=NA
-process=1
-write.log(paste('process:', process, sep=''), 'result.txt')
-
 #Simulation parameters are based on the value of process
-setting = process %/% B + 1
-parameters = params[setting,]
-set.seed(seeds[process+1])
-write.log(paste('seed:', seeds[process+1], sep=''), 'result.txt')
+parameters = params[process,]
+
+#Seed the RNG
+set.seed(process)
+write.log(paste('seed:', process, sep=''), 'result.txt')
 
 #Generate the covariates:
 if (parameters[['tau']] > 0) {
@@ -90,11 +81,11 @@ if (parameters[['sigma.tau']] > 0) {epsilon = grf(n=N**2, grid='reg', cov.model=
 write.log('generated epsilon', 'result.txt')
 
 #calculate the B1 coefficient surface for the appropriate function type
-if ((setting-1) %/% 6 == 0) {
+if ((process-1) %/% 6 == 0) {
     B1 = matrix(rep(ifelse(coord<=0.4, 0, ifelse(coord<0.6,5*(coord-0.4),1)), N), N, N)
-} else if ((setting-1) %/% 6 == 1) {
+} else if ((process-1) %/% 6 == 1) {
     B1 = matrix(rep(coord, N), N, N)
-} else if ((setting-1) %/% 6 == 2) {
+} else if ((process-1) %/% 6 == 2) {
     Xmat = matrix(rep(rep(coord, times=N), times=N), N**2, N**2)
     Ymat = matrix(rep(rep(coord, each=N), times=N), N**2, N**2)
     D = (Xmat-0.5)**2 + (Ymat-0.5)**2
@@ -124,6 +115,8 @@ allvars = replicate(N**2, c('X1', 'X2', 'X3', 'X4', 'X5'), simplify=FALSE)
 
 
 #MODELS:
+S = 100 #number of draws from the bandwidth distribution for each replication
+
 #LAGR:
 write.log('making lagr model.', 'result.txt')
 bw.lagr = lagr.sel(Y~X1+X2+X3+X4+X5-1, data=sim, family='gaussian', coords=sim[,c('loc.x','loc.y')], longlat=FALSE, varselect.method='AICc', kernel=epanechnikov, tol.bw=0.01, bw.type='knn', verbose=TRUE, bwselect.method='AICc', resid.type='pearson')
@@ -139,8 +132,8 @@ smooth = predict(spline, xxx)
 smooth = smooth$y - mean(smooth$y)
 
 #Now restrict our attention to the region of the densest 99% of bandwidth probability mass
-maxi = which(cumsum(exp(-smooth / 2)) / sum(exp(-smooth / 2)) > 0.995)[1]
-mini = tail(which(cumsum(exp(-smooth / 2))/sum(exp(-smooth / 2)) < 0.005),1)
+maxi = min(1001, which(cumsum(exp(-smooth / 2)) / sum(exp(-smooth / 2)) > 0.995)[1])
+mini = max(1, tail(which(cumsum(exp(-smooth / 2))/sum(exp(-smooth / 2)) < 0.005),1))
 xxx = seq(xxx[mini], xxx[maxi], length.out=1001)
 smooth = predict(spline, xxx)$y
 
@@ -150,7 +143,7 @@ pp = cumsum(exp(-smooth / 2)) / sum(exp(-smooth / 2))
 #Draw some typical bandwidths from the CDF and produce a model with each.
 bws = xxx[sapply(runif(S), function(x) which(x<pp)[1])]
 models.lagr = list()
-models.lagr[[1]] = lagr(Y~X1+X2+X3+X4+X5-1, data=sim, family='gaussian', coords=sim[,c('loc.x','loc.y')], longlat=FALSE, varselect.method='AICc', bw=bw.lagr[['bw']], kernel=epanechnikov, bw.type='knn', verbose=TRUE)
+models.lagr[[1]] = lagr(Y~X1+X2+X3+X4+X5-1, data=sim, family='gaussian', coords=sim[,c('loc.x','loc.y')], longlat=FALSE, varselect.method='AICc', bw=0.15, kernel=epanechnikov, bw.type='knn', verbose=TRUE)
 for (bw in bws) {
     indx = sample(1:nrow(sim), replace=TRUE)
     boot = sim[indx,]
