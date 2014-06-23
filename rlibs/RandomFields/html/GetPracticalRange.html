@@ -1,0 +1,94 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<html><head><title>R: Determination of the practical range</title>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+<link rel="stylesheet" type="text/css" href="R.css">
+</head><body>
+
+<table width="100%" summary="page for GetPracticalRange {RandomFields}"><tr><td>GetPracticalRange {RandomFields}</td><td align="right">R Documentation</td></tr></table>
+
+<h2>Determination of the practical range</h2>
+
+<h3>Description</h3>
+
+<p>the function returns the practical range of a covariance model,
+i.e. the distance for which the model with standard parameters
+(<code>variance=1</code>, <code>nugget=0</code>, <code>scale=1</code>) values 0.05
+</p>
+
+
+<h3>Usage</h3>
+
+<pre>
+GetPracticalRange(model, param, dim=1)
+</pre>
+
+
+<h3>Arguments</h3>
+
+<table summary="R argblock">
+<tr valign="top"><td><code>model</code></td>
+<td>
+<p>covariance model in the new list not;
+the model must be primitive, i.e. may not call other models.
+See <CODE><a href="CovarianceFct.html">Covariance</a></CODE> and <CODE><a href="CovarianceFct.html">CovarianceFct</a></CODE>
+for details.</p>
+</td></tr>
+<tr valign="top"><td><code>param</code></td>
+<td>
+<p>optional vector of parameters for the model,
+see <CODE><a href="CovarianceFct.html">CovarianceFct</a></CODE></p>
+</td></tr>
+<tr valign="top"><td><code>dim</code></td>
+<td>
+<p>space-time dimension; except for some few anisotropic
+models, this parameter does not have an effect</p>
+</td></tr>
+</table>
+
+
+<h3>Details</h3>
+
+<p>In case the practical range has to be determined numerically, only a
+rough approximation is provided.
+</p>
+<p>The function can only be applied to isotropic models
+</p>
+
+
+<h3>Value</h3>
+
+<p>real number (the practical range)
+</p>
+
+
+<h3>Author(s)</h3>
+
+<p>Martin Schlather, <a href="mailto:schlather@math.uni-mannheim.de">schlather@math.uni-mannheim.de</a>
+<a href="http://ms.math.uni-mannheim.de">http://ms.math.uni-mannheim.de</a></p>
+
+
+<h3>References</h3>
+
+<p>Goovaerts, P. (1997) <EM>Geostatistics for Natural Resources
+Evaluation.</EM> New York: Oxford University Press.
+</p>
+
+
+<h3>See Also</h3>
+
+  <p><CODE><a href="CovarianceFct.html">CovarianceFct</a></CODE>,
+<code><a href="RandomFields.html">RandomFields</a></code>,
+<CODE><a href="RFparameters.html">RFparameters</a></CODE>,
+</p>
+
+
+<h3>Examples</h3>
+
+<pre>
+GetPracticalRange(list("exponential"))
+GetPracticalRange(list("whittle", nu=2))
+try(GetPracticalRange(list("bessel", nu=-0.5))) # leads to an error
+</pre>
+
+<hr><div align="center">[Package <em>RandomFields</em> version 2.0.66 <a href="00Index.html">Index</a>]</div>
+</body></html>

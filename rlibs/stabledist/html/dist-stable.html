@@ -1,0 +1,314 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<html><head><title>R: Stable Distribution Function</title>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+<link rel="stylesheet" type="text/css" href="R.css">
+</head><body>
+
+<table width="100%" summary="page for StableDistribution {stabledist}"><tr><td>StableDistribution {stabledist}</td><td align="right">R Documentation</td></tr></table>
+
+<h2>Stable Distribution Function</h2>
+
+<h3>Description</h3>
+
+<p>A collection and description of functions to compute
+density, distribution and quantile function and
+to generate random variates of the stable distribution.
+</p>
+<p>The four functions are:
+</p>
+
+<table summary="Rd table">
+<tr>
+ <td align="left">
+      <code>[dpqr]stable</code> </td><td align="left"> the (skewed) stable distribution.
+    </td>
+</tr>
+
+</table>
+
+
+
+<h3>Usage</h3>
+
+<pre>
+dstable(x, alpha, beta, gamma = 1, delta = 0, pm = 0,
+        log = FALSE,
+        tol = 64*.Machine$double.eps, zeta.tol = NULL,
+        subdivisions = 1000)
+pstable(q, alpha, beta, gamma = 1, delta = 0, pm = 0,
+        lower.tail = TRUE, log.p = FALSE,
+        tol = 64*.Machine$double.eps, subdivisions = 1000)
+qstable(p, alpha, beta, gamma = 1, delta = 0, pm = 0,
+        lower.tail = TRUE, log.p = FALSE,
+        tol = .Machine$double.eps^0.25, maxiter = 1000,
+        integ.tol = 1e-7, subdivisions = 200)
+rstable(n, alpha, beta, gamma = 1, delta = 0, pm = 0)
+</pre>
+
+
+<h3>Arguments</h3>
+
+<table summary="R argblock">
+<tr valign="top"><td><code>alpha, beta, gamma, delta</code></td>
+<td>
+
+<p>value of the index parameter <code>alpha</code> with <code>alpha = (0,2]</code>;
+skewness parameter <code>beta</code>, in the range [-1, 1];
+scale parameter <code>gamma</code>; and location (or &lsquo;shift&rsquo;)
+parameter <code>delta</code>.
+</p>
+</td></tr>
+<tr valign="top"><td><code>n</code></td>
+<td>
+<p>sample size (integer).</p>
+</td></tr>
+<tr valign="top"><td><code>p</code></td>
+<td>
+<p>numeric vector of probabilities.</p>
+</td></tr>
+<tr valign="top"><td><code>pm</code></td>
+<td>
+
+<p>parameterization, an integer in <code>0, 1, 2</code>; by default <code>pm=0</code>,
+the &lsquo;S0&rsquo; parameterization.</p>
+</td></tr>
+<tr valign="top"><td><code>x, q</code></td>
+<td>
+<p>numeric vector of quantiles.</p>
+</td></tr>
+<tr valign="top"><td><code>log, log.p</code></td>
+<td>
+<p>logical; if TRUE, probabilities p are given as log(p).</p>
+</td></tr>
+<tr valign="top"><td><code>lower.tail</code></td>
+<td>
+<p>logical; if TRUE (default), probabilities are
+<i>P[X &le; x]</i> otherwise, <i>P[X &gt; x]</i>.</p>
+</td></tr>
+<tr valign="top"><td><code>integ.tol</code></td>
+<td>
+<p>positive number, the tolerance used for numerical
+integration, see <code><a href="../../stats/html/integrate.html">integrate</a></code>.</p>
+</td></tr>
+<tr valign="top"><td><code>tol</code></td>
+<td>
+<p>numerical tolerance,
+</p>
+
+<dl>
+<dt>dstable(), pstable():</dt><dd><p>used for numerical integration, see
+<code>integ.tol</code> above.  Note that earlier versions had tighter
+tolerances &ndash; which seem too tight as default values.</p>
+</dd>
+<dt>qstable():</dt><dd><p>used for rootfinding, see <code><a href="../../stats/html/uniroot.html">uniroot</a></code>.</p>
+</dd>
+</dl>
+
+</td></tr>
+<tr valign="top"><td><code>zeta.tol</code></td>
+<td>
+<p>(<code>dstable</code>) numerical tolerance for checking if
+<code>x</code> is close to <i>&zeta;(&alpha;,&beta;)</i>.  The default,
+<code>NULL</code> depends itself on <i>(&alpha;,&beta;)</i>.
+<br>
+As it is <EM>experimental</EM> and not guaranteed to remain in the
+future, its use is not recommended in production code.  Rather e-mail the
+package maintainer about it.</p>
+</td></tr>
+<tr valign="top"><td><code>subdivisions</code></td>
+<td>
+<p>maximal number of intervals for integration, see
+<code><a href="../../stats/html/integrate.html">integrate</a></code>.</p>
+</td></tr>
+<tr valign="top"><td><code>maxiter</code></td>
+<td>
+<p>maximal number of iterations in <code><a href="../../stats/html/uniroot.html">uniroot</a></code>.</p>
+</td></tr>
+</table>
+
+
+<h3>Details</h3>
+
+<p><B>Skew Stable Distribution:</B>
+<br><br>
+The function uses the approach of J.P. Nolan for general stable
+distributions. Nolan (1997) derived expressions in form of integrals
+based on the characteristic function for standardized stable random
+variables. For <code>dstable</code> and <code>pstable</code>, these integrals
+are numerically evaluated using <font face="Courier New,Courier" color="#666666"><b>R</b></font>'s <code><a href="../../stats/html/integrate.html">integrate</a>()</code>
+function.
+<br>
+&ldquo;S0&rdquo; parameterization [pm=0]: based on the (M) representation
+of Zolotarev for an alpha stable distribution with skewness
+beta. Unlike the Zolotarev (M) parameterization, gamma and
+delta are straightforward scale and shift parameters. This
+representation is continuous in all 4 parameters, and gives
+an intuitive meaning to gamma and delta that is lacking in
+other parameterizations.
+<br>
+Switching the sign of <code>beta</code> <EM>mirrors</EM> the distribution at
+the vertical axis <i>x = delta</i>, i.e.,
+</p>
+<p align="center"><i>f(x, &alpha;, -&beta;, &gamma;, &delta;, 0) =
+      f(2&delta;-x, &alpha;, +&beta;, &gamma;, &delta;, 0),</i></p>
+
+<p>see the graphical example below.
+</p>
+<p>&ldquo;S&rdquo; or &ldquo;S1&rdquo; parameterization [pm=1]: the parameterization used
+by Samorodnitsky and Taqqu in the book Stable Non-Gaussian
+Random Processes. It is a slight modification of Zolotarev's
+(A) parameterization.
+<br>
+&ldquo;S*&rdquo; or &ldquo;S2&rdquo; parameterization [pm=2]: a modification of the S0
+parameterization which is defined so that (i) the scale gamma
+agrees with the Gaussian scale (standard dev.) when alpha=2
+and the Cauchy scale when alpha=1, (ii) the mode is exactly at
+delta.  For this parametrization,
+<code><a href="stableMode.html">stableMode</a>(alpha,beta)</code> is needed.
+<br>
+&ldquo;S3&rdquo; parameterization [pm=3]: an internal parameterization,
+currently not available for these functions.  The scale is the same
+as the &ldquo;S2&rdquo; parameterization, the shift is
+<i>-&beta;*g(&alpha;)</i>, where <i>g(&alpha;)</i> is defined in Nolan(1999).
+</p>
+
+
+<h3>Value</h3>
+
+<p>All values for the <code>*stable</code> functions
+are numeric vectors:
+<code>d*</code> returns the density,
+<code>p*</code> returns the distribution function,
+<code>q*</code> returns the quantile function, and
+<code>r*</code> generates random deviates.
+</p>
+
+
+<h3>Tail Behavior</h3>
+
+<p>The asymptotic behavior for large <i>x</i>, aka &ldquo;tail behavior&rdquo;
+for the cumulative <i>F(x) = P(X &lt;= x)</i>
+is (for <i>x -&gt; Inf</i>)
+</p>
+<p align="center"><i>1 - F(x) ~ (1+b) C_a x^-a,</i></p>
+
+<p>where <i>a=alpha, b=beta, C_a = Gamma(a)/pi * sin(a*pi/2)</i>; hence also
+</p>
+<p align="center"><i>F(-x) ~ (1+b) C_a x^-a.</i></p>
+
+<p>Differentiating <i>F()</i> above gives
+</p>
+<p align="center"><i>f(x) ~ a(1+b) C_a x^-(1+a).</i></p>
+
+
+
+<h3>Note</h3>
+
+<p>In the case <i>&beta; = 1</i>, the distributions are &ldquo;maximally
+skewed to the right&rdquo; or simply &ldquo;<EM>extremal</EM> stable&rdquo;
+(Zolotarev).  In that case, the package <span class="pkg">FMStable</span> provides
+<code>dpq*</code> functions which are faster and more accurate than ours (if
+accuracy higher than about 6 digits is needed), see,
+<code><a href="../../FMStable/html/pEstable.html">pEstable</a></code>.
+</p>
+<p>When <code>alpha</code> is close to 1 or close to 0 (&ldquo;close&rdquo;,
+e.g., meaning distance <i>d &lt; 0.01</i>), the computations typically are
+numerically considerably more challenging, and the results may not be
+accurate.
+<br>
+As we 
+plan to improve on this, <EM>and</EM>
+as it is unknown when exactly the numerical difficulties arise, we
+currently only do warn here (in the documentation), but <EM>not</EM> by
+giving explicit <code><a href="../../base/html/warning.html">warning</a>()</code>s.
+</p>
+
+
+<h3>Author(s)</h3>
+
+<p>Diethelm Wuertz for the original Rmetrics <font face="Courier New,Courier" color="#666666"><b>R</b></font>-port.
+Many numerical improvements by Martin Maechler.
+</p>
+
+
+<h3>References</h3>
+
+<p>Chambers J.M., Mallows, C.L. and Stuck, B.W. (1976)
+<EM>A Method for Simulating Stable Random Variables</EM>,
+J. Amer. Statist. Assoc. <B>71</B>, 340&ndash;344.
+</p>
+<p>John P. Nolan (2012)
+<EM>Stable Distributions - Models for Heavy Tailed Data</EM>
+Birkhauser, Boston; in progress, chapter 1 online at
+<a href="http://academic2.american.edu/~jpnolan/stable/chap1.pdf">http://academic2.american.edu/~jpnolan/stable/chap1.pdf</a>
+</p>
+<p>Nolan J.P. (1997)
+Numerical calculation of stable densities and distribution functions.
+<EM>Stochastic Models</EM> <B>13</B>(4), 759&ndash;774.
+<br>
+Also available as &lsquo;<span class="file">density.ps</span>&rsquo; from Nolan's web page.
+</p>
+<p>Samoridnitsky G., Taqqu M.S. (1994);
+<EM>Stable Non-Gaussian Random Processes, Stochastic Models
+with Infinite Variance</EM>,
+Chapman and Hall, New York, 632 pages.
+</p>
+<p>Weron, A., Weron R. (1999);
+<EM>Computer Simulation of Levy alpha-Stable Variables and
+Processes</EM>,
+Preprint Technical University of Wroclaw, 13 pages.
+</p>
+
+
+<h3>See Also</h3>
+
+<p>the <code><a href="../../fBasics/html/stableSlider.html">stableSlider</a>()</code> function from package
+<span class="pkg">fBasics</span> for displaying densities and probabilities of these
+distributions, for educational purposes.
+</p>
+
+
+<h3>Examples</h3>
+
+<pre>
+## stable -
+
+## Plot stable random number series
+   set.seed(1953)
+   r &lt;- rstable(n = 1000, alpha = 1.9, beta = 0.3)
+   plot(r, type = "l", main = "stable: alpha=1.9 beta=0.3",
+        col = "steelblue")
+   grid()
+
+## Plot empirical density and compare with true density:
+   hist(r, n = 25, probability = TRUE, border = "white",
+        col = "steelblue")
+   x &lt;- seq(-5, 5, 0.25)
+   lines(x, dstable(x, alpha = 1.9, beta = 0.3, tol= 1e-3), lwd = 2)
+
+## Plot df and compare with true df:
+   plot(ecdf(r), do.points=TRUE, col = "steelblue",
+        main = "Probabilities:  ecdf(rstable(1000,..)) and true  cdf F()")
+   rug(r)
+   lines(x, pstable(q = x, alpha = 1.9, beta = 0.3),
+         col="#0000FF88", lwd= 2.5)
+
+## Switching  sign(beta)  &lt;==&gt; Mirror the distribution around  x == delta:
+curve(dstable(x, alpha=1.2, beta =  .8, gamma = 3, delta = 2), -10, 10)
+curve(dstable(x, alpha=1.2, beta = -.8, gamma = 3, delta = 2),
+      add=TRUE, col=2)
+## or the same
+curve(dstable(2*2-x, alpha=1.2, beta = +.8, gamma = 3, delta = 2),
+      add=TRUE, col=adjustcolor("gray",0.2), lwd=5)
+abline(v = 2, col = "gray", lty=2, lwd=2)
+axis(1, at = 2, label = expression(delta == 2))
+
+## Compute quantiles:
+   x. &lt;- -4:4
+   px &lt;- pstable(x., alpha = 1.9, beta = 0.3)
+  (qs &lt;- qstable(px, alpha = 1.9, beta = 0.3))
+   stopifnot(all.equal(as.vector(qs), x., tol = 1e-5))
+</pre>
+
+<hr><div align="center">[Package <em>stabledist</em> version 0.6-6 <a href="00Index.html">Index</a>]</div>
+</body></html>

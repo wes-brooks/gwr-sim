@@ -1,0 +1,113 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<html><head><title>R: Test points for inclusion in a polygon</title>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+<link rel="stylesheet" type="text/css" href="R.css">
+</head><body>
+
+<table width="100%" summary="page for inout {splancs}"><tr><td>inout {splancs}</td><td align="right">R Documentation</td></tr></table>
+
+<h2>
+Test points for inclusion in a polygon
+</h2>
+
+<h3>Description</h3>
+
+<p>Test points for inclusion in a polygon.
+</p>
+
+
+<h3>Usage</h3>
+
+<pre>
+inout(pts,poly,bound=NULL,quiet=TRUE)
+</pre>
+
+
+<h3>Arguments</h3>
+
+<table summary="R argblock">
+<tr valign="top"><td><code>pts</code></td>
+<td>
+
+<p>A points data set
+</p>
+</td></tr>
+<tr valign="top"><td><code>poly</code></td>
+<td>
+
+<p>A polygon data set
+</p>
+</td></tr>
+<tr valign="top"><td><code>bound</code></td>
+<td>
+<p>If points fall exactly on polygon boundaries, the default NULL gives arbitrary assignments. If TRUE, then all points &quot;on&quot; boundaries are set as within the polygon, if FALSE, outside.</p>
+</td></tr>
+<tr valign="top"><td><code>quiet</code></td>
+<td>
+<p>Do not report which points are on boundary for non-NULL bound</p>
+</td></tr>
+</table>
+
+
+<h3>Value</h3>
+
+<p>A vector of logical values. <code>TRUE</code> means the point was inside the
+polygon, <code>FALSE</code> means the point was outside. Note that &quot;inside&quot; is an arbitrary concept for points &quot;on&quot; the polygon boundary.
+</p>
+
+
+<h3>References</h3>
+
+<p>Rowlingson, B. and Diggle, P. 1993 Splancs: spatial point pattern analysis
+code in S-Plus.  Computers and Geosciences, 19, 627-655;
+the original sources can be accessed at:
+<a href="http://www.maths.lancs.ac.uk/~rowlings/Splancs/">http://www.maths.lancs.ac.uk/~rowlings/Splancs/</a>. See also Bivand, R. and
+Gebhardt, A. 2000 Implementing functions for spatial statistical analysis
+using the R language. Journal of Geographical Systems, 2, 307-317.
+</p>
+
+
+<h3>See Also</h3>
+
+<p><code><a href="inpip.html">inpip</a></code>,<code><a href="pip.html">pip</a></code>
+</p>
+
+
+<h3>Examples</h3>
+
+<pre>
+data(uganda)
+suganda &lt;- sbox(uganda$poly)
+ruganda &lt;- csr(suganda, 1000)
+polymap(suganda)
+polymap(uganda$poly, add=TRUE)
+def &lt;- inout(ruganda, uganda$poly, bound=NULL)
+pointmap(as.points(ruganda[def,1], ruganda[def,2]), add=TRUE, col="black")
+pointmap(as.points(ruganda[!def,1], ruganda[!def,2]), add=TRUE, col="red")
+tru &lt;- inout(ruganda, uganda$poly, bound=TRUE, quiet=FALSE)
+which(tru &amp; !def)
+ds1 &lt;- as.points(expand.grid(x=seq(-1.5,1.5,0.5), y=seq(-1.5,1.5,0.5)))
+ds1.poly &lt;- ds1[chull(ds1),]
+ds2 &lt;- as.points(rnorm(300),rnorm(300))
+plot(ds2, type="n", asp=1)
+polymap(ds1.poly, add=TRUE, border="lightblue", col="lightblue", lwd=1)
+points(ds2[inout(ds2,ds1.poly),],  col="green",  pch=20)
+points(ds2[!inout(ds2,ds1.poly),], col="orange", pch=20)
+points(ds1[inout(ds1,ds1.poly),],  col="black",  pch=20)
+points(ds1[!inout(ds1,ds1.poly),], col="red",    pch=20)
+plot(ds2, type="n", asp=1)
+polymap(ds1.poly, add=TRUE, border="lightblue", col="lightblue", lwd=1)
+points(ds2[inout(ds2,ds1.poly,bound=TRUE),],  col="green",  pch=20)
+points(ds2[!inout(ds2,ds1.poly,bound=TRUE),], col="orange", pch=20)
+points(ds1[inout(ds1,ds1.poly,bound=TRUE),],  col="black",  pch=20)
+points(ds1[!inout(ds1,ds1.poly,bound=TRUE),], col="red",    pch=20)
+plot(ds2, type="n", asp=1)
+polymap(ds1.poly, add=TRUE, border="lightblue", col="lightblue", lwd=1)
+points(ds2[inout(ds2,ds1.poly,bound=FALSE),],  col="green",  pch=20)
+points(ds2[!inout(ds2,ds1.poly,bound=FALSE),], col="orange", pch=20)
+points(ds1[inout(ds1,ds1.poly,bound=FALSE),],  col="black",  pch=20)
+points(ds1[!inout(ds1,ds1.poly,bound=FALSE),], col="red",    pch=20)
+</pre>
+
+<hr><div align="center">[Package <em>splancs</em> version 2.01-33 <a href="00Index.html">Index</a>]</div>
+</body></html>

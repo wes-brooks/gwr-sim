@@ -1,12 +1,3 @@
-gwselect-package	gwselect-package
-lager-package	lager
-gwglmnet	gwglmnet
-gwglmnet	legend
-gwglmnet.sel	gwglmnet.sel
-gwr.matplot	gwr.matplot
-gwselect	gwselect-package
-lager	lager
 lagr	lagr
 lagr.fit.inner	lagr.fit.inner
 lagr.sel	lagr.sel
-registerCores	registerCores

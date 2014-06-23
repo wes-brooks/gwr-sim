@@ -1,0 +1,309 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<html><head><title>R: Kriging methods</title>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+<link rel="stylesheet" type="text/css" href="R.css">
+</head><body>
+
+<table width="100%" summary="page for Kriging {RandomFields}"><tr><td>Kriging {RandomFields}</td><td align="right">R Documentation</td></tr></table>
+
+<h2>Kriging methods</h2>
+
+<h3>Description</h3>
+
+<p>The function allows for different methods of kriging.
+</p>
+
+
+<h3>Usage</h3>
+
+<pre>
+Kriging(krige.method, x, y=NULL, z=NULL, T=NULL, grid,
+        gridtriple=FALSE, model, param, given, data, trend=NULL, pch=".",
+        return.variance=FALSE, allowdistanceZero = FALSE, cholesky=FALSE)
+</pre>
+
+
+<h3>Arguments</h3>
+
+<table summary="R argblock">
+<tr valign="top"><td><code>krige.method</code></td>
+<td>
+<p>kriging method; currently only 'S' (simple
+kriging), 'O' (ordinary kriging), 'U' (universal kriging) and 'I'
+(intrinsic kriging) implemented.</p>
+</td></tr>
+<tr valign="top"><td><code>x</code></td>
+<td>
+<i>(n x d)</i><p> matrix or vector of <code>x</code>
+coordinates; coordinates of <i>n</i> points to be kriged</p>
+</td></tr>
+<tr valign="top"><td><code>y</code></td>
+<td>
+<p>vector of <code>y</code> coordinates.</p>
+</td></tr>
+<tr valign="top"><td><code>z</code></td>
+<td>
+<p>vector of <code>z</code> coordinates.</p>
+</td></tr>
+<tr valign="top"><td><code>T</code></td>
+<td>
+<p>vector in grid triple form for the time coordinates.</p>
+</td></tr>
+<tr valign="top"><td><code>grid</code></td>
+<td>
+<p>logical; determines whether the vectors <code>x</code>,
+<code>y</code>, and <code>z</code> should be
+interpreted as a grid definition, see Details.</p>
+</td></tr>
+<tr valign="top"><td><code>gridtriple</code></td>
+<td>
+<p>logical.  Only relevant if <code>grid=TRUE</code>. 
+If <code>gridtriple=TRUE</code>
+then <code>x</code>, <code>y</code>, and <code>z</code> are of the
+form <code>c(start,end,step)</code>; if
+<code>gridtriple=FALSE</code> then <code>x</code>, <code>y</code>, and <code>z</code>
+must be vectors of ascending values.
+</p>
+</td></tr>
+<tr valign="top"><td><code>model</code></td>
+<td>
+<p>string; covariance model, see <CODE><a href="CovarianceFct.html">CovarianceFct</a></CODE>, or
+type <CODE><a href="PrintModelList.html">PrintModelList</a></CODE><code>()</code> to get all options.</p>
+</td></tr>
+<tr valign="top"><td><code>param</code></td>
+<td>
+<p>parameter vector:
+<code>param=c(mean, variance, nugget, scale,...)</code>;
+the parameters must be given
+in this order.  Further parameters are to be added in case of a
+parametrised class of covariance functions, see
+<a href="CovarianceFct.html">CovarianceFct</a>. 
+The value of <code>mean</code> must be finite
+in the case of simple kriging, and is ignored otherwise.</p>
+</td></tr>
+<tr valign="top"><td><code>given</code></td>
+<td>
+<p>matrix or vector of points where data are available.</p>
+</td></tr>
+<tr valign="top"><td><code>data</code></td>
+<td>
+<p>the data values given at <code>given</code>; it might be a
+vector or a matrix. If a matrix is given multivariate data are
+assumed which are kriged <EM>separately</EM>.</p>
+</td></tr>
+<tr valign="top"><td><code>trend</code></td>
+<td>
+<p>only used for universal and intrinsic kriging. In case of
+universal kriging <code>trend</code> is a non-negative integer (monomials
+up to order k as trend functions), a list of functions or a formula (the
+summands are the trend functions); you have the choice of using either
+x, y, z or X1, X2, X3,... as spatial variables;
+in case of intrinsic kriging trend should be a nonnegative integer which
+is the order of the underlying model.
+</p>
+</td></tr>
+<tr valign="top"><td><code>pch</code></td>
+<td>
+<p>Kriging procedures are quite time consuming in general. 
+The character <code>pch</code> is printed after roughly
+each 80th part of calculation.</p>
+</td></tr>
+<tr valign="top"><td><code>return.variance</code></td>
+<td>
+<p>logical. If <code>FALSE</code> the kriged field is
+returned. If <code>TRUE</code> a list of two elements, <code>estim</code> and
+<code>var</code>, i.e. the kriged field and the kriging variances,
+is returned.</p>
+</td></tr>
+<tr valign="top"><td><code>allowdistanceZero</code></td>
+<td>
+<p>if <code>TRUE</code> then
+identical locations are slightly scattered</p>
+</td></tr>
+<tr valign="top"><td><code>cholesky</code></td>
+<td>
+
+<p>if <code>TRUE</code> cholesky decomposition is used instead of LU.
+</p>
+</td></tr>
+</table>
+
+
+<h3>Details</h3>
+
+
+<ul>
+<li> <p><code>grid=FALSE</code> : the vectors <code>x</code>, <code>y</code>,
+and <code>z</code> are interpreted as vectors of coordinates
+</p>
+</li>
+<li> <p><code>(grid=TRUE) &amp;&amp; (gridtriple=FALSE)</code> : the vectors
+<code>x</code>, <code>y</code>, and <code>z</code>
+are increasing sequences with identical lags for each sequence. 
+A corresponding
+grid is created (as given by <code>expand.grid</code>). 
+</p>
+</li>
+<li> <p><code>(grid=TRUE) &amp;&amp; (gridtriple=TRUE)</code> : the vectors
+<code>x</code>, <code>y</code>, and <code>z</code>
+are triples of the form (start,end,step) defining a grid
+(as given by <code>expand.grid(seq(x$start,x$end,x$step),
+      seq(y$start,y$end,y$step),
+      seq(z$start,z$end,z$step))</code>)
+</p>
+</li></ul>
+
+
+
+<h3>Value</h3>
+
+<p>If <code>variance.return=FALSE</code> <code>Kriging</code> returns a vector or matrix
+of kriged values corresponding to the
+specification of <code>x</code>, <code>y</code>, <code>z</code>, and
+<code>grid</code>, and <code>data</code>.<br>
+</p>
+<p><code>data</code>: a vector or matrix with <EM>one</EM> column<br>
+* <code>grid=FALSE</code>.  A vector of simulated values is
+returned (independent of the dimension of the random field)<br>
+* <code>grid=TRUE</code>.  An array of the dimension of the
+random field is returned (according to the specification
+of <code>x</code>, <code>y</code>, and <code>z</code>).<br>
+</p>
+<p><code>data</code>: a matrix with <EM>at least two</EM> columns<br>
+* <code>grid=FALSE</code>.  A matrix with the <code>ncol(data)</code> columns
+is returned.<br>
+* <code>grid=TRUE</code>.  An array of dimension
+<i>d+1</i>, where <i>d</i> is the dimension of
+the random field, is returned (according to the specification
+of <code>x</code>, <code>y</code>, and <code>z</code>).  The last
+dimension contains the realisations.
+</p>
+<p>If <code>variance.return=TRUE</code> a list of two elements, <code>estim</code> and
+<code>var</code>, i.e. the kriged field and the kriging variances,
+is returned. The format of <code>estim</code> is the same as described
+above.
+The format of <code>var</code> is accordingly.
+</p>
+
+
+<h3>Author(s)</h3>
+
+<p>Martin Schlather, <a href="mailto:schlather@math.uni-mannheim.de">schlather@math.uni-mannheim.de</a>
+<a href="http://ms.math.uni-mannheim.de">http://ms.math.uni-mannheim.de</a></p>
+
+
+<h3>References</h3>
+
+<p>Chiles, J.-P. and Delfiner, P. (1999)
+<EM>Geostatistics. Modeling Spatial Uncertainty.</EM>
+New York: Wiley.
+</p>
+<p>Cressie, N.A.C. (1993)
+<EM>Statistics for Spatial Data.</EM>
+New York: Wiley.
+</p>
+<p>Goovaerts, P. (1997) <EM>Geostatistics for Natural Resources
+Evaluation.</EM> New York: Oxford University Press.
+</p>
+<p>Wackernagel, H. (1998) <EM>Multivariate Geostatistics.</EM> Berlin:
+Springer, 2nd edition.  
+</p>
+
+
+<h3>See Also</h3>
+
+<p><CODE><a href="CondSimu.html">CondSimu</a></CODE>,
+<CODE><a href="CovarianceFct.html">Covariance</a></CODE>,
+<CODE><a href="CovarianceFct.html">CovarianceFct</a></CODE>,
+<CODE><a href="EmpiricalVariogram.html">EmpiricalVariogram</a></CODE>,
+<code><a href="RandomFields.html">RandomFields</a></code>,
+</p>
+
+
+<h3>Examples</h3>
+
+<pre>
+###Example 1: Ordinary Kriging
+## creating random variables first
+## here, a grid is chosen, but does not matter
+step &lt;- 0.25 
+x &lt;-  seq(0,7,step)
+param &lt;- c(0,1,0,1)
+model &lt;- "exponential"
+RFparameters(PracticalRange=FALSE)
+p &lt;- 1:7
+points &lt;- as.matrix(expand.grid(p,p))
+data &lt;- GaussRF(points, grid=FALSE, model=model, param=param)
+
+## visualise generated spatial data
+zlim &lt;- c(-2.6,2.6)
+colour &lt;- rainbow(100)
+image(p, p, xlim=range(x), ylim=range(x),
+      matrix(data,ncol=length(p)),
+      col=colour,zlim=zlim)
+
+## now: kriging
+krige.method &lt;- "O" ## ordinary kriging
+z &lt;-  Kriging(krige.method=krige.method,
+              x=x, y=x, grid=TRUE,
+              model=model, param=param,
+              given=points, data=data)
+image(x,x,z,col=colour,zlim=zlim)
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+</pre>
+
+<hr><div align="center">[Package <em>RandomFields</em> version 2.0.66 <a href="00Index.html">Index</a>]</div>
+</body></html>

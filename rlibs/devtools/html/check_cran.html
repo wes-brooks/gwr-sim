@@ -1,0 +1,100 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<html><head><title>R: Check a package from CRAN.</title>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+<link rel="stylesheet" type="text/css" href="R.css">
+</head><body>
+
+<table width="100%" summary="page for check_cran {devtools}"><tr><td>check_cran {devtools}</td><td align="right">R Documentation</td></tr></table>
+
+<h2>Check a package from CRAN.</h2>
+
+<h3>Description</h3>
+
+<p>This is useful for automatically checking that
+dependencies of your packages work.
+</p>
+
+
+<h3>Usage</h3>
+
+<pre>
+  check_cran(pkgs, libpath = file.path(tempdir(), "R-lib"),
+    srcpath = libpath, bioconductor = FALSE,
+    type = getOption("pkgType"), threads = 1, ...)
+</pre>
+
+
+<h3>Arguments</h3>
+
+<table summary="R argblock">
+<tr valign="top"><td><code>pkgs</code></td>
+<td>
+<p>Vector of package names - note that unlike
+other <span class="pkg">devtools</span> functions this is the name of a CRAN
+package, not a path.</p>
+</td></tr>
+<tr valign="top"><td><code>libpath</code></td>
+<td>
+<p>path to library to store dependencies
+packages - if you you're doing this a lot it's a good
+idea to pick a directory and stick with it so you don't
+have to download all the packages every time.</p>
+</td></tr>
+<tr valign="top"><td><code>srcpath</code></td>
+<td>
+<p>path to directory to store source versions
+of dependent packages - again, this saves a lot of time
+because you don't need to redownload the packages every
+time you run the package.</p>
+</td></tr>
+<tr valign="top"><td><code>bioconductor</code></td>
+<td>
+<p>include bioconductor packages in
+checking?</p>
+</td></tr>
+<tr valign="top"><td><code>type</code></td>
+<td>
+<p>binary package type of test</p>
+</td></tr>
+<tr valign="top"><td><code>threads</code></td>
+<td>
+<p>number of concurrent threads to use for
+checking.</p>
+</td></tr>
+<tr valign="top"><td><code>...</code></td>
+<td>
+<p>other parameters passed onto
+<code><a href="../../utils/html/download.packages.html">download.packages</a></code></p>
+</td></tr>
+</table>
+
+
+<h3>Details</h3>
+
+<p>This function does not clean up after itself, but does
+work in a session-specific temporary directory, so all
+files will be removed when your current R session ends.
+</p>
+
+
+<h3>Value</h3>
+
+<p>invisible <code>TRUE</code> if successful and no ERRORs or
+WARNINGS,
+</p>
+
+
+<h3>Examples</h3>
+
+<pre>
+## Not run: 
+dep &lt;- revdep("ggplot2")
+check_cran(dep, "~/documents/ggplot/ggplot-check")
+# Or, equivalently:
+revdep_check("ggplot2")
+
+## End(Not run)
+</pre>
+
+<hr><div align="center">[Package <em>devtools</em> version 1.3 <a href="00Index.html">Index</a>]</div>
+</body></html>

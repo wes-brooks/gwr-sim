@@ -1,0 +1,132 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<html><head><title>R: Continuous scale constructor.</title>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+<link rel="stylesheet" type="text/css" href="R.css">
+</head><body>
+
+<table width="100%" summary="page for continuous_scale {ggplot2}"><tr><td>continuous_scale {ggplot2}</td><td align="right">R Documentation</td></tr></table>
+
+<h2>Continuous scale constructor.</h2>
+
+<h3>Description</h3>
+
+<p>Continuous scale constructor.
+</p>
+
+
+<h3>Usage</h3>
+
+<pre>
+  continuous_scale(aesthetics, scale_name, palette,
+    name = NULL, breaks = waiver(),
+    minor_breaks = waiver(), labels = waiver(),
+    legend = NULL, limits = NULL, rescaler = rescale,
+    oob = censor, expand = waiver(), na.value = NA_real_,
+    trans = "identity", guide = "legend")
+</pre>
+
+
+<h3>Arguments</h3>
+
+<table summary="R argblock">
+<tr valign="top"><td><code>minor_breaks</code></td>
+<td>
+<p>Used with date or datetime scales.
+Either <code>NULL</code> for no minor breaks, <code>waiver()</code>
+for the default breaks (one minor break between each
+major break), a numeric vector of positions, or a
+function that given the limits returns a vector of minor
+breaks.</p>
+</td></tr>
+<tr valign="top"><td><code>limits</code></td>
+<td>
+<p>A numeric vector of length two describing
+the scale limits.</p>
+</td></tr>
+<tr valign="top"><td><code>rescaler</code></td>
+<td>
+<p>Used by diverging and n colour gradients
+(i.e. <code><a href="scale_gradient2.html">scale_colour_gradient2</a></code>,
+<code><a href="scale_gradientn.html">scale_colour_gradientn</a></code>).</p>
+</td></tr>
+<tr valign="top"><td><code>oob</code></td>
+<td>
+<p>What to do with values outside scale limits
+(out of bounds)?</p>
+</td></tr>
+<tr valign="top"><td><code>aesthetics</code></td>
+<td>
+<p>the names of the aesthetics that this
+scale works with</p>
+</td></tr>
+<tr valign="top"><td><code>scale_name</code></td>
+<td>
+<p>the name of the scale</p>
+</td></tr>
+<tr valign="top"><td><code>palette</code></td>
+<td>
+<p>a palette function that when called with a
+single integer argument (the number of levels in the
+scale) returns the values that they should take</p>
+</td></tr>
+<tr valign="top"><td><code>name</code></td>
+<td>
+<p>the name of the scale - used as the axis
+label or the legend title</p>
+</td></tr>
+<tr valign="top"><td><code>breaks</code></td>
+<td>
+<p>control the breaks in the guide.  There are
+four possible types of input: </p>
+ <ul>
+<li>
+<p><code>NULL</code>: don't display any breaks </p>
+</li>
+<li><p> a character
+vector giving the breaks as they should appear on the
+axis or in the legend.  </p>
+</li>
+<li> <p><code>waiver()</code> to use the
+default break computation.  </p>
+</li>
+<li><p> a function, that when
+called with a single argument, a character vector giving
+the limits of the scale, returns a character vector
+specifying which breaks to display.  </p>
+</li></ul>
+<p> This parameter
+does not affect in any way how the data is scaled - it
+only affects the appearance of the legend.</p>
+</td></tr>
+<tr valign="top"><td><code>labels</code></td>
+<td>
+<p><code>NULL</code> for no labels, <code>waiver()</code>
+for default labels (labels the same as breaks), a
+character vector the same length as breaks, or a named
+character vector whose names are used to match
+replacement the labels for matching breaks.</p>
+</td></tr>
+<tr valign="top"><td><code>legend</code></td>
+<td>
+<p>deprecated.  Use <code>guide</code> instead.</p>
+</td></tr>
+<tr valign="top"><td><code>expand</code></td>
+<td>
+<p>a numeric vector of length two, giving a
+multiplicative and additive constant used to expand the
+range of the scales so that there is a small gap between
+the data and the axes.</p>
+</td></tr>
+<tr valign="top"><td><code>na.value</code></td>
+<td>
+<p>how should missing values be displayed?</p>
+</td></tr>
+<tr valign="top"><td><code>guide</code></td>
+<td>
+<p>the name of, or actual function, used to
+create the guide.</p>
+</td></tr>
+</table>
+
+<hr><div align="center">[Package <em>ggplot2</em> version 0.9.3.1 <a href="00Index.html">Index</a>]</div>
+</body></html>

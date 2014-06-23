@@ -1,0 +1,93 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<html><head><title>R: Variance matrix for space-time clustering</title>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+<link rel="stylesheet" type="text/css" href="R.css">
+</head><body>
+
+<table width="100%" summary="page for stvmat {splancs}"><tr><td>stvmat {splancs}</td><td align="right">R Documentation</td></tr></table>
+
+<h2>
+Variance matrix for space-time clustering
+</h2>
+
+<h3>Description</h3>
+
+<p>Compute the variance matrix for space-time clustering
+</p>
+
+
+<h3>Usage</h3>
+
+<pre>
+stvmat(pts, times, poly, tlim, s, tm)
+</pre>
+
+
+<h3>Arguments</h3>
+
+<table summary="R argblock">
+<tr valign="top"><td><code>pts</code></td>
+<td>
+
+<p>A set of points.
+</p>
+</td></tr>
+<tr valign="top"><td><code>times</code></td>
+<td>
+
+<p>A vector of times, the same length as the number of points in <code>pts</code>
+</p>
+</td></tr>
+<tr valign="top"><td><code>poly</code></td>
+<td>
+
+<p>A polygon that encloses the points
+</p>
+</td></tr>
+<tr valign="top"><td><code>tlim</code></td>
+<td>
+
+<p>A vector of length 2 specifying the upper and lower temporal domain.
+</p>
+</td></tr>
+<tr valign="top"><td><code>s</code></td>
+<td>
+
+<p>A vector of spatial distances for the analysis
+</p>
+</td></tr>
+<tr valign="top"><td><code>tm</code></td>
+<td>
+
+<p>A vector of times for the analysis
+</p>
+</td></tr></table>
+
+
+<h3>Value</h3>
+
+<p>A four-dimensional matrix is returned. The covariance between space-time
+<code>t1,s1</code> and <code>t2,s2</code> is given by the corresponding element <code>[t1,s1,t2,s2]</code>
+For full details, see Diggle, Chetwynd, Haggkvist and Morris (1995)
+</p>
+
+
+<h3>References</h3>
+
+<p>Diggle, P., Chetwynd, A., Haggkvist, R. and Morris, S. 1995 Second-order analysis of space-time clustering. Statistical Methods in Medical Research, 4, 124-136;
+Rowlingson, B. and Diggle, P. 1993 Splancs: spatial point pattern analysis
+code in S-Plus.  Computers and Geosciences, 19, 627-655;
+the original sources can be accessed at:
+<a href="http://www.maths.lancs.ac.uk/~rowlings/Splancs/">http://www.maths.lancs.ac.uk/~rowlings/Splancs/</a>. See also Bivand, R. and
+Gebhardt, A. 2000 Implementing functions for spatial statistical analysis
+using the R language. Journal of Geographical Systems, 2, 307-317.
+</p>
+
+
+<h3>See Also</h3>
+
+<p><code><a href="stkhat.html">stkhat</a></code>, <code><a href="stsecal.html">stsecal</a></code>, <code><a href="stmctest.html">stmctest</a></code>, <code><a href="stdiagn.html">stdiagn</a></code>
+</p>
+
+<hr><div align="center">[Package <em>splancs</em> version 2.01-33 <a href="00Index.html">Index</a>]</div>
+</body></html>

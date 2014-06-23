@@ -1,0 +1,51 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<html><head><title>R: Ignore case of match.</title>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+<link rel="stylesheet" type="text/css" href="R.css">
+</head><body>
+
+<table width="100%" summary="page for ignore.case {stringr}"><tr><td>ignore.case {stringr}</td><td align="right">R Documentation</td></tr></table>
+
+<h2>Ignore case of match.</h2>
+
+<h3>Description</h3>
+
+<p>This function specifies that a pattern should ignore the
+case of matches.
+</p>
+
+
+<h3>Usage</h3>
+
+<pre>
+  ignore.case(string)
+</pre>
+
+
+<h3>Arguments</h3>
+
+<table summary="R argblock">
+<tr valign="top"><td><code>string</code></td>
+<td>
+<p>pattern for which to ignore case</p>
+</td></tr>
+</table>
+
+
+<h3>See Also</h3>
+
+<p>Other modifiers: <code><a href="fixed.html">fixed</a></code>, <code><a href="perl.html">perl</a></code>
+</p>
+
+
+<h3>Examples</h3>
+
+<pre>
+pattern &lt;- "a.b"
+strings &lt;- c("ABB", "aaB", "aab")
+str_detect(strings, pattern)
+str_detect(strings, ignore.case(pattern))
+</pre>
+
+<hr><div align="center">[Package <em>stringr</em> version 0.6.2 <a href="00Index.html">Index</a>]</div>
+</body></html>

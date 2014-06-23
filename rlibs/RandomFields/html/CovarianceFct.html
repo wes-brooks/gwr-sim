@@ -1,0 +1,902 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<html><head><title>R: Basic Covariance And Variogram Models</title>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+<link rel="stylesheet" type="text/css" href="R.css">
+</head><body>
+
+<table width="100%" summary="page for CovarianceFct {RandomFields}"><tr><td>CovarianceFct {RandomFields}</td><td align="right">R Documentation</td></tr></table>
+
+<h2>Basic Covariance And Variogram Models</h2>
+
+<h3>Description</h3>
+
+<p><code>CovarianceFct</code> returns the values of a covariance function;
+see <CODE><a href="CovarianceFct.html">Covariance</a></CODE> for sophisticated models
+</p>
+<p><code>Variogram</code> returns the values of a variogram model
+</p>
+
+
+<h3>Usage</h3>
+
+<pre>
+Covariance(x, y=NULL, model, param=NULL, dim=ifelse(is.matrix(x),ncol(x),1),
+               Distances, fctcall=c("Cov", "Variogram", "CovMatrix"))
+CovarianceFct(...)
+CovMatrix(...)
+
+Variogram(x, model, param, dim=ifelse(is.matrix(x),ncol(x),1))
+</pre>
+
+
+<h3>Arguments</h3>
+
+<table summary="R argblock">
+<tr valign="top"><td><code>x</code></td>
+<td>
+<p>vector or <i>(n x
+      \code{dim})</i>-matrix.  In particular,
+if the model is isotropic or <code>dim=1</code> then <code>x</code>
+is a vector.</p>
+</td></tr>
+<tr valign="top"><td><code>y</code></td>
+<td>
+<p>second vector or matrix in case of non-stationary covariance
+functions</p>
+</td></tr>
+<tr valign="top"><td><code>model</code></td>
+<td>
+
+<p>for basic models, <code>model</code> is one of the names given in the
+Details.
+<br>
+
+</p>
+</td></tr>
+<tr valign="top"><td><code>param</code></td>
+<td>
+
+<p>The simplest form of <code>param</code> is the vector 
+<code>param=c(mean,variance,nugget,scale,...)</code>, in this order;<br>
+The dots <code>...</code> stand for additional parameters of the
+model, e.g. the smoothing parameter in the <code>whittle</code>
+model.
+Within this function <code>mean</code> is not interpreted and can
+take an arbitrary value.
+<br>
+
+</p>
+</td></tr>
+<tr valign="top"><td><code>dim</code></td>
+<td>
+<p>dimension of the space in which the model is applied</p>
+</td></tr>
+<tr valign="top"><td><code>Distances</code></td>
+<td>
+<p>for covariance matrices, the lower triangular part
+of the distance matrix can be given instead of the values <code>x</code>
+themselves</p>
+</td></tr>
+<tr valign="top"><td><code>fctcall</code></td>
+<td>
+<p>internal. This parameter should not be considered by
+the user</p>
+</td></tr>
+<tr valign="top"><td><code>...</code></td>
+<td>
+<p>The function <code>CovarianceFct</code> is identical to the function
+<code>Covariance</code>.
+</p>
+</td></tr>
+</table>
+
+
+<h3>Details</h3>
+
+<p><B>Here, only the basic, isotropic models are listed;
+see <CODE><a href="Covariance.html">sophisticated</a></CODE>  models for nonisotropic and hyper models.
+</B>
+</p>
+<p>See <CODE><a href="GetRegisterInfo.html">GetModel</a></CODE> for commands in R to get information
+about implemented models and currently used ones.
+</p>
+<p>The implemented models are in standard notation for a
+covariance function (variance 1, nugget 0, scale 1) and for positive
+real arguments <i>h</i>: 
+</p>
+
+<ul>
+<li> <p><code>+</code> see '<a href="Covariance.html">sophisticated</a>'
+</p>
+</li>
+<li> <p><code>*</code> see '<a href="Covariance.html">sophisticated</a>'
+</p>
+</li>
+<li> <p><code>$</code> see '<a href="Covariance.html">sophisticated</a>'
+</p>
+</li>
+<li> <p><code>ave1</code> see '<a href="Covariance.html">sophisticated</a>'
+</p>
+</li>
+<li> <p><code>ave2</code> see '<a href="Covariance.html">sophisticated</a>'
+</p>
+</li>
+<li> <p><code>bessel</code>
+</p>
+<p align="center"><i>C(h)=2^&nu; &Gamma;(&nu;+1)h^{-&nu;} J_&nu;(h)</i></p>
+
+<p>The parameter <i>&nu;</i> is greater than or equal to
+<i>(d-2)/2</i>, where <i>d</i> is the
+dimension of the random field.
+</p>
+</li>
+<li><p> Brownian motion<br>
+see <code>fractalB</code> 
+</p>
+</li>
+<li><p> cardinal sine<br>
+see <code>wave</code>
+</p>
+</li>
+<li> <p><code>cauchy (normal scale mixture)</code>
+</p>
+<p align="center"><i>C(h)=(1+h^2)^(-&beta;)</i></p>
+
+<p>The parameter <i>&beta;</i> is positive. 
+The model possesses two generalisations, the <code>gencauchy</code>
+model and the <code>hyperbolic</code> model.
+See also <code>nonstatcauchy</code> in <CODE><a href="CovarianceFct.html">Covariance</a></CODE>.
+</p>
+</li>
+<li> <p><code>cauchytbm</code>
+</p>
+<p align="center"><i>C(h)= (1+(1-&beta;/&gamma;)h^&alpha;)(1+h^&alpha;)^(-&beta;/&alpha;-1)</i></p>
+
+<p>The parameter <i>&alpha;</i> is in (0,2] and  <i>&beta;</i>
+is positive.
+The model is valid for dimensions <i>d&le;&gamma;</i>;
+this has been shown for integer <i>&gamma;</i>, but the
+package allows real values of <i>&gamma;</i>.
+<br>
+It allows for simulating random fields where 
+fractal dimension and Hurst coefficient can be chosen
+independently. 
+It has negative correlations for <i>&beta;&gt;&gamma;</i> and large
+<i>h</i>.
+</p>
+<p>This model is equivalent to the model
+<code>list("tbm3", n=gamma, list("gencauchy", alpha=alpha,
+      beta=beta))</code>
+</p>
+</li>
+<li> <p><code>circular</code>
+</p>
+<p align="center"><i>
+      C(h)=1-2/pi*(h sqrt(1-h^2)+asin(h))   if
+      0&lt;=h&lt;=1, 0 otherwise</i></p>
+
+<p>This isotropic covariance function is valid only for dimensions
+less than or equal to 2.
+</p>
+</li>
+<li> <p><code>cone</code><br>
+This model is used only for methods based on marked point processes
+(see <CODE><a href="RFMethods.html">RFMethods</a></CODE>); it is defined only in two dimensions.
+The corresponding (boolean)
+function is a truncated cone with socle. The base has radius
+<i>1/2</i>. The model has three parameters, <i>r</i>,
+<i>s</i>, and <i>h</i>:<br>
+<i>r</i> gives the radius of the top circle of the cone, given
+as part of the socle radius; <i>r \in [0,1)</i>.<br>
+<i>s</i> gives the height of the socle.<br>
+<i>h</i> gives the height of the truncated cone.<br>
+</p>
+</li>
+<li> <p><code>coxisham</code> see <a href="Covariance.html">sophisticated</a>.
+</p>
+</li>
+<li> <p><code>cutoff</code> see <a href="Covariance.html">sophisticated</a>.
+</p>
+</li>
+<li> <p><code>cubic</code>
+</p>
+<p align="center"><i>C(h)=
+      1- 7 h^2 + 8.75 h^3 - 3.5 h^5 + 0.75 h^7  if 0&lt;=h&lt;=1,
+      0 otherwise</i></p>
+
+<p>This model is valid only for dimensions less than or equal to 3. 
+It is a 2 times differentiable covariance functions with compact
+support. 
+</p>
+</li>
+<li> <p><code>dagum</code>
+</p>
+<p align="center"><i>C(h) = 1-(1 + h^{-&beta;})^{-&gamma;/&beta;}</i></p>
+
+<p>RandomFields allows to vary the  parameters <i>&beta;</i> and
+<i>&gamma;</i>  within the intervals <i>(0,1]</i> and
+<i>(0,1)</i>, respectively.
+</p>
+</li>
+<li> <p><code>dampedcosine</code> (hole effect model)
+</p>
+<p align="center"><i>C(h)= e^{-&lambda; h} \cos(h),   \quad h&ge;0</i></p>
+
+<p>This model is valid
+for dimension 1 iff <i>&lambda; &ge; 1</i>,
+for dimension 2 iff <i>&lambda; &ge; 1</i>,
+and for dimension 3 iff <i>&lambda; &ge; &radic;{3}</i>.
+</p>
+</li>
+<li> <p><code>DeWijsian</code>
+</p>
+<p align="center"><i>&gamma;(h) = \log(\|h\|^&alpha; + 1)</i></p>
+
+<p>generalised version of the DeWijsian model with <i>&alpha; \in (0,2]</i>
+</p>
+</li>
+<li> <p><code>EAxxA</code> and  see '<a href="Covariance.html">sophisticated</a>'
+</p>
+</li>
+<li> <p><code>EtAxxA</code> and  see '<a href="Covariance.html">sophisticated</a>'
+</p>
+</li>
+<li> <p><code>exponential (normal scale mixture)</code>
+</p>
+<p align="center"><i>C(h)=exp(-h)</i></p>
+
+<p>This model is a special case of the <code>whittle</code> model
+(for <i>nu = 1/2</i> there)
+and the <code>stable</code> class (for <i>&alpha; = 1</i>).
+</p>
+</li>
+<li> <p><code>FD</code>
+</p>
+<p align="center"><i>C(k) = {(-1)^k &Gamma;(1-a/2)^2} / {&Gamma;(1-a/2+k)
+	&Gamma;(1-a/2-k), 
+	k in  N}</i></p>
+
+<p>and linearly interpolated otherwise.
+Here, <i>&Gamma;</i> is the Gamma function and <i>a \in [-1, 1)</i>. 
+The model is defined in 1 dimension only.
+</p>
+<p>Remark: the fractionally differenced process
+stems from time series modelling
+where the grid locations are multiples
+of the scale parameter.  
+</p>
+</li>
+<li> <p><code>fractalB</code> (fractal Brownian motion)
+</p>
+<p align="center"><i>gamma(h) = h^&alpha;</i></p>
+   
+<p>Here, <i>&alpha; \in (0,2]</i>.
+(Implemented for up to three dimensions). See also <code>genB</code>.
+</p>
+</li>
+<li> <p><code>fractgauss</code>
+</p>
+<p align="center"><i>C(h) = 0.5 (|h+1|^{&alpha;} - 2|h|^{&alpha;} +
+      |h-1|^{&alpha;})</i></p>
+
+<p>This model is the covariance function for the fractional Gaussian noise
+with Hurst parameter <i>H=&alpha; /2</i>, <i>&alpha; \in (0,2]</i>.
+In particular, the model is valid only
+in one dimension.
+</p>
+</li>
+<li> <p><code>gauss (normal scale mixture)</code>
+</p>
+<p align="center"><i>C(h)=exp(-h^2)</i></p>
+
+<p>This model is a special case of the <code>stable</code> class
+(for <i>a=2</i> there).
+Note that the corresponding function for the random coins
+method (cf. the methods based on marked point processes in
+<CODE><a href="RFMethods.html">RFMethods</a></CODE>) is
+</p>
+<p align="center"><i>exp(-2 h^2).</i></p>
+
+<p>See <code>gneiting</code> for an alternative model that does not have
+the disadvantages of the Gaussian model.
+</p>
+</li>
+<li> <p><code>genB</code> (generalised fractal Brownian motion)
+</p>
+<p align="center"><i>&gamma;(h) = (h^{&alpha;}+1)^{&delta;} -1 </i></p>
+
+<p>Here, <i>&alpha; \in(0,2]</i> and
+<i>&delta; \in (0,1)</i>.
+(Implemented for up to three dimensions). See also <code>fractalB</code>.
+</p>
+</li>
+<li> <p><code>gencauchy</code> (generalised <code>cauchy</code>; normal scale mixture)<br>
+</p>
+<p align="center"><i>C(h)=
+      &le;ft(1+h^&alpha;\right)^(-&beta;/&alpha;)</i></p>
+
+<p>The parameter <i>&alpha;</i> is in (0,2], and <i>&beta;</i>
+is positive.
+<br>
+This model allows for simulating random fields where
+fractal dimension and Hurst coefficient can be chosen
+independently.
+</p>
+</li>
+<li> <p><code>gengneiting</code> (generalised <code>gneiting</code>)<br>
+If <i>n=1</i> then
+</p>
+<p align="center"><i>C(h)=&le;ft(1+(&alpha;+1)h\right) * (1-h)^{&alpha;+1}
+      1_{[0,1]}(h)</i></p>
+
+<p>If <i>n=2</i> then
+</p>
+<p align="center"><i>C(h)=&le;ft(1+(&alpha;+2)h+&le;ft((&alpha;+2)^2-1\right)h^2/3\right)
+      (1-h)^{&alpha;+2}  1_{[0,1]}(h)</i></p>
+
+<p>If <i>n=3</i> then
+</p>
+<p align="center"><i>C(h)=&le;ft(1+(&alpha;+3)h+&le;ft(2(&alpha;+3)^2-3\right)h^2/5
+      +&le;ft((&alpha;+3)^2-4\right)(&alpha;+3)h^3/15\right)(1-h)^{&alpha;+3}
+      1_{[0,1]}(h)</i></p>
+
+<p>The parameter <i>n</i> is a positive integer; here only the
+cases <i>n=1, 2, 3</i> are implemented.
+The parameter <i>&alpha;</i> is greater than or equal to
+<i>(d + 2n +1)/2</i> where <i>d</i> is the
+dimension of the random field.
+</p>
+
+</li>
+<li> <p><code>gneiting</code>
+</p>
+<p align="center"><i>C(h)=
+      (1 + 8 s h + 25 s^2 h^2 + 32
+      s^3 h^3)*(1-s h)^8   if 0 &lt;= h &lt;= 1/s, 0 otherwise</i></p>
+
+<p>where
+<i>s=0.301187465825</i>.
+This isotropic covariance function is valid only for dimensions less
+than or equal to 3. 
+It is a 6 times differentiable covariance functions with compact
+support.<br>
+It is an alternative to the <code>gaussian</code> model since
+its graph is visually hardly distinguishable from the graph of
+the Gaussian model, but possesses neither the mathematical and nor the
+numerical disadvantages of the Gaussian model.<br>
+This model is a special case of <code>gengneiting</code> (for
+<i>n=3</i> and <i>&alpha;=5</i> there).
+Note that, in the original work by Gneiting (1999), 
+<i>s = 10 sqrt(2) / 47 ~=
+      .3008965</i>, a numerical value slightly deviating from the
+optimal one.
+</p>
+</li>
+<li><p> gneitingdiff is obsolete, see the last example in
+<a href="Covariance.html">Sophisticated</a> for a user's definition of <code>gneitingdiff</code>.
+</p>
+<p align="center"><i>C(h)=( 1 + 8 h &alpha;^{-1}
+      + 25 h^2&alpha;^{-2}
+      + 32 h^3 &alpha;^{-3} )
+      ( 1-h &alpha;^{-1} )^8 
+      2^{1-&nu;} (&Gamma;(&nu;))^{-1}
+      h^{&nu;} K_{&nu;}(h) 1_{[0,&alpha;]}(h)</i></p>
+
+<p>This isotropic covariance function is valid only for dimensions less
+than or equal to 3. 
+The parameters <i>&nu;</i> and <i>&alpha;</i> are
+positive.<br>
+This class of models with compact support
+allows for smooth parametrisation of the differentiability up to
+order 6.     
+</p>
+</li>
+<li> <p><code>hyperbolic (normal scale mixture)</code>
+</p>
+<p align="center"><i>C(h)= &delta;^{-&lambda;}
+	(K_{&lambda;}(&nu; &delta;))^{-1}
+      ( &delta;^2 + h^2 )^{&lambda;/2}
+      K_{&lambda;}(
+      &nu; [ &delta;^2 + h^2 ]^{1/2} )</i></p>
+
+<p>The parameters are such that<br>
+<i>&delta;&ge;0</i>,  <i>&nu;&gt;0</i>  and
+<i>&lambda;&gt;0, </i>
+or<br>
+<i>&delta;&gt;0</i>,  <i>&nu;&gt;0</i>  and  <i>&lambda;&gt;0, </i>
+or<br>
+<i>&delta;&gt;0</i>,  <i>&nu;&ge;0</i>, and   <i>&lambda;&lt;0</i>.<br>
+Note that this class is over-parametrised; always one
+of the three parameters 
+<i>&nu;</i>, <i>&delta;</i>, and scale
+can be eliminated in the formula. Therefore, one of these
+parameters should be kept fixed in any simulation study.
+<br>
+The model contains as special cases the <code>whittle</code>
+model and the <code>cauchy</code> model, for 
+<i>&delta;=0</i> and <i>&nu;=0</i>, respectively.
+</p>
+<p>See also <code>nonstathyperbolic</code> in <CODE><a href="CovarianceFct.html">Covariance</a></CODE>.
+</p>
+</li>
+<li> <p><code>iacocesare</code> (non-separabel space time model)
+</p>
+<p align="center"><i>C(h, t)=(1+\|h\|^&nu;+|t|^&lambda;)^{-&delta;}</i></p>
+
+<p>The parameters <i>&nu;</i> and <i>&lambda;</i> take values
+in <i>[1,2]</i>; the parameters <i>&delta;</i> must be greater
+than or equal to half the space-time dimension.
+</p>
+</li>
+<li><p> J-Bessel<br>
+see <code>bessel</code>
+</p>
+</li>
+<li><p> K-Bessel<br>
+see <code>whittle</code> and <code>matern</code>
+</p>
+</li>
+<li><p> linear with sill<br>
+See <code>power</code> (<code>a=1</code> there).
+</p>
+</li>
+<li> <p><code>lgd1</code> (local-global distinguisher)
+</p>
+<p align="center"><i>C(h)=
+      1-&beta;^{-1}{&alpha;+&beta;}|h|^{&alpha;}, |h|&le; 1    and   
+      &alpha;^{-1}{&alpha;+&beta;}|h|^{-&beta;}, |h|&gt; 1
+    </i></p>
+
+<p>Here <i>&beta;&gt;0</i> and <i>&alpha;</i> is in
+<i>(0,(3 - d)/2]</i> for dimension <i>d=1,2</i>.
+The random field has fractal dimension
+<i>d + 1 - &alpha;/2</i>
+and Hurst coefficient <i>1 -&beta;/2</i> for
+<i>&beta; \in (0,1]</i>
+</p>
+
+
+</li>
+<li><p> matern (normal scale mixture)<br>
+</p>
+<p align="center"><i>C(x)=W_a(x) = 2^{1-&nu;} &Gamma;(&nu;)^{-1}
+       (&radic;{2 &nu;} x)^&nu; K_&nu;(&radic;{2 &nu;}x)</i></p>
+
+<p>The parameter <i>&nu;</i> is positive.
+<br>
+This is the model of choice if the smoothness of a random field is to
+be parametrised: if <i>&nu; &gt; m</i> then the
+graph is <i>m</i> times differentiable.
+</p>
+<p>In contrast to the <code>whittle</code> model
+this model separates the effects of the scaling parameter and the
+shape parameter. For <i>&nu;=0.5</i> we get the exponential
+model; for <i>&nu;=&infin;</i> we get <i>C(x) = \exp(0.5 x^2)</i>.
+</p>
+<p>The model <i>C(x &radic;{2})</i> equals the Handcock-Wallis (1994)
+parameterisation.
+</p>
+<p>The model allows further to replace <i>nu</i> by <i>1/&nu;</i>,
+setting the second parameter <code>invnu=TRUE</code>.
+</p>
+<p>See also <code>whittle</code>, and
+<code>nonstatwhittle</code> in <CODE><a href="CovarianceFct.html">Covariance</a></CODE>.
+</p>
+</li>
+<li> <p><code>M</code> and  see '<a href="Covariance.html">sophisticated</a>'
+</p>
+</li>
+<li> <p><code>mastein</code> see '<a href="Covariance.html">sophisticated</a>'
+</p>
+</li>
+<li> <p><code>mixed</code> see '<a href="Covariance.html">sophisticated</a>'
+</p>
+</li>
+<li> <p><code>nugget</code>
+</p>
+<p align="center"><i>C(h)=1_{0}(h)</i></p>
+
+<p>If the model is used in <code>param</code>-definition mode,
+either <code>param[2]</code>, the <code>variance</code>,
+or <code>param[3]</code>, the <code>nugget</code>, must be zero.
+If the model is used in the list-definition mode,
+the anisotropy matrix must be given in an anisotropic
+context, but not
+the scale parameter in an isotropic context.
+See also <CODE><a href="Covariance.html">sophisticated</a></CODE>.
+</p>
+</li>
+<li> <p><code>penta</code>
+</p>
+<p align="center"><i>C(x)=
+      1 - 22/3 x^2 +33 x^4
+      - 77/2 x^5 + 33/2 x^7 - 11/2 x^9 + 5/6 x^11  if 0&lt;=x&lt;=1,  
+      0 otherwise</i></p>
+
+<p>valid only for dimensions less than or equal to 3. 
+This is a 4 times differentiable covariance functions with compact
+support.
+
+</p>
+</li>
+<li> <p><code>power</code>
+</p>
+<p align="center"><i>C(x)= (1-x)^a 1_{[0,1]}(x)</i></p>
+
+<p>This covariance function is valid for dimension <i>d</i> if
+<i>a &ge; (d+1)/2</i>. 
+For <i>a=1</i> we get the well-known triangle (or tent)
+model, which is valid on the real line, only.
+
+
+</p>
+</li>
+<li><p> powered exponential<br>
+See <code>stable</code>.
+</p>
+</li>
+<li> <p><code>qexponential</code>
+</p>
+<p align="center"><i>C(x)= ( 2 e^{-x} - &alpha; e^{-2x} ) / ( 2 - &alpha; )</i></p>
+
+<p>The parameter <i>&alpha;</i> takes values in <i>[0,1]</i>.   
+</p>
+
+
+
+</li>
+<li> <p><code>rational</code> and  see '<a href="Covariance.html">sophisticated</a>'
+</p>
+</li>
+<li> <p><code>spherical</code>
+</p>
+<p align="center"><i>C(x)=&le;ft(1- 1.5 x+0.5 x^3\right)
+      1_{[0,1]}(x)</i></p>
+
+
+
+<p>This isotropic covariance function is valid only for dimensions
+less than or equal to 3.
+</p>
+</li>
+<li> <p><code>stable</code>
+</p>
+<p align="center"><i>C(x)=\exp&le;ft(-x^&alpha;\right)</i></p>
+
+<p>The parameter <i>&alpha;</i> is in <i>(0,2]</i>.
+See <code>exponential</code> and <code>gaussian</code> for special cases.
+</p>
+</li>
+<li> <p><code>Stein</code> and  see '<a href="Covariance.html">sophisticated</a>'
+</p>
+</li>
+<li> <p><code>steinst1</code> and  see '<a href="Covariance.html">sophisticated</a>'
+</p>
+</li>
+<li><p> symmetric stable<br>
+See <code>stable</code>.
+</p>
+</li>
+<li> <p><code>tbm2</code> and  see '<a href="Covariance.html">sophisticated</a>'
+</p>
+</li>
+<li> <p><code>tbm3</code> and  see '<a href="Covariance.html">sophisticated</a>'
+</p>
+</li>
+<li><p> tent model<br>
+See <code>power</code>.
+</p>
+</li>
+<li><p> triangle<br>
+See <code>power</code>.
+</p>
+</li>
+<li> <p><code>wave</code>
+</p>
+<p align="center"><i>
+      C(x)=sin(x)/x if x&gt;0 and C(0)=1</i></p>
+
+<p>This isotropic covariance function is valid only for dimensions less
+than or equal to 3.
+It is a special case of the <code>bessel</code> model
+(for <i>a</i><i>=0.5</i>).
+</p>
+</li>
+<li> <p><code>whittle (normal scale mixture)</code>
+</p>
+<p align="center"><i>C(x)=W_&nu;(x) = 2^{1-&nu;} &Gamma;(&nu;)^{-1} x^&nu;
+      K_&nu;(x)</i></p>
+
+<p>The parameter <i>&nu;</i> is positive.
+<br>
+This is the model of choice if the smoothness of a random field is to
+be parametrised: if <i>&nu; &gt; m</i> then the
+graph is <i>m</i> times differentiable.
+</p>
+<p>The model is a special case of the
+<code>hyperbolic</code> model (for <i>c=0</i> there).
+</p>
+<p>See also <code>nonstWM</code> in <a href="Covariance.html">sophisticated</a>.
+</p>
+</li></ul>
+
+<p>Let <i>\code{cov}</i> be a model given in standard notation. 
+Then the covariance model
+applied with arbitrary variance and scale equals
+</p>
+<p align="center"><i>variance * cov( (.)/scale).</i></p>
+
+<p>The parameters can be passed by the vector <code>param</code>,
+<code>param=c(mean, variance, nugget, scale, ...)</code>.
+Here &lsquo;...&rsquo; stands for additional parameters such as <i>&nu;</i>
+in the <code>whittle</code> model.
+In case a model has several parameters, as in <code>hyperbolic</code>,
+the parameters must be given in the sequence they are explained
+aboved. However, it is strongly recommended to use the <code>list</code>
+notation explained in  <code>sophisticated</code>. The <code>list</code>
+definition available in <span class="pkg">RandomFields</span> V 1.x, is depreciated!
+</p>
+<p>For a given covariance function <i>cov</i> the variogram
+<i>&gamma;</i> equals 
+</p>
+<p align="center"><i>&gamma;(x) = cov(0) -  cov(x).</i></p>
+
+<p>Note:
+</p>
+
+<ul>
+<li><p>  The value of the covariance function or variogram
+depends also on
+<CODE><a href="RFparameters.html">RFparameters</a></CODE><code>()$PracticalRange</code>.  If the latter is
+<code>TRUE</code> and the covariance model is isotropic
+then the covariance function is internally
+rescaled such that cov<i>(1)~=0.05</i> for standard
+parameters (<code>scale=1</code>).
+</p>
+</li>
+<li><p>   Some models allow certain parameter combinations only for certain
+dimensions.  As any model valid in <i>d</i> dimensions is also valid in 1
+dimension, the default in <code>CovarianceFct</code> and <code>Variogram</code>
+is <code>dim=1</code>.
+</p>
+</li></ul>
+
+
+
+<h3>Value</h3>
+
+<p><code>CovarianceFct</code> returns a vector of values of the covariance
+function.
+</p>
+<p><code>Variogram</code> returns a vector of values of the variogram model.
+</p>
+<p><code>CovMatrix</code> return a covariance matrix. Here a matrix of
+of coordinates (<code>x</code>) or a vector or a matrix of <code>Distances</code>
+is expected.
+<code>CovMatrix</code> allows also for variogram models. Then negative of
+variogram matrix is returned.
+</p>
+
+
+<h3>Author(s)</h3>
+
+<p>Martin Schlather, <a href="mailto:schlather@math.uni-mannheim.de">schlather@math.uni-mannheim.de</a>
+<a href="http://ms.math.uni-mannheim.de">http://ms.math.uni-mannheim.de</a>
+</p>
+
+
+<h3>References</h3>
+
+<p>Overviews:
+</p>
+
+<ul>
+<li><p> Chiles, J.-P. and Delfiner, P. (1999)
+<EM>Geostatistics. Modeling Spatial Uncertainty.</EM>
+New York: Wiley.
+</p>
+</li>
+<li><p>  Gneiting, T. and Schlather, M. (2004)
+Statistical modeling with covariance functions.
+<EM>In preparation.</EM>
+</p>
+</li>
+<li><p> Schlather, M. (1999) <EM>An introduction to positive definite
+functions and to unconditional simulation of random fields.</EM>
+Technical report ST 99-10, Dept. of Maths and Statistics,
+Lancaster University.
+</p>
+</li>
+<li><p> Schlather, M. (2002) Models for stationary max-stable
+random fields. <EM>Extremes</EM> <B>5</B>, 33-44.
+</p>
+</li>
+<li><p> Yaglom, A.M. (1987) <EM>Correlation Theory of Stationary and
+Related Random Functions I, Basic Results.</EM>
+New York: Springer.
+</p>
+</li>
+<li><p> Wackernagel, H. (2003) <EM>Multivariate Geostatistics.</EM> Berlin:
+Springer, 3nd edition.
+</p>
+</li></ul>
+
+<p>Cauchy models, generalisations and extensions
+</p>
+
+<ul>
+<li><p> Gneiting, T. and Schlather, M. (2004)
+Stochastic models which separate fractal dimension and Hurst effect.
+<EM>SIAM review</EM> <B>46</B>, 269-282.
+</p>
+</li></ul>
+
+<p>Dagum model
+</p>
+
+<ul>
+<li><p> Porcu, E., Zini, A. and Pini, R. (2007)
+Modelling spatio-temporal data: A new variogram and covariance
+structure proposal 
+<EM>Stats. Probab. Lett.</EM>, <B>77</B>, 83-89. 
+</p>
+</li>
+<li><p> Berg, C., Mateu, J. and Porcu, E. (2008)
+The Dagum family of isotropic correlation functions
+<EM>Bernoulli</EM>, <B>14</B>, 1134-1149.
+</p>
+</li></ul>
+
+<p>Generalised fractal Brownian motion
+</p>
+
+<ul>
+<li><p> Gneiting, T. (2002) Nonseparable, stationary covariance
+functions for space-time data, <EM>JASA</EM> <B>97</B>, 590-600.
+</p>
+</li></ul>
+
+<p>Gneiting's models
+</p>
+
+<ul>
+<li><p> Gneiting, T. (1999)
+Correlation functions for atmospheric data analysis.
+<EM>Q. J. Roy. Meteor. Soc., Part A</EM> <B>125</B>, 2449-2464. 
+</p>
+</li></ul>
+
+<p>Holeeffect model
+</p>
+
+<ul>
+<li><p> Zastavnyi, V.P. (1993)
+Positive definite functions depending on a norm.
+<EM>Russian Acad. Sci. Dokl. Math.</EM> <B>46</B>, 112-114. 
+</p>
+</li></ul>
+
+<p>Hyperbolic model
+</p>
+
+<ul>
+<li><p> Shkarofsky, I.P. (1968) Generalized turbulence space-correlation and
+wave-number spectrum-function pairs. <EM>Can. J. Phys.</EM> <B>46</B>,
+2133-2153.
+</p>
+</li></ul>
+
+<p>fractalB
+</p>
+
+<ul>
+<li><p>  Stein, M.L. (2002)
+Fast and exact simulation of fractional Brownian surfaces.
+<EM>J. Comput. Graph. Statist.</EM> <B>11</B>, 587-599.
+</p>
+</li></ul>
+
+<p>genB
+</p>
+
+<ul>
+<li><p> Schlather, M. (2010)
+On some covariance models based on normal scale mixtures.
+<EM>Bernoulli</EM>, <B>16</B>, 780-797.
+</p>
+</li></ul>
+
+<p>lgd
+</p>
+
+<ul>
+<li><p> Gneiting, T. and Schlather, M. (2004)
+Stochastic models which separate fractal dimension and Hurst effect.
+<EM>SIAM review</EM> 
+</p>
+</li></ul>
+
+<p>Power model
+</p>
+
+<ul>
+<li><p> Golubov, B.I. (1981) On Abel-Poisson type and Riesz means,
+<EM>Analysis Mathematica</EM> <B>7</B>, 161-184.
+</p>
+</li>
+<li><p>  Zastavnyi, V.P. (2000) On positive definiteness of some
+functions, <EM>J. Multiv. Analys.</EM> <B>73</B>, 55-81.
+</p>
+</li></ul>
+
+
+
+<h3>See Also</h3>
+
+<p><CODE><a href="Covariance.html">sophisticated</a></CODE>,
+<CODE><a href="EmpiricalVariogram.html">EmpiricalVariogram</a></CODE>,
+<CODE><a href="GetRegisterInfo.html">GetModel</a></CODE>,
+<CODE><a href="GetPracticalRange.html">GetPracticalRange</a></CODE>,
+<CODE><a href="parameter.range.html">parameter.range</a></CODE>,
+<code><a href="RandomFields.html">RandomFields</a></code>,
+<CODE><a href="RFparameters.html">RFparameters</a></CODE>,
+<CODE><a href="ShowModels.html">ShowModels</a></CODE>.</p>
+
+
+<h3>Examples</h3>
+
+<pre>
+
+
+PrintModelList()
+x &lt;- 0:100
+
+## the following five model definitions are the same!
+## 
+## (1) very traditional form
+(cv &lt;- CovarianceFct(x, model="bessel", param=c(NA,2,1,5,0.5)))
+plot(x, cv)
+
+
+## (2) above model in the very general list definition
+model &lt;- list("+",
+              list("$", var=2, scale=5, list("bessel", 0.5)),
+              list("nugget"))
+cv &lt;- CovarianceFct(x, model=model)
+points(x, cv, col="red", pch=20) ## no differnce to first
+
+
+
+## (3) nested model definition
+## this kind of definiton models is depreciated from Version 2.0 on
+cv &lt;- CovarianceFct(x, model="bessel",
+                  param=rbind(c(2, 5, 0.5), c(1, 0, 0)))
+points(x, cv, col="blue", pch=20, cex=0.5) 
+ 
+
+## (4) anisotropic notation
+ model &lt;- list("+",
+               list("$", var=2, aniso=as.matrix(0.2),
+                    list("bessel", nu=0.5)
+                   ),
+               list("nugget")
+              ) 
+cv &lt;- CovarianceFct(as.matrix(x), model=model)
+points(x, cv, col="green", pch=4) 
+ 
+
+
+## Depreciated list defintions in Version 1.x
+## this way of defining a model still works, but
+## is not supported anymore
+## (isotropic version)
+model &lt;- list(list(model="bessel", var=2, kappa=0.5, scale=5),
+              "+",
+              list(model="nugget", var=1, scale=1))
+cv &lt;- CovarianceFct(x, model=model)
+points(x, cv, col="black", pch=5) 
+
+</pre>
+
+<hr><div align="center">[Package <em>RandomFields</em> version 2.0.66 <a href="00Index.html">Index</a>]</div>
+</body></html>

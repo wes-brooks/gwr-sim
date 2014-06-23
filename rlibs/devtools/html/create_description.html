@@ -1,0 +1,56 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<html><head><title>R: Create a default DESCRIPTION file for a package.</title>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+<link rel="stylesheet" type="text/css" href="R.css">
+</head><body>
+
+<table width="100%" summary="page for create_description {devtools}"><tr><td>create_description {devtools}</td><td align="right">R Documentation</td></tr></table>
+
+<h2>Create a default DESCRIPTION file for a package.</h2>
+
+<h3>Description</h3>
+
+<p>Create a default DESCRIPTION file for a package.
+</p>
+
+
+<h3>Usage</h3>
+
+<pre>
+  create_description(path,
+    extra = getOption("devtools.desc"), quiet = FALSE)
+</pre>
+
+
+<h3>Arguments</h3>
+
+<table summary="R argblock">
+<tr valign="top"><td><code>path</code></td>
+<td>
+<p>path to package root directory</p>
+</td></tr>
+<tr valign="top"><td><code>extra</code></td>
+<td>
+<p>a named list of extra options to add to
+&lsquo;<span class="file">DESCRIPTION</span>&rsquo;</p>
+</td></tr>
+<tr valign="top"><td><code>quiet</code></td>
+<td>
+<p>if <code>TRUE</code>, suppresses output from this
+function.</p>
+</td></tr>
+</table>
+
+
+<h3>Details</h3>
+
+<p>To set the default author and licenses, set
+<code>options</code> <code>devtool.author</code> and
+<code>devtool.license</code>.  I use
+<code>options(devtools.author = '"Hadley Wickham
+  &lt;h.wickham@gmail.com&gt; [aut,cre]"', devtools.license =
+  "GPL-3")</code>.
+</p>
+
+<hr><div align="center">[Package <em>devtools</em> version 1.3 <a href="00Index.html">Index</a>]</div>
+</body></html>

@@ -18,7 +18,7 @@ gaussian:
 	  --dagdir=simoutput-gaussian \
 	  --pattern=result.txt \
 	  --type=R \
-	  --version=sl5-R-2.15.3
+	  --version=sl5-R-3.1.0
 	./submit.sh gaussian
 
 

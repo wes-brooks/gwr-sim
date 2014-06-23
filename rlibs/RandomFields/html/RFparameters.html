@@ -1,0 +1,1104 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<html><head><title>R: Control Parameters</title>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+<link rel="stylesheet" type="text/css" href="R.css">
+</head><body>
+
+<table width="100%" summary="page for RFparameters {RandomFields}"><tr><td>RFparameters {RandomFields}</td><td align="right">R Documentation</td></tr></table>
+
+<h2>Control Parameters</h2>
+
+<h3>Description</h3>
+
+<p><code>RFparameters</code> sets and returns control parameters for the simulation
+of random fields
+</p>
+
+
+<h3>Usage</h3>
+
+<pre>
+   RFparameters(..., no.readonly=FALSE)
+</pre>
+
+
+<h3>Arguments</h3>
+
+<table summary="R argblock">
+<tr valign="top"><td><code>...</code></td>
+<td>
+<p>arguments in <code>tag = value</code> form, or a list of tagged
+values.</p>
+</td></tr>
+<tr valign="top"><td><code>no.readonly</code></td>
+<td>
+<p>If <CODE>RFparameters</CODE> is called without
+parameter then all parameters are returned in a list. If
+<code>no.readonly=TRUE</code> then only rewritable parameters are returned.
+</p>
+</td></tr>
+</table>
+
+
+<h3>Details</h3>
+
+<p>The possible parameters are
+</p>
+<p><B>General options</B><br>
+</p>
+
+<dl>
+<dt><code>PracticalRange</code></dt><dd><p>logical or .
+If not <code>FALSE</code> the range of the <STRONG>primitive</STRONG>
+covariance functions is
+adjusted so that cov(1) is zero for models with finite range.
+The value of 
+cov(1) is about 0.05 (for <code>scale=1</code>)
+for models without range.
+See <CODE><a href="CovarianceFct.html">CovarianceFct</a></CODE> or type
+<CODE>PrintModelList()</CODE>
+for the list of
+primitive models.
+</p>
+
+<ul>
+<li> <p><code>FALSE</code> : the practical range ajustment is not used.
+</p>
+</li>
+<li> <p><code>TRUE</code> : <code>PracticalRange</code> is applicable only if
+the value is known exactly, or, at least, can be approximated by
+a closed formula.
+</p>
+</li>
+<li> <p><code>2</code> : if the practical range is not known exactly it
+is approximated numerically.	
+</p>
+</li></ul>
+
+<p>Default: <code>FALSE</code> [init].</p>
+</dd>
+<dt><code>PrintLevel</code></dt><dd><p>If <code>PrintLevel</code><i>&lt;=0</i>
+there is not any output on the screen.  The
+higher the number the more tracing information is given. 
+Default: 1 [init, do].<br>
+1 : error messages<br>
+2 : messages about partial failures of the algorithm<br>
+&gt;2 : additional informations
+</p>
+<p>Note that <code>PrintLevel</code> is also used in other packages
+as a default, for example in SoPhy
+(<CODE>risk.index</CODE> and  <CODE>create.roots</CODE>). The changing of
+<code>PrintLevel</code> here may cause some unexpected effects in these
+functions. See the documentation there.
+</p>
+</dd>
+</dl>
+
+
+<p><B>General options for simulating</B><br>
+</p>
+
+<dl>
+<dt><code>pch</code></dt><dd><p>Character or empty string.
+The character is printed after each
+performed simulation if more than one simulation is performed at
+once. If <code>pch='!'</code> then an absolute
+counter is shown instead of the character.
+If <code>pch='%'</code> then a
+counter of percentages is shown instead of the character.
+Note that also '<i>^</i>H's are printed in
+the last two cases, 
+which may have undesirable interactions with some few other R
+functions, e.g.  <CODE><a href="../../utils/html/Sweave.html">Sweave</a></CODE>.
+Default: <code>'*'</code> [do]. 
+</p>
+</dd>
+<dt><code>Storing</code></dt><dd><p>Logical.
+If <code>FALSE</code> then the intermediate results are
+destroyed after the simulation of the random field(s)
+or if an error had occured.
+</p>
+<p>On the other hand, if <code>Storing=TRUE</code>, then
+several simulations performed with <code>DoSimulateRF</code> for the same
+model parameters are performed faster.
+</p>
+<p>See alse <code>CE.several</code>, <code>TBMCE.several</code> and
+<code>local.several</code> for related parameters.
+</p>
+<p>Default: <code>FALSE</code> [do].
+</p>
+</dd>
+<dt><code>skipchecks</code></dt><dd><p>logical.
+If <code>TRUE</code>, the check whether the given parameter values
+and the dimension are within the allowed range is skipped.
+Do not change the value of this variable except you really
+know what you do.
+</p>
+<p>Default: <code>FALSE</code> [init].      
+</p>
+</dd>
+<dt><code>stationary.only</code></dt><dd><p>Logical or NA. Used for the automatic
+choice of methods. See also <a href="RFMethods.html">RFMethods</a>.
+</p>
+
+<ul>
+<li> <p><code>TRUE</code>: the simulation of non-stationary random
+fields is refused. In particular, the intrinsic
+embedding method is excluded and
+the simulation of Brownian motion is rejected.
+</p>
+</li>
+<li> <p><code>FALSE</code>: intrinsic embedding is always allowed,
+actually it's the first one considered in the automatic
+selection algorithm.
+</p>
+</li>
+<li> <p><code>NA</code>: the simulation of the Brownian motion allowed,
+but intrinsic embedding is not used for stationary random fields.
+</p>
+</li></ul>
+
+<p>Default: <code>NA</code> [init].</p>
+</dd>
+<dt><code>exactness</code></dt><dd><p>logical or NA.
+</p>
+
+<ul>
+<li> <p><code>TRUE</code>: add.MPP, hyperplanes and
+all turning bands methods are excluded.
+If the circulant embedding method is considered as badly
+behaved, then the matrix decomposition methods are preferred.
+</p>
+</li>
+<li> <p><code>FALSE</code>: if the circulant embedding method is
+considered as badly behaved or the number of points to be
+simulated is large, the turning bands methods are
+rather preferred.
+</p>
+</li>
+<li> <p><code>NA</code>: approximative non-exact methods are excluded,
+i.e. TBM2 if the Abel transform of the covariance function
+cannot be given explicitely.
+</p>
+</li></ul>
+
+<p>Default: <code>NA</code> [init].
+</p>
+</dd>
+<dt><code>every</code></dt><dd><p>integer.
+if greater than zero, then every <code>every</code>th iteration is
+printed if simulated by TBM or random coin method.
+Default: <code>0</code> [do].
+</p>
+</dd>
+<dt><code>aniso</code></dt><dd><p>logical.
+If <code>TRUE</code> missing anisotropy parameter
+or scale parameter in model <code>$</code> are
+intepreted as identity matrix. If <code>FALSE</code>
+missing anisotropy or scale parameter is intepreted
+as scale parameter of value 1.0. The latter coding tends to faster
+simulation, but also to more error messages. The parameter should
+be changed only by advanced users.
+Default: <code>TRUE</code> [init].
+</p>
+</dd>
+</dl>
+
+
+<p><B>Options for simulating with the standard circulant embedding method</B><br>
+</p>
+
+<dl>
+<dt><code>CE.force</code></dt><dd><p>Logical.  Circulant embedding does not work if a
+certain circulant
+matrix has negative eigenvalues.  Sometimes it is convenient
+to replace all the negative eigenvalues by zero
+(<code>CE.force=TRUE</code>) after <code>CE.trials</code> number of trials. 
+Default: <code>FALSE</code> [init].
+</p>
+</dd>
+<dt><code>CE.mmin</code></dt><dd><p>Scalar or vector, integer if positive.
+<code>CE.mmin</code> determines the initial size of the circulant
+matrix. If <code>CE.mmin=0</code> the minimal starting size is
+determined automatically according to the
+dimensions of the grid.
+If <code>CE.mmin&gt;0</code> then the absolute starting size is given.
+If <code>CE.mmin&lt;0</code> then the automatically determined
+matrix size is multiplied
+by <i>|\code{CE.mmin}|</i>; here <code>CE.mmin</code> must be smaller
+than -1; the 
+value -1 takes over the minimal starting size.<br>
+Note: in any cases, the initial size might be increased according
+to <code>CE.useprimes</code>.<br>
+Default: <code>0</code> [init].</p>
+</dd>
+<dt><code>CE.strategy</code></dt><dd><p>0 : if the circulant
+matrix has negative eigenvalues then the
+size in each direction is doubled; <br> 1 : the size is enhanced only in
+one direction, namely that one where the covariance function has the
+largest value at the end point of the grid &mdash; note that
+the default value of <code>CE.trials</code> is probably too small
+in that case.
+</p>
+<p>In some cases <code>CE.strategy=0</code> works better, in other cases
+<code>CE.strategy=1</code>. Just try.
+</p>
+<p>Default: <code>0</code>
+[init].</p>
+</dd>
+<dt><code>CE.maxmem</code></dt><dd>
+<p>maximal total size of the circulant matrix. 
+The total amount of memory needed for the internal calculations
+is about 16 (=2 * sizeof(double))
+times as large as <code>CE.maxmem</code>
+if <CODE><a href="RFparameters.html">RFparameters</a></CODE><code>()$Storing=FALSE</code>
+and 32 (=4 * sizeof(double)) time as large if <code>Storing=TRUE</code>.
+</p>
+<p>Note that <code>CE.maxmem</code> can be used to control the automatic
+choice of the simulation algorithm. Namely, in case of huge
+circulant matrices, other simulation
+methods (TBM) are faster and might be preferred be the user.
+</p>
+<p>Default: <code>4096^2 = 16777216</code> [init].
+</p>
+</dd>
+<dt><code>CE.tolIm</code></dt><dd>
+<p>If the modulus of the imaginary part is less than
+<code>CE.tolIm</code> then the eigenvalue is considered as real. 
+Default: <code>1E-3</code> [init].</p>
+</dd>
+<dt><code>CE.tolRe</code></dt><dd>
+<p>Eigenvalues between <code>CE.tolRe</code> and 0 are considered as
+0 and set 0.  Default: <code>-1E-7</code> [init].</p>
+</dd>
+<dt><code>CE.trials</code></dt><dd>
+<p>A larger circulant matrix is likely to make more eigenvalues
+non-negative. If at least one of the thresholds <code>CE.tolRe</code> and
+<code>CE.tolIm</code> are missed then the matrix size is doubled
+according to <code>CE.strategy</code>,
+and the matrix is checked again.  This procedure is repeated
+up to <code>CE.trials-1</code> times.  If there are still negative
+eigenvalues, the simulation method fails if <code>CE.force=FALSE</code>. 
+Default: <code>3</code> [init].
+</p>
+</dd>
+<dt><code>CE.several</code></dt><dd><p>logical.
+If <code>FALSE</code> only half the memory is need, but
+only a single independent realisation can created.
+Default: <code>TRUE</code> [init].
+</p>
+</dd>
+<dt><code>CE.useprimes</code></dt><dd><p>Logical.  If <code>FALSE</code>
+the columns of the circulant matrix
+have length <i>2^k</i> for some <i>k</i>.  Otherwise the algorithm
+tries to find a nicely factorizable number close to the size of the
+given matrix.  Default: <code>TRUE</code>  [init].</p>
+</dd>
+<dt><code>CE.dependent</code></dt><dd><p>Logical.  If <code>FALSE</code>
+then independent random fields are created. If <code>TRUE</code>
+then at least 4 non-overlapping rectangles are taken out of the
+the expanded grid defined by the circulant matrix.
+These simulations are dependent.
+See below for an example.
+See <code>CE.trials</code> for some
+more information on the circulant matrix.
+Default: <code>FALSE</code> [init].</p>
+</dd>
+<dt><code>CE.method</code></dt><dd><p>0 or 1. Decomposition of the covariance matrix.
+This parameter
+is only relevant if multivariate random fields are simulated.
+</p>
+<p>Default (<code>CE.method=0</code>):
+If <code>.Random.seed</code> is fixed, Cholesky decomposition allows for
+fixing the random field of the first component whilst
+parameters for the second field are changed.
+If <code>CE.method=0</code> and approximate circulant embedding is
+allowed, i.e. <code>CE.force=TRUE</code>,
+SVD is tried for the last failed attempt of Cholesky
+decomposition. (SVD, in contrast to Cholesky decomposition, allows
+for approximate circulant embedding.)
+</p>
+<p>If <code>CE.method=1</code>, Cholesky
+decomposition will not be attempted, but singular value
+decomposition used instead in all attempts. (SVD is slower, but
+more precise.)
+</p>
+<p>Default: <code>0</code> [init].</p>
+</dd>
+</dl>
+
+<p><B>Options for simulating by simple matrix decomposition</B><br>
+</p>
+
+<dl>
+<dt><code>direct.bestvariables</code></dt><dd><p>integer.
+When searching for an appropriate simuation method
+the matrix decomposition method (see &lsquo;direct method&rsquo; below)
+is preferred if the number of variables is less than or equal to 
+<code>direct.bestvariables</code>.
+Default: <code>800</code> [init]</p>
+</dd>
+<dt><code>direct.maxvariables</code></dt><dd>
+<p>If the number of variables to generate is
+greater than <code>direct.maxvariables</code>, then any matrix decomposition
+method is rejected.  It is important that this option is set
+conveniently to avoid great losses of time during the automatic
+search of a simulation method (<code>method=NULL</code> in
+<CODE><a href="GaussRF.html">GaussRF</a></CODE>).  
+Default: <code>4096</code> [init]</p>
+</dd>
+<dt><code>direct.method</code></dt><dd><p>Decomposition of the covariance matrix.
+If <code>direct.method=1</code>, Cholesky
+decomposition will not be attempted, but singular value
+decomposition
+used instead if <code>direct.svdtolerance</code> positive.
+In case of a multivariate random field, <code>direct.method = 2</code>
+or 3 orders the covariance such that first all components are
+considered for the first variable, then all components for the
+second one, and so on. If <code>direct.method = 0</code> or 1
+it starts with the first component of all locations, then the
+second components follow, etc.
+</p>
+<p>Default: <code>0</code> [init].</p>
+</dd>
+<dt><code>direct.svdtolerance</code></dt><dd>
+<p>If SVD decomposition is used for calculating the square root of
+the covariance matrix then the absolute componentwise difference between
+the covariance matrix and square of the square root must be less
+than <code>direct.svdtolerance</code>. No check is performed if
+<code>direct.svdtolerance</code> is negative.
+Default: <code>1e-12</code> [init].</p>
+</dd>
+</dl>
+
+
+<p><B>Options for simulating hyperplane tessellations</B><br>
+</p>
+
+<dl>
+<dt><code>hyper.superpos</code></dt><dd><p>integer.
+number of superposed hyperplane tessellations.
+Default: <code>300</code> [do].
+</p>
+</dd>
+<dt><code>hyper.maxlines</code></dt><dd><p>integer.
+Maximum number of allowed lines.
+Default: <code>1000</code> [init].
+</p>
+</dd>
+<dt><code>hyper.mar.distr</code></dt><dd><p>integer.
+code for the marginal distribution used in the
+simulation:
+</p>
+
+<dl>
+<dt><code>0</code></dt><dd><p>uniform distribution</p>
+</dd>
+<dt><code>1</code></dt><dd><p>Frechet distribution with form parameter
+<code>hyper.mar.param</code></p>
+</dd>
+<dt><code>2</code></dt><dd><p>Bernoulli distribution (Binomial with <i>n=1</i>) with
+parameter <code>hyper.mar.param</code></p>
+</dd>
+</dl>
+
+<p>The parameter should not be changed yet.
+Default: <code>0</code> [do].
+</p>
+</dd>
+<dt><code>hyper.mar.param</code></dt><dd><p>Parameter used for the marginal
+distribution. The parameter should not be changed yet.
+Default: <code>0</code> [do].
+</p>
+</dd>
+</dl>
+
+<p><B>Options for simulating with the local ce
+methods (cutoff, intrinsic)</B><br>
+</p>
+
+<dl>
+<dt><code>local.force</code></dt><dd><p>see CE.force above.
+Default: <code>FALSE</code> [init].
+</p>
+</dd>
+<dt><code>local.mmin</code></dt><dd><p>see CE.mmin above.
+</p>
+<p>Difference: if <code>local.mmin=0</code> the automatic determination
+of the initial size of the circulant matrix takes into
+account an expansion factor. This expansion factor is
+intended to make the circulant matrix positive definite
+and is either theoretically or numerically known, or guessed.
+</p>
+<p>If the usual strategy of circulant embedding
+(doubling the grid sizes) should be taken over then
+<code>local.mmin</code> must
+be set to <code>-1</code>.
+</p>
+<p>Default: <code>0</code> [init].</p>
+</dd>    
+<dt><code>local.maxmem</code></dt><dd><p>see <code>CE.maxmem</code> above.
+Default: <code>20000000</code> [init].</p>
+</dd>
+<dt><code>local.tolIm</code></dt><dd><p>see <code>CE.tolIm</code> above.
+Default: <code>1E-7</code> [init].</p>
+</dd>
+<dt><code>local.tolRe</code></dt><dd><p>see <code>CE.tolRe</code> above.
+Default: <code>-1E-9</code> [init].</p>
+</dd>
+<dt><code>local.several</code></dt><dd><p>see <code>CE.several</code> above.  
+Default: <code>1</code> [init].</p>
+</dd>
+<dt><code>local.useprimes</code></dt><dd><p>see <code>CE.useprimes</code> above.
+Default: <code>TRUE</code> [init].</p>
+</dd>
+<dt><code>local.dependent</code></dt><dd><p>see <code>CE.dependent</code> above.
+Default: <code>FALSE</code> [init].</p>
+</dd>
+</dl>
+
+
+<p><B>Options for simulating a Gaussian Markov random fields</B>
+</p>
+
+<dl>
+<dt><code>markov.neighbours</code></dt><dd><p>2 or 3.
+Number of neighbours in each direction.
+Default: <code>2</code> [init].
+</p>
+</dd>
+<dt><code>markov.precision</code></dt><dd>
+<p>See also the GMRF manual.
+Default: <code>1.0</code> [init].
+</p>
+</dd>
+<dt><code>markov.cyclic</code></dt><dd><p>logical.
+simulation on a torus; should not be changed
+except the user knows what he/she does. (The covariance function
+will be (slightly?!) changed then without further notice!)
+Default: <code>FALSE</code> [init].
+</p>
+</dd>
+<dt><code>markov.maxmem</code></dt><dd><p>integer.
+maximum numer of points of the grid.
+Default: <code>250000</code> [init].
+</p>
+</dd>
+</dl>
+
+<p><B>Options for simulating by random coins</B><br>
+</p>
+
+<dl>
+<dt><code>mpp.locations</code></dt><dd>
+<p>integer. Way of defining the point process.<br>
+-1 : automatic choice<br>
+0 : grid<br>
+1 : Poisson point process<br>
+2 : uniform distribution<br>
+3 : single point follows d dimensional Gaussian distribution<br>
+Default: <code>-1</code> [init].
+</p>
+</dd>
+<dt><code>mpp.intensity</code></dt><dd><p>real.
+Number of superposed
+realisations (to approximate the normal distribution; total number
+for all (additive) components with same anisotropy);
+if <code>mpp.intensity&lt;=0.0</code> then only a single
+value is simulated (for checking).
+Default: <code>100</code> [do].</p>
+</dd>
+<dt><code>mpp.plus</code></dt><dd>
+<p>In order avoid edge effects, the simulation area is enlarged by
+a constant <i>r</i> so that all marks have their
+(supposed) support in the ball with radius <i>r</i> centred at
+the origin; see also <code>mpp.approxzero</code>.
+If <code>mpp.plus&gt;0</code> the true radius <i>r</i> is replaced by
+<code>mpp.radius</code>.
+Default: <code>0.0</code> [init].</p>
+</dd>
+<dt><code>mpp.relRadius</code></dt><dd>
+<i>\code{mpp.relRadius} / V</i><p> is added to the effectiveRadius.
+The latter gives the approximate radius for the support of the
+grain.
+Default: <code>2.5</code> [init].
+</p>
+</dd>
+<dt><code>mpp.approxzero</code></dt><dd><p>Functions that
+do not have 
+compact support are set to zero outside the ball outside for which the
+function has absolute values less than <code>MPP.approxzero</code>. 
+Default: <code>0.001</code> [init].</p>
+</dd>
+<dt><code>mpp.samplingdist</code></dt><dd>
+<p><code>mpp.samplingdist</code> gives the grid distance
+to numerically approximate the volume of the grain.
+<code>[-mpp.samplingr,mpp.sampling]^d </code> gives the
+domain over which the approximation is calculated.
+</p>
+<p>Default: <code>0.01</code> [init].
+</p>
+</dd>
+<dt><code>mpp.samplingr</code></dt><dd>
+<p>see <code>mpp.samplingdist</code>
+Default: <code>5</code> [init].
+</p>
+</dd>
+</dl>
+
+<p><B>Options for simulating nugget effects</B><br>
+Simulating a nugget effect seems trivial. It gets complicated
+and best methods (including <code>direct</code> and <code>circulant
+    embedding</code>!) fail if zonal anisotropies are considered,
+where sets of points have to be identified that belong to the
+same subspace of eigenvalue 0 of the anisotropy matrix.
+</p>
+
+<dl>
+<dt><code>nugget.tol</code></dt><dd>
+<p>points at a distance less than or equal to <code>nugget.tol</code>
+are considered as being identical. This strategy applies to
+the simulation method and the covariance function itself.
+Hence, the covariance function is only positive definite
+if <code>nugget.tol=0.0</code>. However, if the anisotropy matrix
+does not have full rank and <code>nugget.tol=0.0</code> then,
+the simulations are likely to be odd. 
+The value of <code>nugget.tol</code>
+should be of order <i>1e-15</i>. 
+Default: <code>0.0</code> [init].
+</p>
+</dd>
+<dt><code>nugget.meth</code></dt><dd>
+<p>logical. If <code>TRUE</code> any method given the user for the
+simulation of the nugget effect is replaced by the method
+&lsquo;nugget&rsquo; whenever appropriate (zonal nugget or a method
+different form circulant embedding, direct and sequential).
+</p>
+</dd>
+</dl>
+
+<p><B>Options for using the sequential method</B><br>
+The method works only for spatio-temporal settings (and
+grids).
+</p>
+
+<dl>
+<dt><code>sequ.max</code></dt><dd><p>integer.
+maximum number of allowed variables on which
+the conditional distribution is conditionned.
+Default: <code>5000</code> [init].
+</p>
+</dd>
+<dt><code>sequ.back</code></dt><dd><p>integer.
+number of previous instances on which
+the algorithm should condition.
+If less than one then the number of previous instances
+equals <code>sequ.max</code> / (number of spatial points).
+Default: <code>5</code> [init].
+</p>
+</dd>
+<dt><code>sequ.initial</code></dt><dd>
+<p>First, N=(number of spatial points) * <code>sequ.back</code>
+number of points are simulated. Then, sequentially,
+all spatial points for the next time instance
+are simulated at once, based on the previous <code>sequ.back</code>
+instances. The distribution of the first N points
+is the correct distribution, but
+differs, in general, from the distribution of the sequentially
+simulated variables. We prefer here to have the same distribution
+all over (although only approximatively the correct one),
+hence do some initial sequential steps first.
+If <code>sequ.initial</code> is non-negative, then <code>sequ.initial</code>
+first steps are performed.
+If <code>sequ.initial</code> is negative, then
+<code>sequ.back</code> -  <code>sequ.initial</code>
+initial steps are performed. The latter ensures that
+none of the very first N variables are returned.
+Default: <code>-10</code> [init].
+</p>
+</dd>
+</dl>
+
+<p><B>Options for special simulation methods</B><br>
+Special methods exist for the following covariance functions
+</p>
+
+<dl>
+<dt>spatialMA1</dt><dd>
+<p>this covariance function is simulated by
+a certain moving average of a spatially independent,
+but temporally dependent random field <i>Y</i>.
+</p>
+
+<dl>
+<dt><code>spec.MA.r</code></dt><dd><p>gives the radius beyond which the bivariate
+standard normal density is considered as being zero
+Default: <code>2.5</code> [init].
+</p>
+</dd>
+<dt><code>spec.MA.dist</code></dt><dd><p>the random field <i>Y</i> is
+approximated by a grid; the grid length is given by
+<code>spec.MA.dist</code>.
+Default: <code>0.1</code> [init].
+</p>
+</dd>
+</dl>
+
+</dd>
+</dl>
+
+<p><B>Options for simulating with a turning bands method</B><br>
+Currently, there are 3 variants of the turning bands method
+implemented:
+</p>
+
+<dl>
+<dt><code>spectral</code></dt><dd><p>The spectral turning bands method
+is implemented for 2 (and 1)
+dimensions only.</p>
+</dd>
+<dt><code>TBM2</code></dt><dd><p>It is based on the two dimensional turning bands operator
+and is applicable for 1 and 2 dimensions. As an additional dimension
+the time dimension can be added.
+</p>
+</dd>
+<dt><code>TBM3</code></dt><dd><p>It is based on the three dimensional turning bands operator
+and is applicable for 1,2,3 dimensions. As an additional dimension
+the time dimension can be added.
+</p>
+</dd>
+</dl>
+
+<p>The following parameters are used. 
+</p>
+
+<dl>
+<dt><code>spectral.grid</code></dt><dd><p>Logical.
+The angle of the lines is random if
+<code>spectral.grid=FALSE</code>, 
+and <i>k*pi/</i><code>spectral.lines</code>
+for <i>k</i> in <code>1:spectral.lines</code>,
+otherwise. This parameter is only considered
+if the spectral measure, not the density is used.
+Default: <code>TRUE</code> [do].</p>
+</dd>
+<dt><code>spectral.ergodic</code></dt><dd>
+<p>In case of an additive model and <code>spectral.ergodic=FALSE</code>,
+the additive component are chosen proportional to their
+variance. In total <code>spectral.lines</code> are simulated. If
+<code>spectral.ergodic=TRUE</code>, the components are simulated
+separately and then added.
+Default: <code>FALSE</code> [do].
+</p>
+</dd>
+<dt><code>spectral.lines</code></dt><dd>
+<p>Number of lines used (in total for all additive components of the
+covariance function).  Default: <code>500</code> [do].</p>
+</dd>
+<dt><code>spectral.metro</code></dt><dd>
+<p>Logical. If <code>TRUE</code> then preference is given
+to the (slower) metropolis sampling algorithm of the spectral
+density.
+Default: <code>FALSE</code> [init].
+</p>
+</dd>
+<dt><code>spectral.nmetro</code></dt><dd><p>integer. Considered if the Metropolis
+algorithm is used. It gives the number of metropolis steps
+before returning the next draw from the spectral density.
+If  <code>spectral.nmetro</code>
+is not positive then<code>RandomFields</code> tries to find a good
+choice for 
+<code>spectral.nmetro</code> by itself.
+Default: <code>0</code> [init].
+</p>
+</dd>
+<dt><code>spectral.sigma</code></dt><dd><p>real. Considered if the Metropolis
+algorithm is used. It gives the standard deviation of the
+multivariate normal distribution of the proposing
+distribution.
+If <code>spectral.sigma</code>
+is not positive then<code>RandomFields</code> tries to find a good
+choice for 
+<code>spectral.sigma</code>  itself.
+Default: <code>0</code> [init].
+</p>
+</dd>
+</dl>
+
+
+
+
+<dl>
+<dt><code>TBM.method</code></dt><dd><p>character.
+The preferred method to simulate on the line for <code>TBM2</code> and
+<code>TBM3</code>;
+If &lsquo;Nothing&rsquo; then automatic choice.
+Default: <code>"Nothing"</code> [init].
+</p>
+</dd>
+<dt><code>TBM.center</code></dt><dd><p>Scalar or vector.
+If not <code>NA</code>, the <code>TBM.center</code> is used as the center of
+the turning bands for <code>TBM2</code> and <code>TBM3</code>.
+Otherwise the center is determined
+automatically such that the line length is minimal.
+See also <code>TBM.points</code> and the examples below.
+Default: <code>NA</code>  [init].
+</p>
+</dd>
+<dt><code>TBM.points</code></dt><dd><p>integer. If greater than 0,
+<code>TBM.points</code> gives the number of points simulated on the TBM
+line, hence 
+must be greater than the minimal number of points given by
+the size of the simulated field and the two paramters
+<code>TBMx.linesimufactor</code> and <code>TBMx.linesimustep</code>.
+If <code>TBM.points</code> is not positive the number of points is
+determined automatically.
+The use of <code>TBM.center</code> and <code>TBM.points</code> is highlighted
+in an example below.
+Default: <code>0</code>  [init].
+</p>
+</dd>
+<dt><code>TBM2.every</code></dt><dd><p>If <code>TBM2.every&gt;0</code> then every
+<code>TBM2.every</code>th iteration is announced.
+Default: <code>0</code> [do].</p>
+</dd>
+<dt><code>TBM2.lines</code></dt><dd>
+<p>Number of lines used.
+Default: <code>60</code> [do].</p>
+</dd>
+<dt><code>TBM2.linesimufactor</code></dt><dd> <p><code>TBM2.linesimufactor</code> or
+<code>TBM2.linesimustep</code> must be non-negative; if
+<code>TBM2.linesimustep</code>
+is positive then <code>TBM2.linesimufactor</code> is ignored.
+If both
+parameters are naught then <code>TBM.points</code> is used (and must be
+positive).
+The grid on the line is <code>TBM2.linesimufactor</code>-times
+finer than the smallest distance. 
+See also <code>TBM2.linesimustep</code>. 
+Default: <code>2.0</code> [init].</p>
+</dd>
+<dt><code>TBM2.linesimustep</code></dt><dd>
+<p>If <code>TBM2.linesimustep</code> is positive the grid on the line has lag
+<code>TBM2.linesimustep</code>. 
+See also <code>TBM2.linesimufactor</code>. 
+Default: <code>0.0</code> [init].</p>
+</dd>
+<dt><code>TBM2.layers</code></dt><dd>
+<p>Logical or integer. If <code>TRUE</code> then the turning layers are used whenever
+a time component is given.
+If <code>FALSE</code> the turning layers are used only when the
+traditional TBM is not applicable.
+If negative then turning layers may never be used.
+If greater than 1 then only turning layers may be used. 
+Default: <code>FALSE</code> [init].</p>
+</dd>
+</dl>
+
+
+
+
+
+
+
+<dl>
+<dt><code>TBM3.every</code></dt><dd><p>If <code>TBM3.every&gt;0</code> then every
+<code>TBM3.every</code>th iteration is announced.
+Default: <code>0</code> [do].</p>
+</dd>
+<dt><code>TBM3.lines</code></dt><dd> 
+<p>Number of lines used. 
+Default: <code>500</code> [do].</p>
+</dd>
+<dt><code>TBM3.linesimufactor</code></dt><dd><p>See <code>TBM2.linesimufactor</code> for
+the meaning.
+Default: <code>2.0</code> [init].</p>
+</dd>
+<dt><code>TBM3.linesimustep</code></dt><dd><p>See 
+<code>TBM2.linesimustep</code> for the meaning.   
+Default: <code>0.0</code> [init].</p>
+</dd>
+<dt><code>TBM3.layers</code></dt><dd><p>See 
+<code>TBM2.layers</code> for the meaning.   
+Default: <code>FALSE</code> [init].</p>
+</dd>
+<dt><code>TBMCE.force</code></dt><dd><p>see <code>TBM.method</code> and <code>CE.force</code>
+Default: <code>FALSE</code> [init].</p>
+</dd>
+<dt><code>TBMCE.mmin</code></dt><dd><p>see <code>TBM.method</code> and 
+<code>CE.mmin</code>.  Default: <code>0</code> [init].</p>
+</dd>
+<dt><code>TBMCE.strategy</code></dt><dd><p>see <code>TBM.method</code> and
+<code>CE.strategy</code>.  Default: <code>0</code> [init].</p>
+</dd> 
+<dt><code>TBMCE.maxmem</code></dt><dd><p>see <code>TBM.method</code> and
+<code>CE.maxmem</code>.  Default: <code>10000000</code> [init].</p>
+</dd> 
+<dt><code>TBMCE.tolIm</code></dt><dd><p>see <code>TBM.method</code> and
+<code>CE.tolIm</code>.  Default: <code>1E-3</code> [init].</p>
+</dd> 
+<dt><code>TBMCE.tolRe</code></dt><dd><p>see <code>TBM.method</code> and
+<code>CE.tolRe</code>. Default: <code>-1E-7</code> [init].</p>
+</dd> 
+<dt><code>TBMCE.trials</code></dt><dd><p>see <code>TBM.method</code> and
+<code>CE.trials</code>.  Default: <code>3</code> [init].</p>
+</dd> 
+<dt><code>TBMCE.useprimes</code></dt><dd><p>see <code>TBM.method</code> and
+<code>CE.useprimes</code>.  Default: <code>TRUE</code> [init].</p>
+</dd> 
+<dt><code>TBMCE.dependent</code></dt><dd><p>see <code>TBM.method</code> and <code>CE.dependent</code>.
+Default: <code>FALSE</code> [init].</p>
+</dd>
+</dl>
+
+
+<p><B>Options specific to simulating max-stable random fields</B>
+</p>
+
+<dl>
+<dt><code>maxstable.maxGauss</code></dt><dd><p>Max-stable random fields.
+The simulation of the max-stable process based on random fields uses
+a stopping rule that necessarily needs a finite upper endpoint
+of the marginal distribution of the random field.
+In the case of extremal Gaussian random fields,
+see <CODE><a href="MaxStableRF.html">MaxStableRF</a></CODE>, the upper endpoint is
+approximated by <code>maxstable.maxGauss</code>.
+Default: <code>3.0</code> [init].
+</p>
+</dd>
+</dl>
+
+<p><B>General comments on the options</B>
+<br>
+The following refers to the simulation of Gaussian random fields
+(<CODE><a href="GaussRF.html">InitGaussRF</a></CODE>, <CODE><a href="GaussRF.html">GaussRF</a></CODE>), but most
+parts also apply
+for the simulation of max-stable random fields
+(<CODE><a href="MaxStableRF.html">InitMaxStableRF</a></CODE>, <CODE><a href="MaxStableRF.html">MaxStableRF</a></CODE>).
+</p>
+<p>Some of the global parameters determine the basic settings of a
+simulation, e.g. <code>direct.method</code> (which chooses a square
+root of a positive definite matrix).  The values of
+such parameters are read by
+<CODE><a href="GaussRF.html">InitGaussRF</a></CODE> and stored in an internal register.
+Changing
+such a parameter between calling <CODE><a href="GaussRF.html">InitGaussRF</a></CODE> and calling
+<CODE><a href="SimulateRF.html">DoSimulateRF</a></CODE> or between subsequent calls of
+<CODE><a href="GaussRF.html">GaussRF</a></CODE> will not have any effect.  These parameters have
+the flag &quot;[init]&quot;.
+</p>
+<p>Parameters like <code>TBM2.lines</code> (which determines the number of
+i.i.d. processes to be simulated on the line)
+are only relevant when generating
+random numbers.  These parameters are read by <code>DoSimulateRF</code>
+(or by the second part of <CODE><a href="GaussRF.html">GaussRF</a></CODE>), and
+are marked by &quot;[do]&quot;.
+</p>
+<p><code>Storing</code> has an influence on both, <CODE><a href="GaussRF.html">InitGaussRF</a></CODE> and
+<CODE><a href="SimulateRF.html">DoSimulateRF</a></CODE>.  <CODE><a href="GaussRF.html">InitGaussRF</a></CODE> may reserve
+more memory if <code>Storing=TRUE</code>.  <CODE><a href="SimulateRF.html">DoSimulateRF</a></CODE> will
+free the register
+if <code>Storing=FALSE</code>, whatever the value of <code>Storing</code> was
+when <CODE><a href="GaussRF.html">InitGaussRF</a></CODE> was called. 
+</p>
+<p>The distinction between [init] and [do] is also relevant if 
+<CODE><a href="GaussRF.html">GaussRF</a></CODE> is used and called a second time
+with the same parameters for the random field and if
+<code>RFparameters()$Storing=TRUE</code>.  
+Then <CODE><a href="GaussRF.html">GaussRF</a></CODE> realises that the second call has the
+same random field parameters, and
+takes over the stored intermediate results (that have been calculated
+with the <code>RFparameters()</code> at that time).  To prevent the use of
+stored intermediate results or to take into account intermediate
+changes of RFparameters
+set <code>RFparameters(Storing=FALSE)</code> or use
+<CODE><a href="Registers.html">DeleteRegister</a>()</CODE> between calls of <code>GaussRF</code>.
+</p>
+<p>A programme that checks whether the parameters are well
+adapted to a specific simulation problem is given as an example of
+<CODE><a href="EmpiricalVariogram.html">EmpiricalVariogram</a>()</CODE>.
+</p>
+<p>For further details on the implemented methods, see <a href="RFMethods.html">RFMethods</a>.
+</p>
+
+
+<h3>Value</h3>
+
+<p>If any parameter has been given
+<code>RFparameters</code> returns an invisible list of
+the given parameters in full name.
+</p>
+<p>Otherwise the complete list of parameters is returned. Further the
+values of the following internal readonly variables are returned:
+<br>
+* <code>covmaxchar</code>:  max. name length for variogram/covariance
+models
+<br>
+* <code>covnr</code>: number of currently implemented
+variogram/covariance models
+<br>
+* <code>distrmaxchar</code>: max. name length for a distribution
+<br>
+* <code>distrnr</code>: number of currently implemented
+distributions
+<br>
+* <code>maxdim</code>: maximum number of dimensions for a
+random field
+<br>
+* <code>maxmodels</code>: maximum number of elementary models in
+definition of a complex covariance model
+<br>
+* <code>methodmaxchar</code>: max. name length for methods
+<br>
+* <code>methodnr</code>: number of currently implemented simulation methods
+</p>
+
+
+<h3>Author(s)</h3>
+
+<p>Martin Schlather, <a href="mailto:schlather@math.uni-mannheim.de">schlather@math.uni-mannheim.de</a>
+<a href="http://ms.math.uni-mannheim.de">http://ms.math.uni-mannheim.de</a></p>
+
+
+<h3>References</h3>
+
+<p>Schlather, M. (1999) <EM>An introduction to positive definite
+functions and to unconditional simulation of random fields.</EM>
+Technical report ST 99-10, Dept. of Maths and Statistics,
+Lancaster University. 
+</p>
+
+
+<h3>See Also</h3>
+
+<p><CODE><a href="GaussRF.html">GaussRF</a></CODE>,
+<CODE><a href="GetPracticalRange.html">GetPracticalRange</a></CODE>, 
+<CODE><a href="MaxStableRF.html">MaxStableRF</a></CODE>,
+<code><a href="RandomFields.html">RandomFields</a></code>,
+and <CODE><a href="RFMethods.html">RFMethods</a></CODE>.</p>
+
+
+<h3>Examples</h3>
+
+<pre>
+ RFparameters(Storing=TRUE)
+ str(RFparameters())
+
+
+############################################################
+##                                                        ##
+##       use of TBM.points and TBM.center                 ##
+##                                                        ##
+############################################################
+## The following example shows that the same realisation      
+## can be obtained on different grid geometries (or point     
+## configurations, i.e. grid, non-grid) using TBM3 (or TBM2)
+
+x1 &lt;- seq(-150,150,1)
+y1 &lt;- seq(-15, 15, 1)
+x2 &lt;- seq(-50, 50, 1)
+model &lt;- "exponential"
+param &lt;- c(0, 1, 0, 10)
+meth &lt;- "TBM3"
+
+###### simulation of a random field on long thing stripe
+runif(1)
+rs &lt;- get(".Random.seed", envir=.GlobalEnv, inherits = FALSE)
+z1 &lt;- GaussRF(x1, y1, model=model, param=param, grid=TRUE, 
+              method=meth, TBM.center=0, Storing=TRUE)
+do.call(getOption("device"), list(height=1.55, width=12))
+par(mar=c(2.2, 2.2, 0.1, 0.1))
+image(x1, y1, z1, col=rainbow(100))
+polygon(range(x2)[c(1,2,2,1)], range(y1)[c(1,1,2,2)], border="red", lwd=3)
+
+
+###### definition of a random field on a square of shorter diagonal
+assign(".Random.seed", rs, envir=.GlobalEnv)
+tbm.points &lt;- length(GetRegisterInfo(meth="TBM")$S$line)
+z2 &lt;- GaussRF(x2, x2, model=model, param=param, grid=TRUE, register=1,
+              method=meth, TBM.center=0, TBM.points=tbm.points)
+do.call(getOption("device"), list(height=4.3, width=4.3))
+par(mar=c(2.2, 2.2, 0.1, 0.1))
+image(x2, x2, z2, zlim=range(z1), col=rainbow(100))
+polygon(range(x2)[c(1,2,2,1)], range(y1)[c(1,1,2,2)], border="red", lwd=3)
+
+
+
+############################################################
+##                                                        ##
+##                   use of exactness                     ##
+##                                                        ##  
+############################################################
+
+x &lt;- seq(0, 1, 1/30)
+model &lt;- list("+",
+              list("stable", alpha=1.0),
+              list(model="gencauchy", alpha=1.0, beta=2.0)
+              )
+
+for (exactness in c(NA, FALSE, TRUE)) { 
+  readline(paste("\n\nexactness: `", exactness, "'; press return"))
+   z &lt;- GaussRF(x, x,  grid=TRUE, gridtriple=FALSE,
+                model=model, exactness=exactness,
+                stationary.only=NA, Print=1, n=1,
+                TBM2.linesimustep=1, Storing=TRUE)
+   Print(GetRegisterInfo()$meth$name)
+  }
+
+
+
+ #############################################################
+ ## The following gives a tiny example on the advantage of  ##
+ ## local.dependent=TRUE (and CE.dependent=TRUE) if in a    ##
+ ## study most of the time is spent with simulating the     ##
+ ## Gaussian random fields. Here, the covariance at a pair  ##
+ ## of points is estimated for n independentent repetitions ##
+ ## and 2*n locally dependent dependent repetitions .       ##
+ ## To get the precision, the procedure is repeated m times.##
+ #############################################################
+
+# In the example below, local.dependent speeds up the simulation
+# by about factor 16 at the price of an increased variance of
+# factor 1.5
+
+x &lt;- seq(0, 1, len=10)
+y &lt;- seq(0, 1, len=10)
+grid.size &lt;- c(length(x), length(y))
+model &lt;- list("$", var=1.1, aniso=matrix(nc=2, c(2,1,0.5,1)),
+              list(model="exp"))
+(CovarianceFct(matrix(c(1, -1), ncol=2), model=model)) ## true value
+
+m &lt;- if (interactive()) 100 else 2
+n &lt;- if (interactive()) 100 else 10
+
+# using local.dependent=FALSE (which is the default)
+c1 &lt;- numeric(m)
+unix.time(
+for (i in 1:m) {
+  cat("", i)
+  z &lt;- GaussRF(x, y, model=model, grid=TRUE, method="cu", n=n,
+               local.dependent=FALSE, pch="")
+  c1[i] &lt;- cov(z[1,length(y), ], z[length(x), 1, ])
+})  # many times slower than with local.dependent=TRUE
+mean(c1)
+sd(c1)
+
+# using local.dependent=TRUE...
+c2 &lt;- numeric(m)
+unix.time(
+for (i in 1:m) {
+  cat("", i)
+  z &lt;- GaussRF(x, y, model=model, grid=TRUE, method="cu", n=2 * n,
+               local.dependent=TRUE, pch="")
+  c2[i] &lt;- cov(z[1,length(y),], z[length(x), 1 , ])
+})
+mean(c2)
+sd(c2) # the sd is samller (using more locally dependent realisations)
+##       but it is (much) faster! For n=n2 instead of n=2 * n, the 
+##       value of sd(c2) would be larger due to the local dependencies 
+##       in the realisations.
+
+</pre>
+
+<hr><div align="center">[Package <em>RandomFields</em> version 2.0.66 <a href="00Index.html">Index</a>]</div>
+</body></html>

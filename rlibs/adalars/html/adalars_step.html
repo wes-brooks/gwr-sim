@@ -1,0 +1,67 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<html><head><title>R: Uses the lars package to select variables based on the...</title>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+<link rel="stylesheet" type="text/css" href="R.css">
+</head><body>
+
+<table width="100%" summary="page for adalars_step {adalars}"><tr><td>adalars_step {adalars}</td><td align="right">R Documentation</td></tr></table>
+
+<h2>
+Uses the lars package to select variables based on the imputed observations that come out of the censReg step.
+
+</h2>
+
+<h3>Usage</h3>
+
+<pre>
+adalars_step(y, x)
+</pre>
+
+
+<h3>Arguments</h3>
+
+<table summary="R argblock">
+<tr valign="top"><td><code>y</code></td>
+<td>
+
+
+</td></tr>
+<tr valign="top"><td><code>x</code></td>
+<td>
+
+
+</td></tr>
+</table>
+
+
+<h3>Examples</h3>
+
+<pre>
+##---- Should be DIRECTLY executable !! ----
+##-- ==&gt;  Define data, use random,
+##--	or do  help(data=index)  for the standard data sets.
+
+## The function is currently defined as
+function(y, x) {
+    result = list()
+    
+    p.max = min(dim(x)[2], dim(x)[1]-5)
+    result[['cv']] = cv.model = cv.lars(y=y, x=x, type='lar', index=1:p.max, K=dim(x)[1])
+    err.min = min(cv.model$cv)
+    err.tol = err.min + cv.model$cv.error[which.min(cv.model$cv)]
+    
+    which.tol = which(cv.model$cv&lt;err.tol)
+    
+    result[['lambda.index']] = lambda.index = min(which.tol)
+    result[['model']] = model = lars(y=y, x=x, type='lar', max.steps=p.max)
+    result[['fitted']] = predict.lars(model, newx=x, type='fit', s=lambda.index, mode='step')
+    result[['vars']] = vars = names(which(model$beta[lambda.index,]&gt;0))
+    coefs = predict.lars(model, type='coefficients', s=lambda.index, mode='step')
+    result[['coefs']] = coefs$coefficients[which(coefs$coefficients&gt;0)]
+    
+    return(result)
+  }
+</pre>
+
+<hr><div align="center">[Package <em>adalars</em> version 0.1 <a href="00Index.html">Index</a>]</div>
+</body></html>

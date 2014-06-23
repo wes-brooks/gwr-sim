@@ -6,4 +6,4 @@ Author: Wesley Brooks <brooks.wesley@gmail.com>
 Maintainer: Wesley Brooks <brooks.wesley@gmail.com>
 License: MIT
 Depends: SGL, Matrix, foreach
-Built: R 2.15.3; ; 2014-05-14 20:26:55 UTC; unix
+Built: R 3.0.2; ; 2014-06-13 21:17:23 UTC; unix

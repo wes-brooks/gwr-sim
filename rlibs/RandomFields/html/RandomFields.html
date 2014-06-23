@@ -1,0 +1,255 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<html><head><title>R: Simulation and Analysis of Random Fields</title>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+<link rel="stylesheet" type="text/css" href="R.css">
+</head><body>
+
+<table width="100%" summary="page for RandomFields {RandomFields}"><tr><td>RandomFields {RandomFields}</td><td align="right">R Documentation</td></tr></table>
+
+<h2>Simulation and Analysis of Random Fields</h2>
+
+<h3>Description</h3>
+
+<p>The package <code>RandomFields</code> allows for simulating various kinds
+of random fields, including anisotropic
+processes. Furthermore, algorithms for  
+conditional simulation and simulation of
+max-stable random fields are provided.
+</p>
+<p>Additionally, the package includes tools for analysing spatial data:
+Hurst parameter, fractal dimension, empirical variogram,
+interactive fitting of parameters, LSQ and MLE estimation of parameters.
+Basic kriging procedures are also provided.
+</p>
+<p>Starting with version 2.0, it also allows for the simulation
+of random fields that are non-stationary or multivariate or
+sophisticated space-time fields.
+fitvario allows for multivariate models and mixed effect models.
+</p>
+<p><B>There are some changings in the definitions and in the output,
+see help(&quot;changings&quot;)</B>
+</p>
+
+
+<h3>Details</h3>
+
+<p>The following random fields and related functionalities are
+provided by the package.
+</p>
+
+<ol>
+<li><p> stationary and isotropic Gaussian random fields<br>
+</p>
+
+<ul>
+<li> <p><CODE><a href="CondSimu.html">CondSimu</a></CODE> : conditional simulation
+</p>
+</li>
+<li> <p><CODE><a href="CovarianceFct.html">CovarianceFct</a></CODE>,
+<a href="Covariance.html">sophisticated</a> models:  covariance functions and
+variogram models
+</p>
+</li>
+<li> <p><CODE><a href="EmpiricalVariogram.html">EmpiricalVariogram</a></CODE> : empirical variogram
+</p>
+</li>
+<li> <p><CODE><a href="GaussRF.html">GaussRF</a></CODE> : simulation of Gaussian random
+fields; nice examples to get familiar with the
+simulation features of the package;	
+</p>
+</li>
+<li> <p><CODE><a href="Kriging.html">Kriging</a></CODE> : simple and ordinary kriging
+</p>
+</li>
+<li> <p><CODE><a href="fitvario.html">fitvario</a></CODE> : variogram/covariance function fit
+by least squares, maximum likelihood and cross validation
+techniques
+</p>
+</li>
+<li> <p><CODE><a href="RFMethods.html">PrintMethodList</a></CODE> : list of implemented
+simulation methods
+</p>
+</li>
+<li> <p><CODE><a href="ShowModels.html">ShowModels</a></CODE> : interactive, graphical choice of
+models &ndash; currently not available.
+</p>
+<p>Use ShowModels in version 1.3.x
+</p>
+</li>
+<li> <p><CODE><a href="soil.html">soil</a></CODE> : Soil physical and chemical data;
+the <code>example</code> gives a simple geostatistical analysis using
+features of the package      
+</p>
+</li></ul>
+
+</li>
+<li><p> stationary (and isotropic) max-stable random fields<br>
+</p>
+
+<ul>
+<li> <p><CODE><a href="CovarianceFct.html">CovarianceFct</a></CODE> : covariance models for
+extremal Gaussian random fields
+</p>
+</li>
+<li> <p><CODE><a href="MaxStableRF.html">MaxStableRF</a></CODE> : simulation of max-stable
+random fields
+</p>
+<p><B>Note: Simulation algorithm for Brown-Resnick processes will
+come up soon.</B>
+</p>
+</li></ul>
+
+</li>
+<li><p> stationary and isotropic Poisson random fields
+(not implemented yet)<br>
+
+
+
+
+
+</p>
+</li></ol>
+
+<p>Data and example code:
+</p>
+
+<ul>
+<li> <p><code><a href="soil.html">soil</a></code> : soil physical data
+</p>
+</li>
+<li> <p><code><a href="papers.html">papers</a></code> : code used in the papers published by
+the author
+</p>
+</li>
+<li> <p><code><a href="weather.html">weather</a></code> : UWME weather data
+</p>
+</li></ul>
+
+<p>Functions used in diverse simulation methods:
+</p>
+
+<ul>
+<li> <p><CODE><a href="Registers.html">DeleteRegister</a></CODE> : deleting internal registers
+</p>
+</li>
+<li> <p><CODE><a href="RFparameters.html">RFparameters</a></CODE> : control parameters (advanced settings)
+</p>
+</li></ul>
+
+<p>Functions of general purpose:
+</p>
+
+
+<ul>
+<li> <p><CODE><a href="fractal.html">fractal.dim</a></CODE> : estimation of the fractal dimension
+</p>
+</li>
+<li> <p><CODE><a href="hurst.html">hurst</a></CODE> : estimation of the Hurst parameter
+</p>
+</li>
+<li> <p><CODE><a href="Print.html">Print</a></CODE> : nice print function
+</p>
+</li>
+<li> <p><CODE><a href="regression.html">regression</a></CODE> : interactive regression plot
+</p>
+</li>
+<li> <p><CODE><a href="Locator.html">Locator</a></CODE>, <CODE><a href="Readline.html">Readline</a></CODE> :
+<CODE><a href="../../graphics/html/locator.html">locator</a></CODE> and <CODE><a href="../../base/html/readline.html">readline</a></CODE>,
+respectively, with storage and replay functionality
+</p>
+</li>
+<li> <p><CODE><a href="sleep.html">sleep.milli</a></CODE> : sets the process into sleeping status
+</p>
+</li></ul>
+
+<p>In the beta version, the following functionalities are currently
+not available:
+</p>
+
+<ul>
+<li> <p><CODE><a href="ShowModels.html">ShowModels</a></CODE>
+</p>
+</li>
+<li><p> numerical evaluation of the covariance function in tbm2
+</p>
+</li>
+<li><p> Harvard Rue's Markov fields 
+</p>
+</li></ul>
+
+
+
+<h3>Acknowledgement</h3>
+
+<p>Many thanks to 
+</p>
+
+
+<ul>
+<li> 
+<p>R Core Team making available the algoithm for fft (fft.c)
+by Richard Singleton and advicing
+</p>
+</li>
+<li>
+<p>Ben Pfaff, 12167 Airport Rd, DeWitt MI 48820, USA making available
+an algorithm for AVL trees (avltr*)
+</p>
+</li>
+<li>
+<p>Peter Menck implemented the multivariate circulant embedding
+for version 2.0. 
+</p>
+</li>
+<li>
+<p>Yindeng Jiang <a href="mailto:jiangyindeng@gmail.com">jiangyindeng@gmail.com</a> implemented the
+circulant embedding methods &lsquo;cutoff&rsquo; and &lsquo;intrinsic&rsquo;
+in 2004 for the versions 1.2.
+</p>
+</li>
+<li>
+<p>Martin Maechler, Paulo Ribeiro, and Tilmann Gneiting
+were proof-reading parts of the code and the help text for the versions
+1.0.
+</p>
+</li></ul>
+
+
+
+<h3>Financial support</h3>
+
+
+<ul>
+<li>
+<p>V1.0 has been  financially supported by
+the German Federal Ministry of Research and Technology 
+(BMFT) grant PT BEO 51-0339476C during 2000-03.
+</p>
+</li>
+<li>
+<p>V1.0 has been financially supported by the EU TMR network
+ERB-FMRX-CT96-0095 on
+&ldquo;Computational and statistical methods for the analysis of spatial
+data&rdquo; in 1999.
+</p>
+</li></ul>
+
+
+
+<h3>Author(s)</h3>
+
+<p>Martin Schlather, <a href="mailto:schlather@math.uni-mannheim.de">schlather@math.uni-mannheim.de</a>
+<a href="http://ms.math.uni-mannheim.de">http://ms.math.uni-mannheim.de</a>;
+</p>
+
+
+<h3>References</h3>
+
+<p>Singleton, R.C. (1979). In <EM>Programs for Digital Signal Processing</EM> 
+Ed.: Digital Signal Processing Committee and IEEE Acoustics,
+Speech, and Signal Processing Committe (1979)
+IEEE press.
+</p>
+
+<hr><div align="center">[Package <em>RandomFields</em> version 2.0.66 <a href="00Index.html">Index</a>]</div>
+</body></html>

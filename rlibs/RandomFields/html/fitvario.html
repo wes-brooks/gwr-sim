@@ -1,0 +1,1099 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<html><head><title>R: LSQ and Maximum Likelihood Estimation of Random Field...</title>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+<link rel="stylesheet" type="text/css" href="R.css">
+</head><body>
+
+<table width="100%" summary="page for fitvario {RandomFields}"><tr><td>fitvario {RandomFields}</td><td align="right">R Documentation</td></tr></table>
+
+<h2>LSQ and Maximum Likelihood Estimation
+of Random Field Parameters</h2>
+
+<h3>Description</h3>
+
+<p>The function estimates arbitrary parameters of
+a random field specification with various methods.
+</p>
+
+
+<h3>Usage</h3>
+
+<pre>
+fitvario(x, y=NULL, z=NULL, T=NULL, data, model, param,
+         lower=NULL, upper=NULL, sill=NA, grid=!missing(gridtriple),
+          gridtriple, ...)
+
+fitvario.default(x, y=NULL, z=NULL, T=NULL, data, model, param,
+         grid=!missing(gridtriple), gridtriple=FALSE,
+         trend = NULL,
+         BC.lambda, ## if missing then no BoxCox-Trafo
+         BC.lambdaLB=-10, BC.lambdaUB=10,  
+         lower=NULL, upper=NULL, sill=NA, 
+         use.naturalscaling=FALSE, PrintLevel,
+         optim.control=NULL, bins=20, nphi=1, ntheta=1, ntime=20,
+         distance.factor=0.5,
+         upperbound.scale.factor=3, lowerbound.scale.factor=3,
+         lowerbound.scale.LS.factor=5,
+         upperbound.var.factor=10, lowerbound.var.factor=100,
+         lowerbound.sill=1E-10, scale.max.relative.factor=1000,
+         minbounddistance=0.001, minboundreldist=0.02,
+         approximate.functioncalls=50, refine.onborder=TRUE,
+         minmixedvar=1/1000, maxmixedvar=1000,
+         pch=RFparameters()$pch,
+         transform=NULL, standard.style=NULL,
+         var.name="X", time.name="T",
+         lsq.methods=c("self", "plain", "sqrt.nr", "sd.inv", "internal"),
+         mle.methods=c("ml"),
+         cross.methods=NULL,
+
+         users.guess=NULL, only.users = FALSE,
+         Distances=NULL, truedim,
+         solvesigma = NA, # if NA then use algorithm -- ToDo
+         allowdistanceZero = FALSE,
+         na.rm = TRUE)
+</pre>
+
+
+<h3>Arguments</h3>
+
+<table summary="R argblock">
+<tr valign="top"><td><code>x</code></td>
+<td>
+<p>(<i>n x 2</i>)-matrix of coordinates, or vector of
+x-coordinates. All locations must be given explicitely and
+cannot be passed via a grid definition
+as in <CODE>GaussRF</CODE></p>
+</td></tr>
+<tr valign="top"><td><code>y</code></td>
+<td>
+<p>vector of y coordinates</p>
+</td></tr>
+<tr valign="top"><td><code>z</code></td>
+<td>
+<p>vector of z coordinates</p>
+</td></tr>
+<tr valign="top"><td><code>T</code></td>
+<td>
+<p>vector of T coordinates; these coordinates are given in
+triple notation, see <CODE><a href="GaussRF.html">GaussRF</a></CODE></p>
+</td></tr>
+<tr valign="top"><td><code>data</code></td>
+<td>
+<p>vector or matrix of values measured at <code>coord</code>;
+If a matrix is given then the columns are interpreted as independent
+realisations.<br>
+If also a time component is given, then in the data the indices for
+the spatial components run the fastest.
+</p>
+<p>If an <code>n</code>-variate model is used, then each realisation is given as
+<code>n</code> consecutive columns of <code>data</code>.
+</p>
+</td></tr>
+<tr valign="top"><td><code>model</code></td>
+<td>
+<p>string or list;
+covariance model, see <CODE><a href="CovarianceFct.html">CovarianceFct</a></CODE>
+and <CODE><a href="CovarianceFct.html">Covariance</a></CODE>, or
+type <CODE><a href="PrintModelList.html">PrintModelList</a>()</CODE> to get all options.
+
+</p>
+<p>If <code>model</code> is a list, then the parameters with value <code>NA</code>
+are estimated. Parameters that have value <code>NaN</code> should be
+explicitely be defined by the function <code>transform</code>.
+An alternative to define <code>NaN</code> values and
+the function <code>transform</code>, is to replace the <code>NaN</code>
+by a real-valued function with solely parameter a list defining
+a covariance model. In case of the anisotropy matrix, the matrix
+must be replaced by a list if functions are introduced.
+Only the list elements
+variance, scale or anisotropy, and kappas can be used, and
+not the mean or the trend.
+Further, the mean or the trend cannot be set by such a function.
+See also <code>transform</code> below.
+</p>
+</td></tr>
+<tr valign="top"><td><code>param</code></td>
+<td>
+
+<p>vector or matrix or NULL.
+If vector then
+<code>param=c(mean, variance, nugget, scale,...)</code>;
+the parameters must be given
+in this order. Further parameters are to be added in case of a
+parametrised class of covariance functions, see
+<CODE><a href="CovarianceFct.html">CovarianceFct</a></CODE> and <CODE><a href="CovarianceFct.html">Covariance</a></CODE>.
+<EM>Any</EM> components set to <code>NA</code> are estimated; the others
+are kept fix.
+See also <code>model</code> above. 
+</p>
+</td></tr>
+<tr valign="top"><td><code>lower</code></td>
+<td>
+<p>list or vector. Lower bounds for the parameters.
+If <code>param</code> is a vector, <code>lower</code> has to be a vector as well and
+its length must equal the number of parameters to be estimated. The order
+of <code>param</code> has to be maintained. A component being <code>NA</code> means
+that no manual lower bound for the corresponding parameter is set.
+</p>
+<p>If <code>param</code> is a list, <code>lower</code> has to be of (exactly) the same
+structure.
+</p>
+</td></tr>
+<tr valign="top"><td><code>upper</code></td>
+<td>
+<p>list or vector. Upper bounds for the parameters.
+See also lower.
+</p>
+</td></tr>
+<tr valign="top"><td><code>sill</code></td>
+<td>
+<p>If not <code>NA</code> the sill is kept fix. Only used if the
+standard format for the covariance model is given. See Details.</p>
+</td></tr>
+<tr valign="top"><td><code>grid</code></td>
+<td>
+<p>boolean. Weather coordinates give a grid</p>
+</td></tr>
+<tr valign="top"><td><code>gridtriple</code></td>
+<td>
+<p>boolean. Format, see <CODE><a href="GaussRF.html">GaussRF</a></CODE></p>
+</td></tr>
+<tr valign="top"><td><code>BC.lambda</code></td>
+<td>
+<p>a vector of at most two numerical components (just one component
+corresponds to two identical ones) which are the parameters of the 
+box-cox-transformation:
+<i>(x^&lambda;_1-1)/&lambda;_1+&lambda;_2</i>
+If the model is univariate, the first parameter can be estimated by
+using <code>NA</code>.
+</p>
+</td></tr>
+<tr valign="top"><td><code>BC.lambdaLB</code></td>
+<td>
+<p>lower bound for the first box-cox-parameter</p>
+</td></tr>
+<tr valign="top"><td><code>BC.lambdaUB</code></td>
+<td>
+<p>upper bound for the first box-cox-parameter</p>
+</td></tr>
+<tr valign="top"><td><code>trend</code></td>
+<td>
+
+<p>If a univariate model is used, the following trend types are possible:<br>
+number: the constant mean (not to be estimated any more)<br>
+NA: there is a constant mean to be estimated <br>
+formula : uses <code>X1</code>, <code>X2</code>,... and <code>T</code> as internal <br>
+parameters for the coordinates; all parameters are estimated<br>
+list of matrices: length of the list must be the number of realisations;
+each matrix must have the same number of rows as <code>x</code><br>
+list of matrices and formula: trend is a list of matrices (see above)
+and one additional entry which is a formula<br>
+</p>
+<p>In an <i>n</i>-variate model trend can be either a list of <i>n</i>
+trends for univariate models or a list of <i>n*d</i>
+matrices (<i>d</i>: number of independent realisations) where each
+entry of <code>trend</code> corresponds to a column of <code>data</code>.
+</p>
+</td></tr>
+<tr valign="top"><td><code>...</code></td>
+<td>
+<p>arguments as given in <code>fitvario.default</code> and listed in the
+following.</p>
+</td></tr>
+<tr valign="top"><td><code>use.naturalscaling</code></td>
+<td>
+
+<p>logical.  Only used if model is given in standard (simple) way.
+If <code>TRUE</code> then <EM>internally</EM>, rescaled
+covariance functions will be used for which
+cov(1)<i>~=</i>0.05.
+<code>use.naturalscaling</code> has the advantage that <code>scale</code>
+and the form parameters of the model get &lsquo;orthogonal&rsquo;,
+but <code>use.naturalscaling</code> does not work for all models.
+See Details.</p>
+</td></tr>
+<tr valign="top"><td><code>PrintLevel</code></td>
+<td>
+<p>level to which messages are shown. See Details.</p>
+</td></tr>
+<tr valign="top"><td><code>optim.control</code></td>
+<td>
+<p>control list for <CODE><a href="../../stats/html/optim.html">optim</a></CODE>, which uses
+'L-BFGS-B'. However 'parscale' may not be given.</p>
+</td></tr>
+<tr valign="top"><td><code>bins</code></td>
+<td>
+<p>number of bins of the empirical variogram.
+See Details.</p>
+</td></tr>
+<tr valign="top"><td><code>nphi</code></td>
+<td>
+<p>scalar or vector of 2 components.
+If it is a vector then the first component gives the first angle
+of the xy plane
+and the second one gives the number of directions on the half circle.
+If scalar then the first angle is assumed to be zero.
+Note that a good estimation of the variogramm by LSQ with a
+anisotropic model a large value for <code>ntheta</code> might be needed (about 20).
+</p>
+</td></tr>
+<tr valign="top"><td><code>ntheta</code></td>
+<td>
+<p>scalar or vector of 2 components.
+If it is a vector then the first component gives the first angle
+in the third direction
+and the second one gives the number of directions on the half circle.
+If scalar then the first angle is assumed to be zero.
+</p>
+<p>Note that a good estimation of the variogramm by LSQ with a
+anisotropic model a large value for <code>ntheta</code> might be needed (about 20).
+</p>
+</td></tr>
+<tr valign="top"><td><code>ntime</code></td>
+<td>
+<p>scalar or vector of 2 components.
+if <code>ntimes</code> is a vector, then the first component are the
+maximum time distance (in units of the grid length <code>T[3]</code>) and the
+second component gives the step size (in units of the grid length
+<code>T[3]</code>). If scalar then the step size is assumed to 1 (in units
+of the grid length <code>T[3]</code>).
+</p>
+</td></tr>
+<tr valign="top"><td><code>distance.factor</code></td>
+<td>
+<p>relative right bound for the bins.  See Details.</p>
+</td></tr>
+<tr valign="top"><td><code>upperbound.scale.factor</code></td>
+<td>
+<p>relative upper bound for scale in LSQ
+and MLE. 
+See Details.</p>
+</td></tr>
+<tr valign="top"><td><code>lowerbound.scale.factor</code></td>
+<td>
+<p>relative lower bound for scale in MLE. 
+See Details.</p>
+</td></tr>
+<tr valign="top"><td><code>lowerbound.scale.LS.factor</code></td>
+<td>
+<p>relative lower bound for scale
+in LSQ.  See Details.</p>
+</td></tr>
+<tr valign="top"><td><code>upperbound.var.factor</code></td>
+<td>
+<p>relative upper bound for variance
+and nugget.  See Details.</p>
+</td></tr>
+<tr valign="top"><td><code>lowerbound.var.factor</code></td>
+<td>
+<p>relative lower bound for variance.
+See Details.</p>
+</td></tr>
+<tr valign="top"><td><code>lowerbound.sill</code></td>
+<td>
+<p>absolute lower bound for variance
+and nugget.  See Details.</p>
+</td></tr>
+<tr valign="top"><td><code>scale.max.relative.factor</code></td>
+<td>
+<p>relative lower bound
+for scale below
+which an additional nugget effect is detected. See Details.</p>
+</td></tr>
+<tr valign="top"><td><code>minbounddistance</code></td>
+<td>
+<p>absolute distance to the bounds
+below which a part of the algorithm is considered as
+having failed.  See Details.</p>
+</td></tr>
+<tr valign="top"><td><code>minboundreldist</code></td>
+<td>
+<p>relative distance to the bounds
+below which a part of the algorithm is considered as
+having failed.  See Details.</p>
+</td></tr>
+<tr valign="top"><td><code>approximate.functioncalls</code></td>
+<td>
+<p>approximate evaluations
+of the ML target function on a grid.  See Details.</p>
+</td></tr>
+<tr valign="top"><td><code>refine.onborder</code></td>
+<td>
+<p>logical.
+If <code>refine.onborder=TRUE</code> and if the result of
+any maximum likelihood method or cross validation method
+is on a borderline, then the optimisation is redone
+in a modified way (which takes about double extra time)
+</p>
+</td></tr>
+<tr valign="top"><td><code>minmixedvar</code></td>
+<td>
+
+<p>lower bound for variance in a mixed model;
+so, the covariance model for mixed model part might
+be calibrated appropriately
+</p>
+</td></tr>
+<tr valign="top"><td><code>maxmixedvar</code></td>
+<td>
+
+<p>upper bound for variance in a mixed model;
+so, the covariance model for mixed model part might
+be calibrated appropriately
+</p>
+</td></tr>
+<tr valign="top"><td><code>pch</code></td>
+<td>
+<p>character shown before evaluating any method;
+if <code>pch!=""</code> then one or two
+additional steps in the MLE methods are
+marked by &ldquo;+&rdquo; and &ldquo;#&rdquo;.
+Default: &quot;*&quot;.</p>
+</td></tr>
+<tr valign="top"><td><code>var.name</code></td>
+<td>
+<p>basic name for the coordinates in the formula of the
+trend.  Default: &lsquo;X&rsquo;</p>
+</td></tr>
+<tr valign="top"><td><code>time.name</code></td>
+<td>
+<p>basic name for the time component in the formula of the
+trend.  Default: &lsquo;X&rsquo;</p>
+</td></tr>
+<tr valign="top"><td><code>transform</code></td>
+<td>
+<p>function.
+Essentially, <code>transform</code> allows for the definition of a parameter as a
+function of other estimated parameters.
+All the parameters are supposed to be in a vector called &lsquo;param&rsquo;
+where the positions are given by <CODE><a href="parampositions.html">parampositions</a></CODE>.
+An example of <code>transform</code> is
+<code>function(param) {param[3] &lt;- 5 - param[1]; param}</code>.
+</p>
+<p>Note that the mean and the trend of the model can be neither set nor used in
+<code>transform</code>.  See also <code>standard.style</code>.
+</p>
+<p>Note further that many internal checks cannot be performed in case
+of the very flexible function transform. Hence, it is completely up
+to the user to get <code>users.guess</code>, <code>lower</code> and <code>upper</code>
+right. The parameter <code>users.guess</code> must be given; <code>lower</code> and
+<code>upper</code> should be given.    
+</p>
+<p>Default: <code>NULL</code></p>
+</td></tr>
+<tr valign="top"><td><code>standard.style</code></td>
+<td>
+<p>logical or <code>NULL</code>.  This variable should only be
+set by the advanced user.  If <code>NULL</code> then <code>standard.style</code>
+will be 
+<code>TRUE</code> if the covariance model allows for a &lsquo;standard&rsquo;
+definition (see <CODE><a href="CovarianceFct.html">CovarianceFct</a></CODE>)
+and <code>transform</code> is <code>NULL</code>.
+
+If a &lsquo;standard&rsquo; definition is given and both the variance and the
+nugget are either not estimated or do not appear on the right hand
+side of the <code>transform</code>, then <code>standard.style</code> might be set
+to <code>TRUE</code> by the user. This accelerates the MLE algorithm.
+The responsibility is completely left to the user, then.
+</p>
+</td></tr>
+<tr valign="top"><td><code>lsq.methods</code></td>
+<td>
+
+<p>variants of the least squares fit of the variogram. See Details.
+</p>
+</td></tr>
+<tr valign="top"><td><code>mle.methods</code></td>
+<td>
+
+<p>variants of the maximum likelihood fit of the covariance function.
+See Details.
+</p>
+</td></tr>
+<tr valign="top"><td><code>cross.methods</code></td>
+<td>
+
+<p>Not implemented yet.
+
+
+</p>
+</td></tr>
+<tr valign="top"><td><code>users.guess</code></td>
+<td>
+
+<p>User's guess of the parameters. All the parameters must be given
+using the same rules as for either <code>param</code> (except that no NA's should
+be contained) or <code>model</code>.
+</p>
+</td></tr>
+<tr valign="top"><td><code>only.users</code></td>
+<td>
+<p>boolean. If true then only users.guess is used as a
+starting point for the fitting algorithms</p>
+</td></tr>
+<tr valign="top"><td><code>Distances</code></td>
+<td>
+<p>alternatively to coordinates
+<code>x</code>, <code>y</code>, and <code>z</code> the distances themselves can be
+given. Then <code>truedim</code> must be indicated.
+</p>
+</td></tr>
+<tr valign="top"><td><code>truedim</code></td>
+<td>
+<p>see Distances</p>
+</td></tr>
+<tr valign="top"><td><code>solvesigma</code></td>
+<td>
+<p>Boolean &ndash; experimental stage!
+If a mixed effect part is present where the variance
+has to be estimated, then this variance parameter is solved
+iteratively within the profile likelihood function, if
+<code>solvesigma=TRUE</code>.This makes sense
+if the number of independent variables is very small.
+If <code>solvesigma=FALSE</code> then the variance parameter is
+treated as any other parameter to be estimated.</p>
+</td></tr>
+<tr valign="top"><td><code>allowdistanceZero</code></td>
+<td>
+<p>boolean. If true, then
+multiple observations are allowed within a single data set.
+In this case, the coordinates are slightly scattered, so that
+the points have some tiny distances.</p>
+</td></tr>
+<tr valign="top"><td><code>na.rm</code></td>
+<td>
+<p>boolean &ndash; experimental stage.   
+Only the data may have missing values.
+If <code>na.rm=TRUE</code> then lines of (repeated) data are deleted if at
+least one missing value appears. If <code>na.rm=FALSE</code> then the
+repetitions are treated sepeartely.
+</p>
+</td></tr>
+</table>
+
+
+
+
+
+
+
+
+<h3>Details</h3>
+
+<p>The optimisations are performed using <CODE><a href="../../stats/html/optimize.html">optimize</a></CODE> if one
+parameter has to be estimated only and <CODE><a href="../../stats/html/optim.html">optim</a></CODE>, otherwise.
+</p>
+<p>First, by means of various control parameters, see below, the algorithm
+first tries to estimate the bounds for the parameters to be estimated,
+if the bounds for the parameters are not given.<br>
+Independently whether <code>users.guess</code> is given,
+the algorithm guesses initial values for the parameters.
+The automatic guess and the user's guess will be called
+primitive methods in the following.
+</p>
+<p>Second, the variogram model is fitted by various least squares
+methods (according to the value of <code>lsq.methods</code>) using
+the best parameter set among the primitive methods as initial value
+if the effective number of parameters is greater than 1.
+</p>
+<p>[Remarks: (i) &ldquo;best&rdquo; with respect to the target value of
+the respective lsq method;
+(ii) the effective number of parameters in the optimisation algorithm
+can be smaller than the number of estimated parameters, since in some
+cases, some parameters can be calculated explicitely;
+relevant for the choice between
+<CODE><a href="../../stats/html/optimize.html">optimize</a></CODE> and <CODE><a href="../../stats/html/optim.html">optim</a></CODE> is the
+effective number of parameters; (iii) <CODE><a href="../../stats/html/optim.html">optim</a></CODE> needs]
+</p>
+<p>Third, the model is fitted by various maximum likelihood methods
+(according to the value of <code>mle.methods</code>) using
+the best parameter set among the primitive methods and the lsq methods
+as initial value (if the effective number of parameters is greater
+than 1).  
+</p>
+
+
+
+
+<p>Comments on specific parameters:
+</p>
+
+<ul>
+<li> <p><code>BC.lambda</code> If you want to estimate <code>BC.lambda</code> you should assert that all data values are positive;<br>
+otherwise errors will probably occur because of the box-cox-transformation.<br>
+The second parameter of the box-cox-transformation cannot be estimated since it corresponds to the mean.
+So the mean should be estimated instead.
+</p>
+</li>
+<li> <p><code>trend</code> Among the formes mentioned above it is possible to use just one matrix for the trend 
+instead of a list of identical ones.
+</p>
+</li>
+<li> <p><code>lower</code><br>
+The lower bounds are technical bounds that should not
+really restrict the domaine of the value.
+However, if these values are too small the optimisation
+algorithm will frequently run into local minima or get
+stuck close the border of the parameter domain.
+It is advised to limit seriously the domain of the additional
+parameters of the covariance model and/or the total number of
+parameters to be estimated, if &ldquo;many&rdquo; parameters
+of the covariance model are  estimated.
+</p>
+<p>If the model is given in standard form, the user may supply
+the lower bounds for the whole parameter vector, or only for
+the additional form parameters of the model.
+The lower bound for the mean will be ignored.
+<code>lower</code> may contain <code>NA</code>s, then these values
+are generated by the 
+</p>
+<p>If a nested model is given, the bounds may again be supplied
+for all parameters or only for the additional form parameters
+of the model. The bounds given apply uniformely to all
+submodels of the nested model.
+</p>
+<p>If the <code>model</code> is given in list format, then
+<code>lower</code> is a list, where components may be missing
+or <code>NA</code>. These are generated by the algorithm, then.
+</p>
+<p>If <code>lower</code> is <code>NULL</code> all lower bounds are generated
+automatically. 
+</p>
+</li>
+<li> <p><code>upper.kappa</code><br>
+See <code>lower.kappa</code>.
+</p>
+</li>
+<li> <p><code>sill</code><br>
+Additionally to estimating <code>nugget</code> and <code>variance</code>
+separately, they may also be estimated together under the
+condition that <code>nugget</code> + <code>variance</code> = <code>sill</code>.
+For the latter a finite value for <code>sill</code> has to be supplied,
+and  <code>nugget</code> and  <code>variance</code> are set to <code>NA</code>.
+</p>
+<p><code>sill</code> is only used for the standard model. 
+</p>
+</li>
+<li> <p><code>use.naturalscaling</code><br>
+logical. If <code>TRUE</code> then internally, rescaled
+covariance functions will be used for which
+cov(1)<i>~=</i>0.05. However this parameter
+does not influence
+the output of <code>fitvario</code>: the parameter vector
+returned by <code>fitvario</code> refers
+<EM>always</EM> to the standard covariance model as given in
+<CODE><a href="CovarianceFct.html">CovarianceFct</a></CODE>. (In contrast to <code>PracticalRange</code>
+in <CODE><a href="RFparameters.html">RFparameters</a></CODE>.)<br>
+Advantages if <code>use.naturalscaling=TRUE</code>:
+</p>
+
+<ul>
+<li> <p><code>scale</code> and the shape parameter of a parameterised
+covariance model can be estimated better if they are estimated
+simultaneously.
+</p>
+</li>
+<li><p> The estimated bounds calculated  by means of
+<code>upperbound.scale.factor</code> and <code>lowerbound.scale.factor</code>,
+etc. might be more realistic.
+</p>
+</li>
+<li><p> in case of anisotropic models, the inverse of the elements
+of the anisotropy matrix should be in the above bounds.
+</p>
+</li></ul>
+
+<p>Disadvantages if <code>use.naturalscaling=TRUE</code>:
+</p>
+
+<ul>
+<li><p> For some covariance models with additional parameters, the
+rescaling factor has to be determined numerically.
+Then, more time is needed to perform <code>fitvario</code>.
+</p>
+</li></ul>
+
+<p>Default: <code>TRUE</code>.
+</p>
+</li>
+<li> <p><code>PrintLevel</code><br>
+0 : no message<br>
+1 : error messages<br>
+2 : warnings<br>
+3 : minimum debugging information<br>
+5 : extended debugging information, including graphics<br>
+Default: <code>0</code>.
+</p>
+</li>
+<li> <p><code>trace.optim</code><br>
+see control parameter <code>trace</code> of
+<CODE><a href="../../stats/html/optim.html">optim</a></CODE>.  Default: <code>0</code>.
+</p>
+</li>
+<li> <p><code>bins</code><br>
+vector of explicit boundaries for the bins or the
+number of bins for the empirical variogram (used in the
+LSQ target function, which is described at the beginning
+of the Details).
+Note that for anisotropic models, the value of <code>bins</code> might
+be enlarged.
+Default: <code>20</code>.
+</p>
+</li>
+<li> <p><code>distance.factor</code><br>
+right boundary of the last
+bin is calculated as <code>distance.factor</code> * (maximum distance
+between all pairs of points). Only used if <code>bins</code> is a scalar.
+Default: <code>0.5</code>.
+</p>
+</li>
+<li> <p><code>upperbound.scale.factor</code><br>
+The upper bound for the scale is determined
+as <code>upperbound.scale.factor</code> * (maximum distance
+between all pairs of points). 
+Default: <code>10</code>.
+</p>
+</li>
+<li> <p><code>lowerbound.scale.factor</code><br>
+The lower bound for the scale is determined
+as
+</p>
+<i>(minimum distance
+      between different pairs of points) /
+      \code{lowerbound.scale.factor}</i><p>.
+</p>
+<p>Default: <code>20</code>.<br>
+</p>
+</li>
+<li> <p><code>lowerbound.scale.LS.factor</code><br>
+For the LSQ target function a different lower bound
+for the scale is used. It is determined as
+</p>
+<i>(minimum distance
+    between different pairs of points) /
+    \code{lowerbound.scale.LS.factor}</i><p>.
+</p>
+<p>Default: <code>5</code>.<br>
+</p>
+</li>
+<li> <p><code>upperbound.var.factor</code><br>
+The upper bound for the variance and the nugget is determined
+as  
+</p>
+<p align="center"><i>\code{upperbound.var.factor} *
+      var(\code{data}).</i></p>
+
+<p>Default: <code>10</code>.
+</p>
+</li>
+<li> <p><code>lowerbound.var.factor</code><br>
+The lower bound for the variance and the nugget is determined
+as
+</p>
+<p align="center"><i>var(\code{data}) /
+      \code{lowerbound.var.factor}.</i></p>
+ 
+<p>If a standard model definition is given and
+either the nugget or the variance is fixed,
+the parameter to be estimated
+must also be greater than <code>lowerbound.sill</code>.
+If a non-standard model definition is given
+then <code>lowerbound.var.factor</code> is only used
+for the first model; the other lower bounds for the
+variance are zero.
+Default: <code>100</code>.
+</p>
+</li>
+<li> <p><code>lowerbound.sill</code><br>
+See <code>lowerbound.var.factor</code>. 
+Default: <code>1E-10</code>.
+</p>
+</li>
+<li> <p><code>scale.max.relative.factor</code><br>
+If the initial scale value for the ML estimation
+obtained by the LSQ target function is
+less than
+</p>
+<i> (minimum distance
+    between different pairs of points) /
+    \code{scale.max.relative.factor}</i>
+<p>a warning is given that probably a nugget effect
+is present.  
+Note: if <code>scale.max.relative.factor</code> is greater
+than <code>lowerbound.scale.LS.factor</code> then
+no warning is given as
+the scale has the lower bound (minimum distance
+between different pairs of points) /
+<code>lowerbound.scale.LS.factor</code>. 
+Default: <code>1000</code>.
+</p>
+</li>
+<li> <p><code>minbounddistance</code><br>
+If any value of the parameter vector
+returned from the ML estimation
+is closer than <code>minbounddistance</code>
+to any of the bounds or if any value
+has a relative distance smaller than
+<code>minboundreldist</code>, then it is assumed that
+the MLE algorithm has dropped into a local minimum,
+and it will be continued with evaluating the
+ML target function on a grid, cf. the beginning paragraphs
+of the Details.
+Default: <code>0.001</code>.
+</p>
+</li>
+<li> <p><code>minboundreldist</code><br>
+See <code>minbounddistance</code>. 
+Default: <code>0.02</code>.
+</p>
+</li>
+<li> <p><code>approximate.functioncalls</code><br>
+In case the parameter vector is too close to the given
+bounds, the ML target function is evaluated on a grid
+to get a new initial value for the ML estimation. 
+The number of points of the grid is approximately
+<code>approximate.functioncalls</code>. 
+Default: <code>50</code>.
+</p>
+</li>
+<li> <p><code>lsq.methods</code><br>
+Variogram fit by least squares methods; first, a preliminary
+trend is estimated
+by a simple regression; second, the variogram is fitted; third,
+the trend is fitted using the estimated covariance structure.
+</p>
+
+<ul>
+<li> <p><code>"self"</code> weighted lsq.  Weights are the values of the
+fitted variogram to the power of -2
+</p>
+</li>
+<li> <p><code>"plain"</code> model fitted by least squares; trends are never taken
+into account
+</p>
+</li>
+<li> <p><code>"sqrt.nr"</code> weighted lsq.  Weight is the square root
+of the number 
+of points in the bin
+</p>
+</li>
+<li> <p><code>"sd.inv"</code> weighted lsq.  Weight is the inverse the
+standard deviation of the 
+variogram cloud within the bin
+</p>
+</li></ul>
+
+</li>
+<li> <p><code>mle.methods</code><br>
+Model fit by various maximum likelihood methods
+(according to the value of <code>mle.methods</code>) using
+the best parameter set among the primitive methods and the lsq methods
+as initial value (if the effective number of parameters is greater
+than 1).   If the best parameter vector of the MLE found so far is too close
+to some given bounds, see the specific parameters above, it is
+assumed that
+<CODE><a href="../../stats/html/optim.html">optim</a></CODE> ran into a local minimum because of a bad starting
+value.
+In this case and if <code>refine.onborder=TRUE</code>
+the MLE target function is calculated on a grid, the
+best parameter vector is taken, and the optimisation is restarted with
+this parameter vector.
+</p>
+
+<ul>
+<li> <p><code>"ml"</code> maximum likelihood;
+since ML and REML give the same result if there are not any
+covariates, ML is performed in that case, independently whether
+it is given or not.
+</p>
+</li>
+<li> <p><code>"reml"</code> restricted maximum likelihood
+</p>
+</li></ul>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+</li></ul>
+
+
+
+<h3>Value</h3>
+
+<p>The function returns a list with the following elements
+</p>
+<table summary="R valueblock">
+<tr valign="top"><td><code>ev</code></td>
+<td>
+<p>list returned by <CODE><a href="EmpiricalVariogram.html">EmpiricalVariogram</a></CODE></p>
+</td></tr>
+<tr valign="top"><td><code>table</code></td>
+<td>
+<p>Matrix. The first rows contain the estimated parameters,
+followed by  
+the target values of all methods for the given set of parameters;
+the last rows give the lower and upper bounds used in the estimations.
+The columns correspond to the various estimation methods for the parameters.</p>
+</td></tr>
+<tr valign="top"><td><code>lowerbounds</code></td>
+<td>
+<p>lower bounds</p>
+</td></tr>
+<tr valign="top"><td><code>lowerbounds</code></td>
+<td>
+<p>upper bounds</p>
+</td></tr>
+<tr valign="top"><td><code>transform</code></td>
+<td>
+<p>transformation function</p>
+</td></tr>
+<tr valign="top"><td><code>vario</code></td>
+<td>
+<p>obsolete</p>
+</td></tr>
+<tr valign="top"><td><code>self</code></td>
+<td>
+<p>list containing
+</p>
+
+<ul>
+<li><p><code>model</code>the variogram or covariance model
+</p>
+</li>
+<li><p><code>residuals</code><code>NULL</code>
+</p>
+</li>
+<li><p><code>ml.value</code>the likelihood value for the <code>model</code>
+</p>
+</li></ul>
+
+</td></tr>
+<tr valign="top"><td><code>plain, sqrt.nr, sd.inv, internal, ml, reml</code></td>
+<td>
+
+<p>see <code>self</code>; excepetion is <code>ml</code>, where the <code>residuals</code>
+are given instead of <code>NULL</code>.
+</p>
+</td></tr>
+</table>
+
+
+<h3>Acknowledgement</h3>
+
+<p>Thanks to Paulo Ribeiro for hints and comparing the perliminary versions
+of <code>fitvario</code> in RandomFields V1.0 to
+<code>likfit</code> of the package <code>geoR</code> whose homepage is at 
+<a href="http://www.est.ufpr.br/geoR/">http://www.est.ufpr.br/geoR/</a>.
+</p>
+
+
+<h3>Note</h3>
+
+<p>This function does not depend on the value of
+<CODE><a href="RFparameters.html">RFparameters</a></CODE><code>()$PracticalRange</code>. 
+The function <code>fitvario</code> always uses the standard specification
+of the covariance model as given in <CODE><a href="CovarianceFct.html">CovarianceFct</a></CODE>.
+</p>
+<p>Further, the function has implemented accelerations if the model
+is simple. E.g., if there is a common variance to estimated
+and the definition by lists is used, then the leading model should
+be &lsquo;$&rsquo; with <code>var=NA</code>.
+</p>
+
+
+
+
+
+<h3>Author(s)</h3>
+
+<p>Martin Schlather, <a href="mailto:schlather@math.uni-mannheim.de">schlather@math.uni-mannheim.de</a>
+<a href="http://ms.math.uni-mannheim.de">http://ms.math.uni-mannheim.de</a></p>
+
+
+<h3>References</h3>
+
+
+<ul>
+<li><p> Least squares and mle methods
+</p>
+<p>Cressie, N.A.C. (1993)
+<EM>Statistics for Spatial Data.</EM>
+New York: Wiley.
+</p>
+
+
+
+
+</li>
+<li><p> Related software<br>
+Ribeiro, P. and Diggle, P. (2001) Software for geostatistical analysis
+using R and S-PLUS: geoR and geoS, version 0.6.15.
+<a href="http://www.maths.lancs.ac.uk/~ribeiro/geoR.html">http://www.maths.lancs.ac.uk/~ribeiro/geoR.html</a>.
+</p>
+</li>
+<li><p> REML (rml)
+</p>
+<p>LaMotte, L.R. (2007)
+A direct derivation of the REML likelihood function
+<EM>Statistical Papers</EM> <B>48</B>, 321-327.
+</p>
+</li></ul>
+
+
+
+<h3>See Also</h3>
+
+<p><CODE><a href="CovarianceFct.html">Covariance</a></CODE>,
+<CODE><a href="CovarianceFct.html">CovarianceFct</a></CODE>,
+<CODE><a href="GetPracticalRange.html">GetPracticalRange</a></CODE>,
+<CODE><a href="parampositions.html">parampositions</a></CODE>
+<code><a href="RandomFields.html">RandomFields</a></code>,
+<CODE><a href="weather.html">weather</a></CODE>.
+</p>
+
+
+<h3>Examples</h3>
+
+<pre>
+
+
+
+ 
+
+ model &lt;-"gencauchy"
+ param &lt;- c(0, 1, 0, 1, 1, 2)
+ estparam &lt;- c(0, NA, 0, NA, NA, 2) ## NA means: "to be estimated"
+ ## sequence in `estparam' is
+ ## mean, variance, nugget, scale, (+ further model parameters)
+ ## So, mean, variance, and scale will be estimated here.
+ ## Nugget is fixed and equals zero.
+ points &lt;- 100
+ x &lt;- runif(points,0,3)
+ y &lt;- runif(points,0,3) ## 300 random points in square [0, 3]^2
+ ## simulate data according to the model:
+ d &lt;- GaussRF(x=x, y=y, grid=FALSE, model=model, param=param, n=1000) #1000
+ ## fit the data:
+
+Print(fitvario(x=cbind(x,y), data=d, model=model, param=estparam,
+    lower=c(0.1, 0.1, 0.1), upper=c(1.9, 5, 2)))
+
+
+#########################################################
+## The next two estimations give about the same result.
+## For the first the sill is fixed to 1.5. For the second the sill
+## is reached if the estimated variance is smaller than 1.5
+estparam &lt;- c(0, NA, NA, NA, NA, NA) 
+## Not run: 
+Print(v &lt;- fitvario(x=cbind(x,y), data=d, model=model, param=estparam,
+    sill=1, use.nat=FALSE)) ## gencauchy works better with use.nat=FALSE
+
+## End(Not run)
+
+estmodel &lt;-  list("+",
+                  list("$", var=NA, scale=NA,
+                       list("gencauchy", alpha=NA, beta=NA)
+                       ),
+                  list("$", var=NA, list("nugget"))
+                 )
+parampositions(model=estmodel, dim=2)
+f &lt;- function(variab) c(variab, max(0, 1.0 - variab[1]))
+## Not run: 
+Print(v2 &lt;- fitvario(x=cbind(x,y), data=d, model=estmodel, 
+                  lower = c(TRUE, TRUE, TRUE, TRUE, FALSE),
+                  transform=f, use.nat=FALSE))
+
+## End(Not run)
+
+#########################################################
+## estimation of coupled parameters (alpha = beta, here)
+# source("RandomFields/tests/source.R")
+f &lt;- function(param) param[c(1:3,3,4)]
+## Not run: 
+Print(fitvario(x=cbind(x,y), data=d, model=estmodel,
+             lower=c(TRUE, TRUE, TRUE, FALSE, TRUE),
+             transform=f))
+
+## End(Not run)
+
+
+
+#########################################################
+## estimation in a anisotropic framework
+
+x &lt;- y &lt;- (1:6)/4
+model &lt;- list("$", aniso=matrix(nc=2, c(4,2,-2,1)), var=1.5,
+              list("exp"))
+z &lt;- GaussRF(x=x, y=y, grid=TRUE, model=model, n=10)
+estmodel &lt;-list("$", aniso=matrix(nc=2, c(NA,NA,-2,1)), var=NA,
+                list("exp"))
+Print(fitvario(as.matrix(expand.grid(x, y)), data=z,
+             model=estmodel, nphi=20))
+
+
+
+
+
+#########################################################
+## estimation with trend (formula)
+model &lt;- list("$", var=1, scale=2, list("gauss"))
+estmodel &lt;- list("$", var=NA, scale=NA, list("gauss"))
+x &lt;- seq(-pi,pi,pi/2)
+n &lt;- 5
+data &lt;- GaussRF(x, x, gridtri=FALSE, model=model,
+       trend=function(X1,X2) sin(X1) + 2*cos(X2),n=n)
+Print(v &lt;- fitvario(x, x, data=data, gridtrip=FALSE,
+                  model=estmodel,
+                  trend=~sin(X1)+cos(X1)+sin(X2)+cos(X2)))
+
+
+
+########################################################
+## estimation of anisotropy matrix with two identical ##
+## diagonal elements                                  ##
+## Not run: 
+x &lt;- c(0, 5, 0.4)
+model &lt;- list("$", var=1, scale=1, list("exponential"))
+z &lt;- GaussRF(x, x, x, model=model, gridtriple=TRUE, n=10, Print=2)
+
+est.model &lt;- list("+",
+                 list("$", var=NA, aniso=diag(c(NA, NA, NA)), list("exponen")),
+                 list("$", var=NA, list("nugget")))
+parampositions(est.model, dim=3)
+trafo &lt;- function(variab) {variab[c(1:2, 2:4)]}
+lower &lt;- c(TRUE, TRUE, FALSE, TRUE, TRUE) # which parameter to be estimated
+fitlog &lt;- fitvario(x, x, x, gridtriple=TRUE, data=z, model=est.model,
+                   transform=trafo, lower=lower)
+str(fitlog$ml)
+
+## End(Not run)
+
+</pre>
+
+<hr><div align="center">[Package <em>RandomFields</em> version 2.0.66 <a href="00Index.html">Index</a>]</div>
+</body></html>

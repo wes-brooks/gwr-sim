@@ -1,0 +1,129 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<html><head><title>R: An interval represented by a vertical line.</title>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+<link rel="stylesheet" type="text/css" href="R.css">
+</head><body>
+
+<table width="100%" summary="page for geom_linerange {ggplot2}"><tr><td>geom_linerange {ggplot2}</td><td align="right">R Documentation</td></tr></table>
+
+<h2>An interval represented by a vertical line.</h2>
+
+<h3>Description</h3>
+
+<p>An interval represented by a vertical line.
+</p>
+
+
+<h3>Usage</h3>
+
+<pre>
+  geom_linerange(mapping = NULL, data = NULL,
+    stat = "identity", position = "identity", ...)
+</pre>
+
+
+<h3>Arguments</h3>
+
+<table summary="R argblock">
+<tr valign="top"><td><code>mapping</code></td>
+<td>
+<p>The aesthetic mapping, usually constructed
+with <code><a href="aes.html">aes</a></code> or <code><a href="aes_string.html">aes_string</a></code>. Only
+needs to be set at the layer level if you are overriding
+the plot defaults.</p>
+</td></tr>
+<tr valign="top"><td><code>data</code></td>
+<td>
+<p>A layer specific dataset - only needed if you
+want to override the plot defaults.</p>
+</td></tr>
+<tr valign="top"><td><code>stat</code></td>
+<td>
+<p>The statistical transformation to use on the
+data for this layer.</p>
+</td></tr>
+<tr valign="top"><td><code>position</code></td>
+<td>
+<p>The position adjustment to use for
+overlappling points on this layer</p>
+</td></tr>
+<tr valign="top"><td><code>...</code></td>
+<td>
+<p>other arguments passed on to
+<code><a href="layer.html">layer</a></code>. This can include aesthetics whose
+values you want to set, not map. See <code><a href="layer.html">layer</a></code>
+for more details.</p>
+</td></tr>
+</table>
+
+
+<h3>Aesthetics</h3>
+
+<p><code>geom_linerange</code> understands the following aesthetics (required aesthetics are in bold):
+</p>
+
+<ul>
+<li> <p><code><STRONG>x</STRONG></code>
+</p>
+</li>
+<li> <p><code><STRONG>ymax</STRONG></code>
+</p>
+</li>
+<li> <p><code><STRONG>ymin</STRONG></code>
+</p>
+</li>
+<li> <p><code>alpha</code>
+</p>
+</li>
+<li> <p><code>colour</code>
+</p>
+</li>
+<li> <p><code>linetype</code>
+</p>
+</li>
+<li> <p><code>size</code>
+</p>
+</li></ul>
+
+
+
+
+<h3>See Also</h3>
+
+<p><code><a href="geom_errorbar.html">geom_errorbar</a></code>: error bars;
+<code><a href="geom_pointrange.html">geom_pointrange</a></code>: range indicated by
+straight line, with point in the middle;
+<code><a href="geom_crossbar.html">geom_crossbar</a></code>: hollow bar with middle
+indicated by horizontal line; <code><a href="stat_summary.html">stat_summary</a></code>:
+examples of these guys in use; <code><a href="geom_smooth.html">geom_smooth</a></code>:
+for continuous analog
+</p>
+
+
+<h3>Examples</h3>
+
+<pre>
+# Generate data: means and standard errors of means for prices
+# for each type of cut
+dmod &lt;- lm(price ~ cut, data=diamonds)
+cuts &lt;- data.frame(cut=unique(diamonds$cut), predict(dmod, data.frame(cut = unique(diamonds$cut)), se=TRUE)[c("fit","se.fit")])
+
+qplot(cut, fit, data=cuts)
+# With a bar chart, we are comparing lengths, so the y-axis is
+# automatically extended to include 0
+qplot(cut, fit, data=cuts, geom="bar")
+
+# Display estimates and standard errors in various ways
+se &lt;- ggplot(cuts, aes(cut, fit,
+  ymin = fit - se.fit, ymax=fit + se.fit, colour = cut))
+se + geom_linerange()
+se + geom_pointrange()
+se + geom_errorbar(width = 0.5)
+se + geom_crossbar(width = 0.5)
+
+# Use coord_flip to flip the x and y axes
+se + geom_linerange() + coord_flip()
+</pre>
+
+<hr><div align="center">[Package <em>ggplot2</em> version 0.9.3.1 <a href="00Index.html">Index</a>]</div>
+</body></html>

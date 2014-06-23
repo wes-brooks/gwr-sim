@@ -1,0 +1,71 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<html><head><title>R: Detect the presence or absence of a pattern in a string.</title>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+<link rel="stylesheet" type="text/css" href="R.css">
+</head><body>
+
+<table width="100%" summary="page for str_detect {stringr}"><tr><td>str_detect {stringr}</td><td align="right">R Documentation</td></tr></table>
+
+<h2>Detect the presence or absence of a pattern in a string.</h2>
+
+<h3>Description</h3>
+
+<p>Vectorised over <code>string</code> and <code>pattern</code>.
+</p>
+
+
+<h3>Usage</h3>
+
+<pre>
+  str_detect(string, pattern)
+</pre>
+
+
+<h3>Arguments</h3>
+
+<table summary="R argblock">
+<tr valign="top"><td><code>string</code></td>
+<td>
+<p>input vector. This must be an atomic
+vector, and will be coerced to a character vector</p>
+</td></tr>
+<tr valign="top"><td><code>pattern</code></td>
+<td>
+<p>pattern to look for, as defined by a POSIX
+regular expression.  See the &ldquo;Extended Regular
+Expressions&rdquo; section of <code><a href="../../base/html/regex.html">regex</a></code> for details.
+See <code><a href="fixed.html">fixed</a></code>, <code><a href="ignore.case.html">ignore.case</a></code> and
+<code><a href="perl.html">perl</a></code> for how to use other types of
+matching: fixed, case insensitive and perl-compatible.</p>
+</td></tr>
+</table>
+
+
+<h3>Value</h3>
+
+<p>boolean vector
+</p>
+
+
+<h3>See Also</h3>
+
+<p><code><a href="../../base/html/grep.html">grepl</a></code> which this function wraps
+</p>
+
+
+<h3>Examples</h3>
+
+<pre>
+fruit &lt;- c("apple", "banana", "pear", "pinapple")
+str_detect(fruit, "a")
+str_detect(fruit, "^a")
+str_detect(fruit, "a$")
+str_detect(fruit, "b")
+str_detect(fruit, "[aeiou]")
+
+# Also vectorised over pattern
+str_detect("aecfg", letters)
+</pre>
+
+<hr><div align="center">[Package <em>stringr</em> version 0.6.2 <a href="00Index.html">Index</a>]</div>
+</body></html>

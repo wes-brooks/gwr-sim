@@ -1,0 +1,107 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<html><head><title>R: Label the bars on a barplot</title>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+<link rel="stylesheet" type="text/css" href="R.css">
+</head><body>
+
+<table width="100%" summary="page for barlabels {plotrix}"><tr><td>barlabels {plotrix}</td><td align="right">R Documentation</td></tr></table>
+
+<h2>Label the bars on a barplot</h2>
+
+<h3>Description</h3>
+
+<p>Displays labels on a plot, usually a bar plot.</p>
+
+
+<h3>Usage</h3>
+
+<pre>
+ barlabels(xpos,ypos,labels=NULL,cex=1,prop=0.5,miny=0,offset=0,...)
+</pre>
+
+
+<h3>Arguments</h3>
+
+<table summary="R argblock">
+<tr valign="top"><td><code>xpos</code></td>
+<td>
+<p>A vector, matrix or data frame of x positions for the labels.</p>
+</td></tr>
+<tr valign="top"><td><code>ypos</code></td>
+<td>
+<p>A vector, matrix or data frame of y positions for the labels.</p>
+</td></tr>
+<tr valign="top"><td><code>labels</code></td>
+<td>
+<p>The labels to display. Defaults to the values of y.</p>
+</td></tr>
+<tr valign="top"><td><code>cex</code></td>
+<td>
+<p>Relative size of the labels. See <span class="samp">text</span>.</p>
+</td></tr>
+<tr valign="top"><td><code>prop</code></td>
+<td>
+<p>The proportion of <span class="samp">ypos</span> at which to place the labels.
+Defaults to 0.5 (the middle).</p>
+</td></tr>
+<tr valign="top"><td><code>miny</code></td>
+<td>
+<p>The minimum value at which to display labels.</p>
+</td></tr>
+<tr valign="top"><td><code>offset</code></td>
+<td>
+<p>Amount to horizontally offset successive labels in case
+of vertical overlaps.</p>
+</td></tr>
+<tr valign="top"><td><code>...</code></td>
+<td>
+<p>Extra arguments passed to <span class="samp">boxed.labels</span>.</p>
+</td></tr>
+</table>
+
+
+<h3>Details</h3>
+
+<p><span class="samp">barlabels</span> places labels on a plot at horizontal positions <span class="samp">xpos</span>
+and vertical positions <span class="samp">ypos</span> * <span class="samp">pos</span>. The typical use of this
+function is to place labels on bars, by default in the middle of the bars.
+</p>
+<p>To put labels just over the tops of the bars, set <span class="samp">prop</span> to 1 and add a
+constant amount to <span class="samp">ypos</span>.
+</p>
+
+
+<h3>Value</h3>
+
+<p>nil</p>
+
+
+<h3>Author(s)</h3>
+
+<p>Jim Lemon</p>
+
+
+<h3>See Also</h3>
+
+<p><a href="boxed.labels.html">boxed.labels</a></p>
+
+
+<h3>Examples</h3>
+
+<pre>
+ heights&lt;-c(14,20,9,31,17)
+ barpos&lt;-barplot(heights,main="A redundant bar plot")
+ # show the usual value labels on the bars
+ barlabels(barpos,heights)
+ # now with stacked bars and offsets
+ heights&lt;-matrix(sample(c(1,2,10,15),20,TRUE),ncol=4)
+ barpos&lt;-barplot(heights,main="Another redundant bar plot")
+ barlabels(barpos,heights,offset=0.1)
+ # finally use barp for the plot
+ barpos&lt;-barp(heights,main="A third and final bar plot",col=2:6,
+  names.arg=paste("Day",1:4))
+ barlabels(barpos$x,barpos$y,matrix(LETTERS[1:5],nrow=5,ncol=4))
+</pre>
+
+<hr><div align="center">[Package <em>plotrix</em> version 3.5-2 <a href="00Index.html">Index</a>]</div>
+</body></html>

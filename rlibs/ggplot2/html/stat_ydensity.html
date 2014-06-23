@@ -1,0 +1,154 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<html><head><title>R: 1d kernel density estimate along y axis, for violin plot.</title>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+<link rel="stylesheet" type="text/css" href="R.css">
+</head><body>
+
+<table width="100%" summary="page for stat_ydensity {ggplot2}"><tr><td>stat_ydensity {ggplot2}</td><td align="right">R Documentation</td></tr></table>
+
+<h2>1d kernel density estimate along y axis, for violin plot.</h2>
+
+<h3>Description</h3>
+
+<p>1d kernel density estimate along y axis, for violin plot.
+</p>
+
+
+<h3>Usage</h3>
+
+<pre>
+  stat_ydensity(mapping = NULL, data = NULL,
+    geom = "violin", position = "dodge", adjust = 1,
+    kernel = "gaussian", trim = TRUE, scale = "area",
+    na.rm = FALSE, ...)
+</pre>
+
+
+<h3>Arguments</h3>
+
+<table summary="R argblock">
+<tr valign="top"><td><code>trim</code></td>
+<td>
+<p>If <code>TRUE</code> (default), trim the tails of
+the violins to the range of the data. If <code>FALSE</code>,
+don't trim the tails.</p>
+</td></tr>
+<tr valign="top"><td><code>scale</code></td>
+<td>
+<p>if &quot;area&quot; (default), all violins have the
+same area (before trimming the tails). If &quot;count&quot;, areas
+are scaled proportionally to the number of observations.
+If &quot;width&quot;, all violins have the same maximum width.</p>
+</td></tr>
+<tr valign="top"><td><code>na.rm</code></td>
+<td>
+<p>If <code>FALSE</code> (the default), removes
+missing values with a warning. If <code>TRUE</code> silently
+removes missing values.</p>
+</td></tr>
+<tr valign="top"><td><code>mapping</code></td>
+<td>
+<p>The aesthetic mapping, usually constructed
+with <code><a href="aes.html">aes</a></code> or <code><a href="aes_string.html">aes_string</a></code>. Only
+needs to be set at the layer level if you are overriding
+the plot defaults.</p>
+</td></tr>
+<tr valign="top"><td><code>data</code></td>
+<td>
+<p>A layer specific dataset - only needed if you
+want to override the plot defaults.</p>
+</td></tr>
+<tr valign="top"><td><code>geom</code></td>
+<td>
+<p>The geometric object to use display the data</p>
+</td></tr>
+<tr valign="top"><td><code>position</code></td>
+<td>
+<p>The position adjustment to use for
+overlappling points on this layer</p>
+</td></tr>
+<tr valign="top"><td><code>adjust</code></td>
+<td>
+<p>see <code><a href="../../stats/html/density.html">density</a></code> for details</p>
+</td></tr>
+<tr valign="top"><td><code>kernel</code></td>
+<td>
+<p>kernel used for density estimation, see
+<code><a href="../../stats/html/density.html">density</a></code> for details</p>
+</td></tr>
+<tr valign="top"><td><code>...</code></td>
+<td>
+<p>other arguments passed on to
+<code><a href="layer.html">layer</a></code>. This can include aesthetics whose
+values you want to set, not map. See <code><a href="layer.html">layer</a></code>
+for more details.</p>
+</td></tr>
+</table>
+
+
+<h3>Value</h3>
+
+<p>A data frame with additional columns:
+</p>
+<table summary="R valueblock">
+<tr valign="top"><td><code>density</code></td>
+<td>
+<p>density estimate</p>
+</td></tr> <tr valign="top"><td><code>scaled</code></td>
+<td>
+<p>density
+estimate, scaled to maximum of 1</p>
+</td></tr> <tr valign="top"><td><code>count</code></td>
+<td>
+<p>density *
+number of points - probably useless for violin plots</p>
+</td></tr>
+<tr valign="top"><td><code>violinwidth</code></td>
+<td>
+<p>density scaled for the violin plot,
+according to area, counts or to a constant maximum width</p>
+</td></tr>
+<tr valign="top"><td><code>n</code></td>
+<td>
+<p>number of points</p>
+</td></tr> <tr valign="top"><td><code>width</code></td>
+<td>
+<p>width of violin
+bounding box</p>
+</td></tr>
+</table>
+
+
+<h3>Aesthetics</h3>
+
+<p><code>stat_ydensity</code> understands the following aesthetics (required aesthetics are in bold):
+</p>
+
+<ul>
+<li> <p><code><STRONG>x</STRONG></code>
+</p>
+</li>
+<li> <p><code><STRONG>y</STRONG></code>
+</p>
+</li></ul>
+
+
+
+
+<h3>See Also</h3>
+
+<p><code><a href="geom_violin.html">geom_violin</a></code> for examples, and
+<code><a href="stat_density.html">stat_density</a></code> for examples with data along
+the x axis.
+</p>
+
+
+<h3>Examples</h3>
+
+<pre>
+# See geom_violin for examples
+# Also see stat_density for similar examples with data along x axis
+</pre>
+
+<hr><div align="center">[Package <em>ggplot2</em> version 0.9.3.1 <a href="00Index.html">Index</a>]</div>
+</body></html>

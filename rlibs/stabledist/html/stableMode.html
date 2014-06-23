@@ -1,0 +1,95 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<html><head><title>R: Mode of the Stable Distribution Function</title>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+<link rel="stylesheet" type="text/css" href="R.css">
+</head><body>
+
+<table width="100%" summary="page for StableMode {stabledist}"><tr><td>StableMode {stabledist}</td><td align="right">R Documentation</td></tr></table>
+
+<h2>Mode of the Stable Distribution Function</h2>
+
+<h3>Description</h3>
+
+<p>Computes the mode of the stable distribution, i.e., the maximum of its
+density function in the &quot;0&quot; parametrization, i.e., the maximum <i>x_0</i> of
+<code><a href="dist-stable.html">dstable</a>(x, alpha, beta, gamma = 1, delta = 0, pm = 0)</code>.
+</p>
+<p>Finds the maximum of <code><a href="dist-stable.html">dstable</a></code> numerically, using
+<code><a href="../../stats/html/optimize.html">optimize</a></code>.
+</p>
+
+
+<h3>Usage</h3>
+
+<pre>
+stableMode(alpha, beta,
+           beta.max = 1 - 1e-11,
+           tol = .Machine$double.eps^0.25)
+</pre>
+
+
+<h3>Arguments</h3>
+
+<table summary="R argblock">
+<tr valign="top"><td><code>alpha, beta</code></td>
+<td>
+<p>numeric parameters:
+value of the index parameter <code>alpha</code> in the range <i>(0,2]</i>,
+and the skewness parameter <code>beta</code>, in the range <i>[-1, 1]</i>.</p>
+</td></tr>
+<tr valign="top"><td><code>beta.max</code></td>
+<td>
+<p>for numerical purposes, values of beta too close to 1,
+are set to <code>beta.max</code>.  Do not modify unless you know what
+you're doing.</p>
+</td></tr>
+<tr valign="top"><td><code>tol</code></td>
+<td>
+<p>numerical tolerance for <code><a href="../../stats/html/optimize.html">optimize</a>()</code>.</p>
+</td></tr>
+</table>
+
+
+<h3>Value</h3>
+
+<p>returns a numeric value, the location of the stable mode.
+</p>
+
+
+<h3>Author(s)</h3>
+
+<p>Diethelm Wuertz for the Rmetrics <font face="Courier New,Courier" color="#666666"><b>R</b></font>-port;
+minor cleanup by Martin Maechler.
+</p>
+
+
+<h3>See Also</h3>
+
+<p>For definition and the &ldquo;dpqr&rdquo;-functions,
+<code><a href="dist-stable.html">StableDistribution</a></code>,
+also for the references.
+</p>
+
+
+<h3>Examples</h3>
+
+<pre>
+## beta = 0  &lt;==&gt;  symmetric  &lt;==&gt;  mode = 0
+all.equal(stableMode(alpha=1, beta=0), 0)
+al.s &lt;- c(1e-100, seq(0,2, by = 1/32)[-1])
+stopifnot(vapply(al.s, function(alp)
+                 stableMode(alpha=alp, beta=0), 1.) == 0)
+
+## more interesting: asymmetric (beta != 0):
+stableMode(alpha=1.2, beta=0.1)
+
+if(stabledist:::doExtras()) { # takes 2.5 seconds
+ sm0.5 &lt;- vapply(al.s, function(AA)
+                 stableMode(alpha=AA, beta= 0.5), 1.)
+ plot(al.s, sm0.5, type = "o", col=2, xlab = quote(alpha), ylab="mode",
+      main = quote("Mode of stable"*{}(alpha, beta == 0.5, pm==0)))
+}
+</pre>
+
+<hr><div align="center">[Package <em>stabledist</em> version 0.6-6 <a href="00Index.html">Index</a>]</div>
+</body></html>

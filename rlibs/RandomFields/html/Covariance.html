@@ -1,0 +1,1165 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<html><head><title>R: Sophicated Covariance And Variogram Models</title>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+<link rel="stylesheet" type="text/css" href="R.css">
+</head><body>
+
+<table width="100%" summary="page for Sophisticated Models {RandomFields}"><tr><td>Sophisticated Models {RandomFields}</td><td align="right">R Documentation</td></tr></table>
+
+<h2>Sophicated Covariance And Variogram Models</h2>
+
+<h3>Description</h3>
+
+<p><code>Covariance</code> returns the values of complex stationary and
+nonstationary covariance functions;
+see <CODE><a href="CovarianceFct.html">CovarianceFct</a></CODE> for basic isotropic models
+</p>
+
+
+<h3>Details</h3>
+
+<p><B>Here only the non-isotropic and hyper models are listed;
+see <CODE><a href="CovarianceFct.html">CovarianceFct</a></CODE> for basic isotropic models.</B>
+</p>
+<p>The implemented models are in standard notation for a
+covariance function (variance 1, nugget 0, scale 1) and for positive
+real arguments <i>h</i> (and <i>t</i>) for the stationary models or parts: 
+</p>
+
+<ul>
+<li> <p><code>+</code><br>
+Operator that adds up at most 10 submodels
+</p>
+</li>
+<li> <p><code>*</code><br>
+Operator that multiplies at most 10 submodels
+</p>
+</li>
+<li> <p><code>$</code><br>
+</p>
+<p align="center"><i>C(x, y) = v C(x / s, y / s)</i></p>
+
+<p align="center"><i>C(x, y) = v C(x a, y a)</i></p>
+
+<p align="center"><i>C(x, y) = v C(A x, A y)</i></p>
+
+<p align="center"><i>C(x, y) = v C(p x, p y)</i></p>
+
+<p>Operator that modifies the the variance (<i>v=</i><code>var</code>) and the
+coordinates or distances by 
+</p>
+
+<ul>
+<li><p> the scale (<i>s=</i><code>scale</code>) or
+</p>
+</li>
+<li><p>  the anisotropy matrix <i>a=</i><code>anisoT</code> multiplied from the
+right or
+</p>
+</li>
+<li><p> the anisotropy matrix <i>A</i> multiplied from the left or
+</p>
+</li>
+<li> <i>p=</i><p><code>proj</code> on a lower dimensional space along
+the coordinate axis
+</p>
+</li></ul>
+
+<p>The parameter <code>scale</code> is positive, <code>aniso</code> and <code>A</code>
+are matrices, and <code>proj</code> is a vector indices with between 1 and
+the dimension of <i>x</i>.
+Note, at most one of the parameters,
+<code>anisoT</code>, <code>A</code>, <code>proj</code> may be given at the same time.
+</p>
+<p>The operator <code>$</code> has 1 submodel.
+If the dimension of the field is 1 or <code>aniso</code> is not given, the
+operator allows for derivatives.
+</p>
+</li>
+<li> <p><code>ave1</code> 
+</p>
+<p align="center"><i>
+      C(h, u) = |E + 2 A h h^t A|^{-1/2}
+      phi(sqrt[|h|^2/2 + (z^t h + u)^2 (1 - 2h^t A (E + 2 A h h^t A)^{-1} A h)])</i></p>
+
+<p>where <i>E</i> is the identity matrix.
+</p>
+<i>A</i><p> is a symmetric positive definite <i>(d-1)
+      x (d-1)</i> and <i>z</i> is a <i>d-1</i> dimensional vector.
+The function <i>&phi;</i> is normal mixture model, e.g.
+<code>whittle</code> model, see <CODE><a href="CovarianceFct.html">CovarianceFct</a></CODE>
+and <CODE><a href="PrintModelList.html">PrintModelList</a></CODE>().
+</p>
+</li>
+<li> <p><code>ave2</code> (nonstationary)<br>
+Here <i>C(h) = C_0(h, 0)</i> where <i>C_0</i> is the
+<code>ave1</code> model.
+</p>
+</li>
+<li> <p><code>biWM</code> (bivariate model)<br>
+</p>
+<p align="center"><i>   C_{ij}(h) = c_{ij} W_{&nu;_{ij}} ( h / s_{ij}) </i></p>
+
+<p>where <i>W_nu</i> is the <code>whittle</code> model and <i>i,j=1,2</i>.
+For (i=j) the  constants  <i>&nu;_{ii}, s_{ii}, c_{ii} &gt; 0</i>.
+For the offdiagonal elements with have <i>C_{12} = C_{21}</i>,
+<i>s_{12}=s_{21}  &gt; 0</i>,
+<i>&nu;_{12} =&nu;_{21} = 0.5 (&nu;_{11} + &nu;{22}) /
+      &nu;_{red}</i>
+for some constant <i>&nu;_{red} \in (0,1]</i>.
+The scalar <i>c_{12} =c_{21} = &rho;_{red} &radic;{f m c_{11} c_{22}}</i>
+where
+</p>
+<p align="center"><i>f = &Gamma;(&nu;_{11} + d/2) * &Gamma;(&nu;_{22} + d/2) /
+      &Gamma;(&nu;_{11}) / &Gamma;(&nu;_{22}) *
+      (&Gamma;(&nu;_{12}) / &Gamma;(&nu;_{12}+d/2))^2 *
+      ( s_{12}^{2*&nu;_{12}} / s_{11}^{&nu;_{11}} / s_{22}^{&nu;_{22}} / )^2</i></p>
+
+<p>and <i>&Gamma;</i> is the Gamma function and <i>d</i> is the dimension
+of the space. The constant <i>m</i> is 
+the infimum of the function <i>g</i> on <i>[0,&infin;)</i>,
+</p>
+<p align="center"><i>
+      g(t) = (1/s_{12}^2 +t^2)^{2&nu;_{12} + d}
+      (1/s_{11}^2 + t^2)^{-&nu;_{11}-d/2}
+      (1/s_{22}^2 + t^2)^{-&nu;_{22}-d/2}     
+    </i></p>
+
+<p>see the reference below for details on the infimum.
+</p>
+<p>The model now has the parameters
+</p>
+<p><code>nu</code> <i>= (nu_{11}, nu_{22})</i><br>
+<code>nured12</code> <i>=&nu;_{red}</i><br>
+<code>s</code> <i>= (s_{11}, s_{22})</i><br>
+<code>s12</code> <i>= s_{12} = s_{21}</i>\
+<code>c</code> <i>= (c_{11}, c_{22})</i><br>
+<code>rhored</code> <i>=&rho;_{red}</i>
+See also <code>parsbiWM</code>.
+</p>
+</li>
+<li> <p><code>constant</code><br>
+This model is designes for the use in <CODE><a href="fitvario.html">fitvario</a></CODE>
+as a part of a linear model definition.
+Its only parameter is a covariance matrix of appropriate size
+to match the number of (non-repeated) observations or
+the number of columns of parameters <code>X</code> in model
+<CODE>mixed</CODE>, see <a href="Covariance.html">sophisticated</a>.
+</p>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+</li>
+<li> <p><code>coxisham</code>
+</p>
+<p align="center"><i>
+      C(h, u) = |E + u^&beta; D|^{-1/2} &phi;([
+      (h - u &mu;)^t (E + u^&beta; D)^{-1} (h - u&mu;)]^{1/2})
+    </i></p>
+
+<p>Here $<i>mu</i> is vector;
+<i>E</i> is the identity matrix and <i>D</i> is a correlation 
+matrix with <i>|D| &gt;0</i>. Currently implementation is done only for
+<i>d=2</i>.  The parameter <i>&beta;</i>
+is in <i>(0,2]</i> and equals 2 by default.
+</p>
+</li>
+<li> <p><code>curlfree</code> (multivariate)
+</p>
+<p align="center"><i>
+      ( - \nabla_x \nabla_x^T ) C_0(x, t)
+    </i></p>
+
+<i>C_0</i><p> is a univariate
+covariance model that is motion invariant and at least twice differentiable
+in the first component. The operator is applied to the first
+component only. The model returns the potential field in the first
+component, the corresponding
+curlfree field and field of sources and sinks in the last component.
+The above formula for the covariance function only gives the part
+for the curlfree field.  The complete matrix-valued
+correlation function, including all
+components, is more complicated.
+</p>
+<i>C_0</i><p> is either a spatiotemporal model (then <i>t</i> is the
+time component) or it is an isotropic model. Then, the first <i>Dspace</i>
+coordinates are considered as <i>x</i> coordinates and the remaining
+ones as <i>t</i> coordinates. By default, <i>Dspace</i> equals the
+dimension of the field (and <i>t</i> is identically <i>0</i>).
+</p>
+<p>See also the models <code>divfree</code> and <code>vector</code>.
+</p>
+</li>
+<li> <p><code>cutoff</code> 
+</p>
+<p align="center"><i>C(h)=&phi;(h),                      0&le; h &le; d</i></p>
+
+<p align="center"><i>C(h) = b_0 ((dr)^a - h^a)^{2 a},   d &le; h &le; dr</i></p>
+
+<p align="center"><i>C(h) = 0,                           dr&le; h</i></p>
+
+<p>The cutoff model is a functional of the covariance function
+<i>phi</i>.
+</p>
+<p>Here, <i>d&gt;0</i> should be the diameter of the domain on which
+simulation is done . The parameter <i>a&gt;0</i> has been shown to be
+optimal for  <i>a = 1/2</i> or <i>a =1</i>.
+</p>
+<p>The parameters <i>r</i> and <i>b_0</i>
+are chosen internally such that <i>C</i> is a smooth function.
+</p>
+<p>NOTE: The algorithm that checks the given parameters knows
+only about some few necessary conditions.
+Hence it is not ensured that
+the cutoff-model is a valid covariance function for any
+choice of phi and the parameters. 
+</p>
+<p>For certain models <i>phi</i>, i.e. <code>stable</code>,
+<code>whittle</code> and <code>gencauchy</code>, some sufficient conditions
+are known.
+</p>
+</li>
+<li> <p><code>delayeffect</code> (bivariate)
+</p>
+<p align="center"><i>
+      C_{11}(h) = C_{22}(h) = C_0(h),  C_{12}(h) = C_0(h + r), C_{21}(h) = C_0(-h + r)</i></p>
+
+<p>Here <i>r</i> is a vector of the dimension of the random field,
+and <i>C_0</i> is a translation invariant, univariate covariance model.
+</p>
+</li>
+<li> <p><code>divfree</code> (multivariate)
+</p>
+<p align="center"><i>
+     ( - &Delta; E + \nabla \nabla^T ) C_0(x, t)
+    </i></p>
+
+<i>C_0</i><p> is a univariate
+covariance model that is motion invariant and at least twice differentiable
+in the first component. The operator is applied to the first
+component only. The model returns the potential field in the first
+component, the corresponding
+divfree field and the field of curl strength in the last component.
+The above formula for the covariance function only gives the part
+for the divfree field.  The complete matrix-valued
+correlation function, including all
+components, is more  complicated.
+</p>
+<i>C_0</i><p> is either a spatiotemporal model (then <i>t</i> is the
+time component) or it is an isotropic model. Then, the first <i>Dspace</i>
+coordinates are considered as <i>x</i> coordinates and the remaining
+ones as <i>t</i> coordinates. By default, <i>Dspace</i> equals the
+dimension of the field (and <i>t</i> is identically <i>0</i>).
+</p>
+<p>See also the models <code>curlfree</code> and <code>vector</code>.
+</p>
+</li>
+<li> <p><code>EtAxxA</code> (auxiliary function)
+</p>
+<p align="center"><i>
+      S(x) = E + R^t A^t x x^t A R,  x \in R^3
+    </i></p>
+
+<p>where <i>E</i> and <i>A</i> are arbitrary <i>3 x 3</i> matrices
+and <i>R</i> is a rotation matrix,
+</p>
+<p align="center"><i>R = matrix(c(cos(alpha x_3), -sin(alpha x_3), 0
+             sin(alpha x_3),  cos(alpha x_3), 0,
+             0,                0,             1), nc=3, by=TRUE)
+	   </i></p>
+
+<p>This is not a covariance function, but can be used as a submodel for
+certain classes of non-stationary covariance functions.
+</p>
+</li>
+<li> <p><code>Exp</code>
+</p>
+<p align="center"><i> C(h) = \exp(-&gamma;(h)) </i></p>
+
+<p>where <i>&gamma;</i> is a valid variogram.
+If a stationary covariance model <i>C</i>is given in stead of <i>&gamma;</i>,
+this is automatically turned into a variogram model, i.e.
+<i> C(h) = \exp(-C(0)+C(h)) </i>.
+</p>
+
+</li>
+<li> <p><code>M</code>
+</p>
+<p align="center"><i>
+      C(h) = M^t &phi;(h) M
+    </i></p>
+
+<p>Here <i>phi</i> is a <i>k</i>-variate variogram or covariance,
+and <i>M</i> is any <i>m x k</i> matrix.
+</p>
+</li>
+<li> <p><code>ma1</code>
+</p>
+<p align="center"><i>
+      C(h) = (&theta; / (1 - (1-&theta;) * C_0(h)))^&alpha;
+    </i></p>
+
+<p>Here, <i>C_0</i> is any correlation function,
+<i>&alpha; \in (0,&infin;)</i> and <i>&theta; \in (0,1)</i>.
+</p>
+</li>
+<li> <p><code>ma2</code>
+</p>
+<p align="center"><i>
+      C(h) = (1 - exp(-&gamma;(h)))/&gamma;(h)
+    </i></p>
+
+<p>Here <i>&gamma;</i> is a variogram model.
+</p>
+</li>
+<li> <p><code>mastein</code>
+</p>
+<p align="center"><i>C(h, t)= [ &Gamma;(&nu; + &gamma;(t))&Gamma;(&nu; + &delta;) ] / [
+	&Gamma;(&nu; + 
+	&gamma;(t) + &delta;) &Gamma;(&nu;) ]
+      W_{&nu; + &gamma;(t)}(\|h - Vt\|)</i></p>
+
+<i>&Gamma;</i><p> is the Gamma function; <i>&gamma;(t)</i>
+is a variogram on the real axis; <i>W</i> is the Whittle-Matern model.
+Here, the
+names of covariance models can also be used; the algorithm
+chooses the corresponding variograms then.
+The parameter <i>&nu;</i> is the smoothness parameter
+of the Whittle-Matern model (for <i>t=0</i>) and must be positive.
+Finally, <i>&delta;</i> must be greater than or equal to half the
+dimension of <i>h</i>.
+Instead of the velocity parameter <i>V</i> in original model
+description, a preceeding anisotropy matrix is chosen appropriately:
+</p>
+<p align="center"><i>
+      matrix(c(A,  -V,
+               0,   1), nr=2, by=TRUE)
+    </i></p>
+
+<p>A is a spatial transformation matrix.
+(I.e. (x,t) is multiplied from left on the above matrix and
+the first elements of the obtained vector are intepreted as
+new spatial components and only these components are used to form
+the argument in the Whittle-Matern function.)
+The last component in the new coordinates is the time which is
+passed to <i>g</i>. (Velocity is assumed to be zero in
+the new coordinates.)
+</p>
+
+
+
+
+
+
+
+<p>Note, that for numerical reasons, <i>&nu;+&gamma;+d</i> may not exceed
+the value 80.0. If exceeded the algorithm fails.
+</p>
+</li>
+<li> <p><code>mixed</code>
+This model is designed for the use in <CODE><a href="fitvario.html">fitvario</a></CODE>
+to build up linear regression models with fixed effects, mixed
+effects, including geoadditive parts.
+</p>
+<p>The model has two parameters. The first, <code>X</code>
+is a  matrix of independent variables.
+The second, <code>b</code>, is a vector of regression coefficients.
+Furthermore a submodel, <code>covb</code>, may give the covariance structure
+for <code>b</code>.
+</p>
+<p>Let <code>n</code> the number of (non-repeated) observations.
+The following combinations are allowed:
+</p>
+
+<ul>
+<li><p> only <code>X</code> is given. Then <code>X</code> is a scalar
+or a vector of length <code>n</code>, and <code>X</code> defines a known mean.
+</p>
+</li>
+<li> <p><code>X</code> and <code>b</code> are given. Then <code>X</code> is a
+<i>n x m</i> matrix
+where <i>m</i> is the length of the vector <i>b</i>. Then a fixed
+effect is defined.
+</p>
+</li>
+<li> <p><code>X</code> and <code>covb</code> are given.
+</p>
+
+<ul>
+<li><p> if <code>covb</code> is the model <CITE>constant</CITE>, 
+then we have a random model (maybe with preceeding model
+<code>$</code>).
+</p>
+</li>
+<li><p> if <code>covb</code> is any other model then we have
+a geoadditive part
+</p>
+</li></ul>
+
+</li></ul>
+
+<p>The data in the fitvario may contain <code>NA</code>s, but not <code>X</code>.
+</p>
+</li>
+<li> <p><code>mqam</code> (multivariate quasi-arithmetic mean)
+</p>
+<p align="center"><i>C_{ij}(h) = &rho;_{ij} &phi;(&theta; &phi;^{-1}(C_i(h)) + (1 - &theta;) &phi;^{-1}(C_j(h)))</i></p>
+
+<p>where <i>&phi;</i> is a completely monotone function
+and <i>C_i</i> are suitable covariance functions.
+</p>
+<p>The submodel <i>&phi;</i> is given (by name) as first submodel.
+Since <i>&phi;</i> is completely monotone if and only if
+<i>&phi;( \| \cdot \|^2)</i> is a valid
+covariance function for all dimensions, e.g. <code>stable</code>,
+<code>gauss</code>, <code>exponential</code>,  <i>&phi;</i> is given
+by the name of the corresponding covariance function <i>C</i>,
+i.e. <i>&phi;(\cdot) = C(&radic;(\cdot))</i>.
+</p>
+<p>Warning: <code>RandomFields</code> cannot check whether the combination
+of <i>&phi;</i> and <i>C_i</i> is valid.
+</p>
+</li>
+<li> <p><code>natsc</code>
+</p>
+<p align="center"><i>    C(h) = C_0(h / s)  </i></p>
+
+<p>Where <i>C_0</i> is any stationary and isotropic model. The parameter
+<code>s</code> is chosen by <code>natsc</code> such that the practical range
+(or the mathematical range, if finite) is 1.
+</p>
+</li>
+<li> <p><code>nonstWM</code>
+</p>
+<p align="center"><i>C(x, y)=&Gamma;(&mu;) &Gamma;(&nu;(x))^{-1/2} &Gamma;(&nu;(y))^{-1/2}
+      W_{&mu;} (\|x-y\|)</i></p>
+
+<p align="center"><i>= 2^{1-&mu;}  &Gamma;(&nu;(x))^{-1/2} &Gamma;(&nu;(y))^{-1/2}
+      \|x-y\|^&mu;
+      K_&nu;(\|x-y\|)</i></p>
+
+<p>where  <i>&mu; = [&nu;(x) + &nu;(y)]/2</i> and
+<i>&nu;</i> is a positive function.
+If <i>&nu;</i> is a scalar use the variable <code>nu</code>.
+If <i>&nu;</i> is a function, use the submodel <code>Nu</code>.
+Note that for <code>Nu</code> the usual list structure applies
+and only the defined covriance models can be used.
+</p>
+</li>
+<li> <p><code>nsst</code> (Non-Separable Space-Time model)
+</p>
+<p align="center"><i>C(h,u)= (&psi;(u)+1)^{-&delta;/2} &phi;(h /&radic;(&psi;(u) +1))</i></p>
+
+<p>The parameter <i>&delta;</i> must be greater than or equal to
+the spatial dimension of the field. 
+<i>&phi;</i> is normal mixture model and
+<i>&psi;</i> is a variogram.
+</p>
+<p>This model is used for space-time modelling where the spatial
+component is isotropic.<br>
+</p>
+</li>
+<li> <p><code>nugget</code> (multivariat model)
+</p>
+<p align="center"><i>diag(1,&hellip;,1) 1(h==0)</i></p>
+
+<p>The components of the multivariate vector are always independent.
+The models adapts the multivariate dimension to the calling model.
+</p>
+</li>
+<li> <p><code>parsbiWM</code> (bivariate model)<br>
+</p>
+<p align="center"><i>   C_{ij}(h) = c_{ij} W_{&nu;_{ij}} (h / s) </i></p>
+
+<p>where <i>W_nu</i> is the <code>whittle</code> model and <i>i,j=1,2</i>.
+For (i=j) the  constants  <i>&nu;_{ii}, c_{ii} &ge; 0</i> and <i>s&gt;0</i>.
+For the offdiagonal elements with have <i>C_{12} = C_{21}</i>.
+Furthermore,  <i>&nu;_{12} =&nu;_{21} = 0.5 (&nu;_{11} + &nu;{22})</i>
+and the scalar <i>c_{12} =c_{21} = &rho;_{red} &radic;{f m c_{11} c_{22}}</i>
+where
+</p>
+<p align="center"><i>f = &Gamma;(&nu;_{11} + d/2) * &Gamma;(&nu;_{22} + d/2) /
+      &Gamma;(&nu;_{11}) / &Gamma;(&nu;_{22}) *
+      (&Gamma;(&nu;_{12}) / &Gamma;(&nu;_{12}+d/2))^2</i></p>
+
+<p>and <i>&Gamma;</i> is the Gamma function and <i>d</i> is the dimension
+of the space. The constant <i>m</i> is 
+the infimum of the function <i>g</i> on <i>[0,&infin;)</i>, 
+</p>
+<p align="center"><i>
+      g(t) = (1/s_{12}^2 +t^2)^{2&nu;_{12} + d}
+      (1/s_{11}^2 + t^2)^{-&nu;_{11}-d/2}
+      (1/s_{22}^2 + t^2)^{-&nu;_{22}-d/2}
+    </i></p>
+
+<p>see the reference below for details on the infimum.
+</p>
+<p>The model now has the parameters
+</p>
+<p><code>nu</code> <i>= (&nu;_{11}, &nu;_{22})</i><br>
+<code>s</code> <i>= (s_{11}, s_{22})</i><br>
+<code>s12</code> <i>= s_{12} = s_{21}</i><br>
+<code>c</code> <i>= (c_{11}, c_{22})</i><br>
+<code>rhored</code> <i>=&rho;_{red}</i>
+</p>
+<p>See also <code>biWM</code>.
+</p>
+</li>
+<li> <p><code>Pow</code>
+</p>
+<p align="center"><i> &gamma;(h) = (&gamma;_0(h))^&alpha;</i></p>
+
+<p>or 
+</p>
+<p align="center"><i> C(h) = C_0(0) - [C_0(0) - C_0(h)]^&alpha;</i></p>
+
+<p>where <i>&gamma;_0</i> is a valid variogram or
+<i>C_0</i> is a valid covariance function,
+and <i>&alpha; \in [0, 1]</i>.
+</p>
+</li>
+<li> <p><code>qam</code> (Quasi-arithmetic mean)
+</p>
+<p align="center"><i>C(h) = &phi;(&sum;_i &theta;_i &phi;^{-1}(C_i(h)))</i></p>
+
+<p>where <i>&phi;</i> is a completely monotone function
+and <i>C_i</i> are suitable covariance functions.
+</p>
+<p>The submodel <i>&phi;</i> is given (by name) as first submodel.
+Since <i>&phi;</i> is completely monotone if and only if
+<i>&phi;( \| \cdot \|^2)</i> is a valid
+covariance function for all dimensions, e.g. <code>stable</code>,
+<code>gauss</code>, <code>exponential</code>, <i>&phi;</i> is given
+by the name of the corresponding covariance function <i>C</i>,
+i.e. <i>&phi;(\cdot) = C(&radic;(\cdot))</i>.
+</p>
+<p>Warning: <code>RandomFields</code> cannot check whether the combination
+of <i>&phi;</i> and <i>C_i</i> is valid.
+</p>
+</li>
+<li> <p><code>rational</code> (auxiliary)
+</p>
+<p align="center"><i>
+      S(x) = (a_0 + a_1 * x^t A A^t x)/ (1 + x^t A A^t x)
+    </i></p>
+
+<p>where is some <i>d x d</i> matrix
+and <i>a = (a_0, a_1)</i> is a 2-dimensional vector.
+</p>
+</li>
+<li> <p><code>Rotat</code>(auxiliary function)
+</p>
+<p align="center"><i>
+      S^t(x) = x^t R, x \in R^3
+    </i></p>
+
+<p>where 
+and <i>R</i> is a rotation matrix,
+</p>
+<p align="center"><i>R = matrix(c(cos(alpha x_3), -sin(alpha x_3), 0
+             sin(alpha x_3),  cos(alpha x_3), 0,
+             0,                0,             1), nc=3, by=TRUE)
+	   </i></p>
+
+<p>This is not a covariance function, but can be used a submodel for
+certain classes of non-stationary covariance functions.
+</p>
+</li>
+<li> <p><code>Stein</code> 
+</p>
+<p align="center"><i>C(h)=a_0 + a_2 (h)^2 + &phi;(h), 0&le; h &le; D</i></p>
+
+<p align="center"><i>C(h)=b_0 (rD - h)^3/(h),   r &le; h &le; rD</i></p>
+
+<p align="center"><i>C(h) = 0,   rD &le; h</i></p>
+
+<p>The Stein model is a functional of the covariance function
+<i>phi</i>. 
+</p>
+<p>Here, <i>D&gt;0</i> should be the diameter of the domain on which
+simulation is done,<i>r&ge;1</i>.
+The parameters <i>a_0</i>, <i>a_2</i> and <i>b_0</i>
+are chosen internally such that <i>C</i> becomes a smooth function.
+</p>
+
+<p>NOTE: The algorithm that checks the given parameters knows
+only about some few necessary conditions.
+Hence it is not ensured that
+the Stein-model is a valid covariance function for any
+choice of phi and the parameters. 
+</p>
+<p>For certain models <i>phi</i>, i.e. <code>stable</code>,
+<code>whittle</code>, <code>gencauchy</code>, and the variogram
+model <code>fractalB</code>
+some sufficient conditions are known.
+</p>
+</li>
+<li> <p><code>steinst1</code> (non-separabel space time model)
+</p>
+<p align="center"><i>
+      C(h, t) = W_&nu;(y) - &lt;h, z&gt; t W_{&nu;-1}(y) / [ (&nu;-1) (2&nu; + d
+    +1) ]</i></p>
+
+<p>Here, <i>W_{&nu;}</i> is the Whittle-Matern model with
+smoothness parameter <i>&nu;</i>;
+<i>y = ||(h,t)||</i>.
+<i>z</i> is a vector whose norm 
+must less than or equal to 1.
+</p>
+</li>
+<li> <p><code>stp</code>
+</p>
+<p align="center"><i>
+      C(x,y) = |S_x|^{1/4} |S_y|^{1/4} |A|^{-1/2}
+      &phi;(Q(x,y)^{1/2})
+    </i></p>
+
+<p>where
+</p>
+<p align="center"><i>
+      Q(x,y) = c^2 - m^2 + h^t (S_x + 2(m + c)M) A^{-1} (A_y + 2
+      (m-c)M)h,
+    </i></p>
+
+<p align="center"><i>
+      c = -z^t h + &xi;_2(x) - &xi;_2(y),
+    </i></p>
+
+<p align="center"><i>
+      A = S_x + S_y + 4 M h h^t M      
+    </i></p>
+
+<p align="center"><i>
+      m = h^t M h
+      .</i></p>
+
+<p align="center"><i>
+      h = H(x) - H(y)
+    </i></p>
+
+<p>The parameters are
+</p>
+
+<ul>
+<li> <i>S_x</i><p> (strictly) positive definite matrices for <i>x
+	\in R^d</i>
+</p>
+</li>
+<li> <i>M</i><p> an arbitrary <i>d x d</i> matrix
+</p>
+</li>
+<li> <i>z \in R^d</i><p>  arbitrary
+</p>
+</li>
+<li> <i>H</i><p> arbitrary d-variate function on <i>R^d</i>
+</p>
+</li>
+<li> <i>&xi;</i><p> arbitrary univariate function on <i>R^d</i>
+</p>
+</li>
+<li> <i>&phi;</i><p> a normal mixture model
+</p>
+</li></ul>
+
+<p>The model allows for mimicking cyclonic behaviour.
+</p>
+</li>
+<li> <p><code>tbm2</code>
+</p>
+<p align="center"><i>
+      C(h) = d/dh int_0^h [ u phi(u) ] / [ sqrt{h^2 - u^2} ] d u
+    </i></p>
+
+<p>for some stationary and isotropic covariance <i>&phi;</i>
+that is valid in at least 2 dimensions.
+</p>
+<p>This operator is currently only designed for internal use!
+</p>
+</li>
+<li> <p><code>tbm3</code>
+</p>
+<p align="center"><i>
+      C(h) = phi(h) + h phi'(h) / n
+    </i></p>
+
+<p>which, for <code>n=1</code> reduced to the standard TBM operator
+</p>
+<p align="center"><i>
+      C(h) = d/dh [ h phi(h) ]
+    </i></p>
+
+<p>for some stationary and isotropic covariance <i>&phi;</i>
+that is valid in at least <i>n+2</i> dimensions.
+<code>n</code> should be an integer.
+</p>
+<p>This operator is currently only designed for internal use!
+</p>
+</li>
+<li> <p><code>vector</code> (multivariate)
+</p>
+<p align="center"><i>
+      ( -0.5 * (a + 1) &Delta; E + a \nabla \nabla^T ) C_0(x, t)
+    </i></p>
+
+<i>C_0</i><p> is a univariate
+covariance model that is motion invariant and at least twice differentiable
+in the first component. The operator is applied to the first
+component only. The parameter <i>a</i> is in <i>[-1, 1]</i>. If <i>a=-1</i>
+then the field is curl free; if <i>a=1</i> then the field is
+divergence free.
+</p>
+<i>C_0</i><p> is either a spatiotemporal model (then <i>t</i> is the
+time component) or it is an isotropic model. Then, the first <i>Dspace</i>
+coordinates are considered as <i>x</i> coordinates and the remaining
+ones as <i>t</i> coordinates. By default, <i>Dspace</i> equals the
+dimension of the field (and <i>t</i> is identically <i>0</i>).
+</p>
+<p>See also the models <code>divfree</code> and <code>curlfree</code>
+</p>
+</li></ul>
+
+<p>See <CODE><a href="CovarianceFct.html">CovarianceFct</a></CODE> for comments on the use of a
+covariance model.
+</p>
+<p>However, for the above sophicated models,
+the following differences should be considered:
+</p>
+
+<ul>
+<li>
+<p><CODE><a href="RFparameters.html">RFparameters</a></CODE><code>()$PracticalRange</code>
+is usually not defined for the above models
+</p>
+</li>
+<li>
+<p>only the list notation 
+can be used, but not the simple model definitions
+with <code>model="name"</code> and
+<code>param=c(mean, variance, nugget, scale,...)</code>.
+</p>
+</li>
+<li>
+<p>the use of <CODE>Covariance</CODE> is obligatory if the model is
+non-stationary.
+</p>
+</li>
+<li>
+<p>the anisotropy matrix belonging to a hypermodel 
+is applied first to the coordinates before any
+call of the submodels.
+</p>
+</li></ul>
+
+<p>To use the above models, a new, very flexible, straight forward
+list notation is needed. Background of this notation is that
+we have &lsquo;primitives&rsquo;, i.e. functions that are positive
+definite. And we have &lsquo;operators&rsquo;, i.e. functionals that
+make out of given variograms, covariance functions etc. new
+models. Examples are <code>"+"</code>, <code>"*"</code>, or Gneiting's
+<code>"nsst"</code>. Consequently, we need also an operator, called
+<code>"$"</code>, that changes the variance and the scale.
+</p>
+<p>E.g. a standard exponential model (variance=1, scale=1, nugget=0)
+is now simply written as
+</p>
+<p align="center"><i>list("exponential")</i></p>
+
+<p>(And no <code>param</code> must be given!)
+</p>
+<p>Further, a standard exponential model with a nugget effect,
+nugget variance 3, is now written as
+<br>
+</p>
+<p>list(&quot;+&quot;,<br>
+list(&quot;exponential&quot;),<br>
+list(&quot;$&quot;, var=3, list(&quot;nugget&quot;))<br>
+)<br>
+</p>
+<p>Here, only the relevant parameters need to be given; the missing
+parameters get standard values whenever standard values exist,
+e.g. variance equals 1 if not given.
+Further, the parameters can (and must) be called by names, which makes
+complex models much more readable.
+Submodels, as <code>list("exponential")</code> in the second example above,
+can (but need not) be called by name.
+</p>
+
+
+<h3>Value</h3>
+
+<p><code>CovarianceFct</code> and <code>Covariance</code>
+return a vector of values of the covariance function.
+</p>
+
+
+<h3>Author(s)</h3>
+
+<p>Martin Schlather, <a href="mailto:schlather@math.uni-mannheim.de">schlather@math.uni-mannheim.de</a>
+<a href="http://ms.math.uni-mannheim.de">http://ms.math.uni-mannheim.de</a>
+</p>
+
+
+<h3>References</h3>
+
+<p>Overviews:
+</p>
+
+<ul>
+<li><p> see reference list in <code><a href="CovarianceFct.html">CovarianceFct</a></code>
+</p>
+</li></ul>
+
+<p>ave1, ave2
+</p>
+
+<ul>
+<li><p> Schlather, M. (2010)
+On some covariance models based on normal scale mixtures.
+<EM>Bernoulli</EM>, <B>16</B>, 780-797. (Example 13)
+</p>
+</li></ul>
+
+<p>biWM, parsbiWM
+</p>
+
+<ul>
+<li><p> Gneiting, T., Kleiber, W., Schlather, M. (2011)
+Matern covariance functions for multivariate random fields
+<EM>JASA</EM>
+</p>
+</li></ul>
+
+<p>coxisham
+</p>
+
+<ul>
+<li><p> Cox, D.R., Isham, V.S. (1988)
+A simple spatial-temporal model of rainfall.
+<EM>Proc. R. Soc. Lond. A</EM>, <B>415</B>, 317-328.
+</p>
+</li>
+<li><p> Schlather, M. (2010)
+On some covariance models based on normal scale mixtures.
+<EM>Bernoulli</EM>, <B>16</B>, 780-797.
+</p>
+</li></ul>
+
+<p>curlfree
+</p>
+
+<ul>
+<li><p> see vector
+</p>
+</li></ul>
+
+<p>cutoff
+</p>
+
+<ul>
+<li><p> Gneiting, T., Sevecikova, H, Percival, D.B., Schlather M.,
+Jiang Y. (2006) Fast and Exact Simulation of Large Gaussian
+Lattice Systems in $R^2$: Exploring the Limits.
+<EM>J. Comput. Graph. Stat.</EM> <B>15</B>, 483-501.
+</p>
+</li>
+<li><p> Stein, M.
+</p>
+</li></ul>
+
+<p>delayeffect
+</p>
+
+<ul>
+<li><p> Wackernagel, H. (2003) <EM>Multivariate Geostatistics.</EM> Berlin:
+Springer, 3nd edition.
+</p>
+</li></ul>
+
+<p>divfree
+</p>
+
+<ul>
+<li><p> see vector
+</p>
+</li></ul>
+
+<p>Iaco-Cesare model
+</p>
+
+<ul>
+<li><p> de Cesare, L., Myers, D.E., and Posa, D. (2002)
+FORTRAN programs for space-time modeling. <EM>Computers \&amp;
+Geosciences</EM> <B>28</B>, 205-212.
+</p>
+</li>
+<li><p>  de Iaco, S.. Myers, D.E., and Posa, D. (2002)
+Nonseparable space-time covariance models: some parameteric
+families. <EM>Math. Geol.</EM> <B>34</B>, 23-42.
+</p>
+</li></ul>
+
+<p>vector
+</p>
+
+<ul>
+<li><p> Fuselier, E.J. (2006) <EM>Refined Error Estimates for
+Matrix-Valued Radial Basis Functions</EM>
+PhD thesis. Texas A&amp;M University
+</p>
+</li>
+<li><p> Scheuerer, M. and Schlather, M. (2011)
+Covariance Models for Random Vector Fields
+<EM>Submitted</EM>
+</p>
+</li></ul>
+
+<p>Ma-Stein model
+</p>
+
+<ul>
+<li><p> Ma, C. (2003)
+Spatio-temporal covariance functions generated by mixtures.
+<EM>Math. Geol.</EM>, <B>34</B>, 965-975.
+</p>
+</li>
+<li><p> Stein, M.L. (2005) Space-time covariance functions. <EM>JASA</EM>,
+<B>100</B>, 310-321.
+</p>
+</li></ul>
+
+<p>ma1/ma2
+</p>
+
+<ul>
+<li>
+</li></ul>
+
+<p>mixed
+</p>
+
+<ul>
+<li><p> Ober, U., Erbe, M., Porcu, E., Schlather, M. and Simianer, H.
+(2011) Kernel-Based Best Linear Unbiased Prediction with Genomic
+Data.
+<EM>Submitted.</EM>
+</p>
+</li></ul>
+
+<p>nonstWM/hyperbolic/cauchy
+</p>
+
+<ul>
+<li><p> Stein, M. (2005)
+Nonstationary Spatial Covariance Functions.
+Tech. Rep., 2005
+</p>
+</li></ul>
+
+<p>nsst
+</p>
+
+<ul>
+<li><p> Gneiting, T. (1997) Normal scale mixtures and dual probability
+densitites, <EM>J. Stat. Comput. Simul.</EM> <B>59</B>, 375-384.
+</p>
+</li>
+<li><p> Gneiting, T. (2002) Nonseparable, stationary covariance
+functions for space-time data, <EM>JASA</EM> <B>97</B>, 590-600.
+</p>
+</li>
+<li><p> Gneiting, T. and  Schlather, M. (2001)
+Space-time covariance models.
+In El-Shaarawi, A.H. and Piegorsch, W.W.:
+<EM>The Encyclopedia of Environmetrics.</EM> Chichester: Wiley.
+</p>
+</li>
+<li><p> Zastavnyi, V. and Porcu, E. (2011)
+Caracterization theorems for the Gneiting class space-time
+covariances.
+<EM>Bernoulli</EM>, <B>??</B>.
+</p>
+</li>
+<li><p> Schlather, M. (2010)
+On some covariance models based on normal scale mixtures.
+<EM>Bernoulli</EM>, <B>16</B>, 780-797.
+</p>
+</li></ul>
+
+<p>Quasi-arithmetic means (qam, mqam)
+</p>
+
+<ul>
+<li><p> Porcu, E., Mateu, J. &amp; Cchristakos, G. (2007) Quasi-arithmetic
+means of covariance functions with potential applications to
+space-time data.  Submitted to Journal of Multivariate Analysis.
+</p>
+</li>
+<li>
+</li></ul>
+
+<p>Paciorek-Stein (steinst1)
+</p>
+
+<ul>
+<li><p> Stein, M. (2005)
+Nonstationary Spatial Covariance Functions.
+Tech. Rep., 2005
+</p>
+</li>
+<li><p> Paciorek, C. (2003)
+<EM>Nonstationary Gaussian Processes for Regression and Spatial
+Modelling</EM>,
+Carnegie Mellon University, Department of Statistics, PhD thesis.
+</p>
+</li></ul>
+
+<p>Stein
+</p>
+
+<ul>
+<li><p> Stein, M.
+</p>
+</li></ul>
+
+<p>stp
+</p>
+
+<ul>
+<li><p> Schlather, M. (2008)
+On some covariance models based on normal scale mixtures.
+<EM>Submitted</EM>
+</p>
+</li></ul>
+
+<p>tbm
+</p>
+
+<ul>
+<li><p> Gneiting, T. (1999)
+On the derivatives of radial positive definite function.
+<EM>J. Math. Anal. Appl</EM>, <B>236</B>, 86-99
+</p>
+</li>
+<li>
+<p>Matheron, G. (1973).
+The intrinsic random functions and their applications.
+<EM>Adv . Appl. Probab.</EM>, <B>5</B>, 439-468.
+</p>
+</li></ul>
+
+
+
+<h3>See Also</h3>
+
+<p><CODE><a href="CovarianceFct.html">CovarianceFct</a></CODE>,
+<CODE><a href="EmpiricalVariogram.html">EmpiricalVariogram</a></CODE>,
+<CODE><a href="GetPracticalRange.html">GetPracticalRange</a></CODE>,
+<CODE><a href="parameter.range.html">parameter.range</a></CODE>,
+<code><a href="RandomFields.html">RandomFields</a></code>,
+<CODE><a href="RFparameters.html">RFparameters</a></CODE>,
+<CODE><a href="ShowModels.html">ShowModels</a></CODE>.
+</p>
+
+
+<h3>Examples</h3>
+
+<pre>
+
+
+PrintModelList(op=TRUE)
+
+## the subsequent model can be used to model rainfall...
+y &lt;- x &lt;- seq(0, 10, len=25) # better 256 -- but will take a while 
+T &lt;- c(0, 10, 1) # better 0.1
+col &lt;- c(topo.colors(300)[1:100], cm.colors(300)[c((1:50) * 2, 101:150)])
+
+model &lt;- list("coxisham", mu=c(1, 1), D=matrix(nr=2, c(1, 0.5, 0.5, 1)),
+              list("whittle", nu=1)
+              )
+
+system.time(z &lt;- GaussRF(x, y, T=T, grid =TRUE, spectral.lines=1500,
+                       model = model))
+
+zlim &lt;- range(z)
+time &lt;- dim(z)[3]
+for (i in 1:time) {
+  Print(i)
+  sleep.milli(100)
+  image(x, y, z[, , i], add=i&gt;1, col=col, zlim=zlim)
+}
+
+
+####################################################
+####################################################
+
+ # the following five model definitions are the same!
+ ## (1) very traditional form
+ (cv &lt;- CovarianceFct(x, model="bessel", param=c(NA, 2 , 1, 5, 0.5)))
+
+ ## (2) traditional form in list notation
+ model &lt;- list(model="bessel", param=c(NA, 2, 1, 5, 0.5))
+ cv - CovarianceFct(x, model=model)
+
+ ## (3) nested model definition
+ cv - CovarianceFct(x, model="bessel",
+                    param=rbind(c(2, 5, 0.5), c(1, 0, 0)))
+
+ #### most general notation in form of lists
+ ## (4) isotropic notation 
+ model &lt;- list("+",
+               list("$", var=2, scale=5, list("bessel", 0.5)),
+               list("nugget"))
+ cv - CovarianceFct(x, model=model)
+              
+ ## (5) anisotropic notation
+ model &lt;- list("+",
+               list("$", var=2, aniso=0.2, list("bessel", 0.5)),
+               list("nugget"))
+ cv - CovarianceFct(as.matrix(x), model=model)
+
+
+
+
+####################################################
+####################################################
+
+ # The model gneitingdiff was defined in RandomFields v1.0.
+ # This isotropic covariance function is valid for dimensions less
+ # than or equal to 3 and has two positive parameters.
+ # It is a class of models with compact support that allows for
+ # smooth parametrisation of the differentiability up to order 6.     
+ # The former model `gneitingdiff' should now be coded as
+
+ gneitingdiff &lt;- function(p){
+    list("+",
+         list("$", var=p[3], list("nugget")),
+         list("$", scale=p[4],
+              list("*", 
+                   list("$", var=p[2], scale=p[6], list("gneiting")),
+                   list("whittle", nu=p[5])
+                  )
+              )
+         )
+ }
+
+ # and then 
+ param &lt;- c(NA, runif(5, max=10)) 
+ CovarianceFct(0:100, model=gneitingdiff(param))
+ ## instead of formerly CovarianceFct(x,"gneitingdiff",param)
+</pre>
+
+<hr><div align="center">[Package <em>RandomFields</em> version 2.0.66 <a href="00Index.html">Index</a>]</div>
+</body></html>

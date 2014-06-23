@@ -31,7 +31,6 @@ as.SpatialPolygons.GridTopology	as.SpatialPolygons.GridTopology
 as.SpatialPolygons.PolygonsList	as.SpatialPolygons.PolygonsList
 as.SpatialPolygons.SpatialPixels	as.SpatialPolygons.GridTopology
 as.SpatialPolygonsDataFrame.SpatialPolygons	SpatialPolygons-class
-bbexpand	panel
 bbox	bbox
 bbox,ANY-method	bbox
 bbox,Line-method	bbox
@@ -55,7 +54,6 @@ coerce,ppp,SpatialGridDataFrame-method	SpatialGridDataFrame-class
 coerce,ppp,SpatialPoints-method	SpatialPoints-class
 coerce,ppp,SpatialPointsDataFrame-method	SpatialPointsDataFrame-class
 coerce,SpatialGrid,data.frame-method	SpatialGrid-class
-coerce,SpatialGrid,GridTopology-method	GridTopology-class
 coerce,SpatialGrid,SpatialPixels-method	SpatialGrid-class
 coerce,SpatialGrid,SpatialPoints-method	SpatialGrid-class
 coerce,SpatialGrid,SpatialPolygons-method	SpatialGrid-class
@@ -70,7 +68,6 @@ coerce,SpatialLines,SpatialPointsDataFrame-method	SpatialLines-class
 coerce,SpatialLinesDataFrame,data.frame-method	SpatialLinesDataFrame-class
 coerce,SpatialLinesDataFrame,SpatialPointsDataFrame-method	SpatialLinesDataFrame-class
 coerce,SpatialPixels,data.frame-method	SpatialPixels-class
-coerce,SpatialPixels,GridTopology-method	GridTopology-class
 coerce,SpatialPixels,SpatialGrid-method	SpatialPixels-class
 coerce,SpatialPixels,SpatialPolygons-method	as.SpatialPolygons.GridTopology
 coerce,SpatialPixelsDataFrame,data.frame-method	SpatialPixelsDataFrame-class
@@ -79,10 +76,7 @@ coerce,SpatialPixelsDataFrame,SpatialGridDataFrame-method	SpatialPixelsDataFrame
 coerce,SpatialPixelsDataFrame,SpatialPointsDataFrame-method	SpatialPixelsDataFrame-class
 coerce,SpatialPixelsDataFrame,SpatialPolygonsDataFrame-method	SpatialPixelsDataFrame-class
 coerce,SpatialPoints,data.frame-method	SpatialPoints-class
-coerce,SpatialPoints,Line-method	SpatialPoints-class
-coerce,SpatialPoints,Lines-method	SpatialPoints-class
 coerce,SpatialPoints,matrix-method	SpatialPoints-class
-coerce,SpatialPoints,SpatialLines-method	SpatialPoints-class
 coerce,SpatialPoints,SpatialPixels-method	SpatialPoints-class
 coerce,SpatialPointsDataFrame,data.frame-method	SpatialPointsDataFrame-class
 coerce,SpatialPointsDataFrame,SpatialPixelsDataFrame-method	SpatialPoints-class
@@ -234,7 +228,6 @@ image.SpatialGridDataFrame	image
 image.SpatialPixels	image
 image.SpatialPixelsDataFrame	image
 image2Grid	image
-imageScale	image
 is.projected	is.projected
 is.projected,Spatial-method	is.projected
 layout.north.arrow	spplot
@@ -246,12 +239,9 @@ Lines	Line
 Lines-class	Lines-class
 LinesLength	SpatialLines
 loadMeuse	loadmeuse
-longlat.scales	panel
 makegrid	spsample
 mapasp	mapasp
 mapLegendGrob	spplot
-merge	merge
-merge,Spatial,data.frame-method	merge
 meuse	meuse
 meuse.grid	meuse.grid
 meuse.grid_ll	meuse.grid_ll
@@ -283,7 +273,6 @@ over,SpatialPolygons,SpatialGridDataFrame-method	over
 over,SpatialPolygons,SpatialPoints-method	over
 over,SpatialPolygons,SpatialPointsDataFrame-method	over
 over-methods	over
-overDF_for_rgeos	over
 overlay	sp-deprecated
 overlay,SpatialGrid,SpatialPoints-method	sp-deprecated
 overlay,SpatialGrid,SpatialPolygons-method	sp-deprecated
@@ -483,6 +472,5 @@ zerodist2	zerodist
 [,SpatialPointsDataFrame-method	SpatialPointsDataFrame-class
 [,SpatialPolygons-method	SpatialPolygons-class
 [,SpatialPolygonsDataFrame-method	SpatialPolygonsDataFrame-class
-[<-,Spatial-method	Spatial-class
 [[,Spatial,ANY,missing-method	Spatial-class
 [[<-,Spatial,ANY,missing-method	Spatial-class

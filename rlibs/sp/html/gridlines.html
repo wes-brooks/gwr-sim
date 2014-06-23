@@ -1,0 +1,106 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<html><head><title>R: Create N-S and E-W grid lines over a geographic region</title>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+<link rel="stylesheet" type="text/css" href="R.css">
+</head><body>
+
+<table width="100%" summary="page for gridlines {sp}"><tr><td>gridlines {sp}</td><td align="right">R Documentation</td></tr></table>
+
+<h2> Create N-S and E-W grid lines over a geographic region </h2>
+
+<h3>Description</h3>
+
+<p> Create N-S and E-W grid lines over a geographic region; <code>gridat</code> permits the construction of points and labels for non-projected grid annotation </p>
+
+
+<h3>Usage</h3>
+
+<pre>
+gridlines(x, easts = pretty(bbox(x)[1,]), norths = pretty(bbox(x)[2,]),
+ ndiscr = 20) 
+gridat(x, easts = pretty(bbox(x)[1,]), norths = pretty(bbox(x)[2,]),
+ offset=0.5, side="WS")
+</pre>
+
+
+<h3>Arguments</h3>
+
+<table summary="R argblock">
+<tr valign="top"><td><code>x</code></td>
+<td>
+<p>object deriving from class <a href="Spatial-class.html">Spatial-class</a></p>
+</td></tr>
+<tr valign="top"><td><code>easts</code></td>
+<td>
+<p>numeric; east-west values for vertical lines</p>
+</td></tr>
+<tr valign="top"><td><code>norths</code></td>
+<td>
+<p>numeric; north-south values for horizontal lines</p>
+</td></tr>
+<tr valign="top"><td><code>ndiscr</code></td>
+<td>
+<p>integer; number of points used to discretize the line, could
+be set to 2, unless the grid is (re)projected</p>
+</td></tr>
+<tr valign="top"><td><code>offset</code></td>
+<td>
+<p>offset value to be returned, see <a href="../../graphics/html/text.html">text</a></p>
+</td></tr>
+<tr valign="top"><td><code>side</code></td>
+<td>
+<p>default &ldquo;WS&rdquo;, if &ldquo;EN&rdquo; labels placed on the top and right borders</p>
+</td></tr>
+</table>
+
+
+<h3>Value</h3>
+
+ <p><code>gridlines</code> returns an object of class <a href="SpatialLines-class.html">SpatialLines-class</a>, with lines as specified;
+the return object inherits the projection information of <code>x</code>; <code>gridat</code> returns a SpatialPointsDataFrame with points at the west and south ends of the grid lines created by <code>gridlines</code>, with degree labels</p>
+
+
+<h3>Author(s)</h3>
+
+<p>Edzer Pebesma, <a href="mailto:edzer.pebesma@uni-muenster.de">edzer.pebesma@uni-muenster.de</a>, using example code
+of Roger Bivand.
+</p>
+
+
+<h3>See Also</h3>
+
+ <p><a href="../../rgdal/html/spTransform.html">spTransform</a>; llgridlines in <code>rgdal</code> (recent versions) for plotting long-lat grid over projected data </p>
+
+
+<h3>Examples</h3>
+
+<pre>
+data(meuse)
+coordinates(meuse) = ~x+y
+plot(meuse)
+plot(gridlines(meuse), add=TRUE)
+title("default gridlines within Meuse bounding box")
+
+if (require(rgdal)) {
+proj4string(meuse) &lt;- CRS("+init=epsg:28992")
+meuse_ll &lt;- spTransform(meuse, CRS("+proj=longlat +datum=WGS84"))
+grd &lt;- gridlines(meuse_ll)
+grd_x &lt;- spTransform(grd, CRS("+init=epsg:28992"))
+plot(meuse)
+plot(grd_x, add=TRUE, lty=2)
+grdat_ll &lt;- gridat(meuse_ll)
+grdat_x &lt;- spTransform(grdat_ll, CRS("+init=epsg:28992"))
+text(coordinates(grdat_x), labels=parse(text=grdat_x$labels),
+  pos=grdat_x$pos, offset=grdat_x$offset)
+plot(meuse)
+plot(grd_x, add=TRUE, lty=2)
+grdat_ll &lt;- gridat(meuse_ll, side="EN")
+grdat_x &lt;- spTransform(grdat_ll, CRS("+init=epsg:28992"))
+text(coordinates(grdat_x), labels=parse(text=grdat_x$labels),
+  pos=grdat_x$pos, offset=grdat_x$offset)
+}
+
+</pre>
+
+<hr><div align="center">[Package <em>sp</em> version 1.0-11 <a href="00Index.html">Index</a>]</div>
+</body></html>
