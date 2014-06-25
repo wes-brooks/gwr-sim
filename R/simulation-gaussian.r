@@ -92,12 +92,9 @@ for (k in 1:100) {
     } else if ((process-1) %/% 6 == 1) {
         B1 = matrix(rep(coord, N), N, N)
     } else if ((process-1) %/% 6 == 2) {
-        Xmat = matrix(rep(rep(coord, times=N), times=N), N**2, N**2)
-        Ymat = matrix(rep(rep(coord, each=N), times=N), N**2, N**2)
-        D = (Xmat-0.5)**2 + (Ymat-0.5)**2
-        d = D[,435]
-        B1 = matrix(max(d)-d, N, N)
-        B1 = B1 / max(B1)
+        Xcoord = rep(coord, times=N)
+        Ycoord = rep(coord, each=N)
+        B1 = 1 - ((Xcoord-0.5)**2 + (Ycoord-0.5)**2)/0.5
     }
     write.log('generated B1 coefficient surface', logfile)
 
