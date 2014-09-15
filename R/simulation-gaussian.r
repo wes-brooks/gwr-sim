@@ -1,13 +1,13 @@
 library(lagr)
-library(sp)
 library(RandomFields)
 
 if (interactive()) {
-    process = 1
+    process = 6
 } else {
     args <- commandArgs(trailingOnly = TRUE)
-    process = args[1]
+    process = as.numeric(args[1])
 }
+print(process)
 
 #Establish the simulation parameters
 tau = rep(0.1, 18) #tau is the spatial autocorrelation range parameter for the covariates
@@ -27,11 +27,12 @@ set.seed(process %% 6)
 N = 20 #number of width and length divisions in the domain
 coord = seq(0, 1, length.out=N)
 if (parameters[['tau']] > 0) {
-    d1 = RFsimulate(RMexp(var=1, scale=parameters[['tau']]), x=coord, y=coord)@data[[1]]
-    d2 = RFsimulate(RMexp(var=1, scale=parameters[['tau']]), x=coord, y=coord)@data[[1]]
-    d3 = RFsimulate(RMexp(var=1, scale=parameters[['tau']]), x=coord, y=coord)@data[[1]]
-    d4 = RFsimulate(RMexp(var=1, scale=parameters[['tau']]), x=coord, y=coord)@data[[1]]
-    d5 = RFsimulate(RMexp(var=1, scale=parameters[['tau']]), x=coord, y=coord)@data[[1]]
+    covariate.model = RMexp(var=1, scale=parameters[['tau']]) + RMnugget(var=0.2)
+    d1 = RFsimulate(covariate.model, x=coord, y=coord)@data[[1]]
+    d2 = RFsimulate(covariate.model, x=coord, y=coord)@data[[1]]
+    d3 = RFsimulate(covariate.model, x=coord, y=coord)@data[[1]]
+    d4 = RFsimulate(covariate.model, x=coord, y=coord)@data[[1]]
+    d5 = RFsimulate(covariate.model, x=coord, y=coord)@data[[1]]
 } else {
     d1 = rnorm(N**2, mean=0, sd=1)
     d2 = rnorm(N**2, mean=0, sd=1)
@@ -60,10 +61,10 @@ if (parameters[['sigma.tau']] == 0) {epsilon = rnorm(N**2, mean=0, sd=parameters
 if (parameters[['sigma.tau']] > 0) {epsilon = grf(n=N**2, grid='reg', cov.model='exponential', cov.pars=c(parameters[['sigma']]**2,parameters[['sigma.tau']]))$data}
 
 #Calculate the coefficient surfaces
-B1 = RFsimulate(RMexp(var=2.5, scale=0.3), x=coord, y=coord)@data[[1]]
-B2 = RFsimulate(RMexp(var=0.5, scale=0.3), x=coord, y=coord)@data[[1]]
-B3 = RFsimulate(RMexp(var=0.1, scale=0.3), x=coord, y=coord)@data[[1]]
-B4 = RFsimulate(RMexp(var=0.02, scale=0.3), x=coord, y=coord)@data[[1]]
+B1 = RFsimulate(RMexp(var=2.5, scale=1), x=coord, y=coord)@data[[1]]
+B2 = RFsimulate(RMexp(var=0.5, scale=1), x=coord, y=coord)@data[[1]]
+B3 = RFsimulate(RMexp(var=0.1, scale=1), x=coord, y=coord)@data[[1]]
+B4 = RFsimulate(RMexp(var=0.02, scale=1), x=coord, y=coord)@data[[1]]
 
 #Generate the response variable and set up the data.frame:
 eta = X1*B1 + X2*B2 + X3+B3 + X4*B4
@@ -73,20 +74,20 @@ sim = data.frame(Y=as.vector(Y), X1=as.vector(X1), X2=as.vector(X2), X3=as.vecto
 indx = sample(400, parameters[['size']])
 data = sim[indx,]
 
+write.table(cbind(x=loc.x[indx], y=loc.y[indx], B1=B1[indx], B2=B2[indx], B3=B3[indx], B4=B4[indx], Y=Y[indx]), file=paste("output/truth", process, "csv", sep="."))
 
 #LAGR:
-write.log('making lagr model.', logfile)
 model = lagr(Y~X1+X2+X3+X4+X5, data=data, family='gaussian', coords=c('loc.x','loc.y'), longlat=FALSE, varselect.method='AIC', bw=0.2, kernel=epanechnikov, bw.type='knn', verbose=TRUE)
 
 #Write LAGR coefficients:
 coefs = t(sapply(model[['model']], function(x) x[['coef']]))
-write.table(coefs, file=paste("coefs", "gwr", process, "csv", sep="."))
+write.table(cbind(x=loc.x[indx], y=loc.y[indx], coefs), file=paste("output/coefs", "lagr", process, "csv", sep="."))
 
 #Write LAGR results:
 fits = as.vector(sapply(model[['model']], function(x) x[['fitted']]))
 resids = Y[indx] - fits
-result = data.frame(fitted=fits, residual=resids)
-write.table(result, file=paste("coefs", "gwr", process, "csv", sep="."))
+result = data.frame(x=loc.x[indx], y=loc.y[indx], fitted=fits, residual=resids)
+write.table(result, file=paste("output/results", "lagr", process, "csv", sep="."))
 
 #Clean up:
 rm(model)
@@ -96,25 +97,21 @@ gc()
 
 
 #GWR:
-write.log('making gwr model.', logfile)
 allvars = replicate(length(indx)**2, c('(Intercept)', 'X1', 'X2', 'X3', 'X4', 'X5'), simplify=FALSE)
-gwr = lagr(Y~X1+X2+X3+X4+X5, data=data, family='gaussian', coords=c('loc.x','loc.y'), longlat=FALSE, oracle=allvars, bw=0.2, kernel=epanechnikov, bw.type='knn', verbose=TRUE)
+gwr = lagr(Y~X1+X2+X3+X4+X5, data=data, family='gaussian', coords=c('loc.x','loc.y'), longlat=FALSE, oracle=allvars, bw=0.25, kernel=epanechnikov, bw.type='knn', verbose=TRUE)
 
 #Write the GWR coefficients
 cgwr = t(sapply(gwr[['model']], function(x) x[['coef']]))
-write.table(cgwr, file=paste("coefs", "gwr", process, "csv", sep="."))
+write.table(cbind(x=loc.x[indx], y=loc.y[indx], cgwr), file=paste("output/coefs", "gwr", process, "csv", sep="."))
 
 #Write the GWR results:
 fgwr = as.vector(sapply(gwr[['model']], function(x) x[['fitted']]))
 rgwr = Y[indx] - fgwr
-result = data.frame(fitted=fgwr, residual=rgwr)
-write.table(result, file=paste("coefs", "gwr", process, "csv", sep="."))
+result = data.frame(x=loc.x[indx], y=loc.y[indx], fitted=fgwr, residual=rgwr)
+write.table(result, file=paste("output/results", "gwr", process, "csv", sep="."))
 
 #Clean up:
-rm(model)
-rm(coefs)
+rm(gwr)
+rm(cgwr)
 rm(result)
 gc()
-
-#We're finished
-write.log('done.', logfile)
