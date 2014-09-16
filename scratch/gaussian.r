@@ -64,10 +64,10 @@ if (parameters[['sigma.tau']] == 0) {epsilon = rnorm(N**2, mean=0, sd=parameters
 if (parameters[['sigma.tau']] > 0) {epsilon = grf(n=N**2, grid='reg', cov.model='exponential', cov.pars=c(parameters[['sigma']]**2,parameters[['sigma.tau']]))$data}
 
 #calculate the B1 coefficient surface for the appropriate function type
-B1 = RFsimulate(RMexp(var=2.5, scale=0.3), x=coord, y=coord)@data[[1]]
-B2 = RFsimulate(RMexp(var=0.5, scale=0.3), x=coord, y=coord)@data[[1]]
-B3 = RFsimulate(RMexp(var=0.1, scale=0.3), x=coord, y=coord)@data[[1]]
-B4 = RFsimulate(RMexp(var=0.02, scale=0.3), x=coord, y=coord)@data[[1]]
+B1 = RFsimulate(RMexp(var=2.5, scale=1), x=coord, y=coord)@data[[1]]
+B2 = RFsimulate(RMexp(var=0.5, scale=1), x=coord, y=coord)@data[[1]]
+B3 = RFsimulate(RMexp(var=0.1, scale=1), x=coord, y=coord)@data[[1]]
+B4 = RFsimulate(RMexp(var=0.02, scale=1), x=coord, y=coord)@data[[1]]
 
 #if ((process-1) %/% 6 == 0) {
 #    B1 = matrix(rep(ifelse(coord<=0.4, 0, ifelse(coord<0.6,5*(coord-0.4),1)), N), N, N)
