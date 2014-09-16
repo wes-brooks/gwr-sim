@@ -11,7 +11,7 @@ registerDoMC(3)
 
 process = 1
 cluster = NA
-N = 30 #number of width and length divisions in the domain
+N = 20 #number of width and length divisions in the domain
 settings = 18 #number of unique simulation settings
 functions = 3 #number of function types
 coord = seq(0, 1, length.out=N) #coordinates of the generated observations
@@ -31,11 +31,11 @@ set.seed(8)
 
 #Generate the covariates:
 if (parameters[['tau']] > 0) {
-    d1 = grf(n=N**2, grid='reg', cov.model='exponential', cov.pars=c(1,parameters[['tau']]))$data
-    d2 = grf(n=N**2, grid='reg', cov.model='exponential', cov.pars=c(1,parameters[['tau']]))$data
-    d3 = grf(n=N**2, grid='reg', cov.model='exponential', cov.pars=c(1,parameters[['tau']]))$data
-    d4 = grf(n=N**2, grid='reg', cov.model='exponential', cov.pars=c(1,parameters[['tau']]))$data
-    d5 = grf(n=N**2, grid='reg', cov.model='exponential', cov.pars=c(1,parameters[['tau']]))$data
+    d1 = RFsimulate(RMexp(var=1, scale=parameters[['tau']]), x=coord, y=coord)@data[[1]]
+    d2 = RFsimulate(RMexp(var=1, scale=parameters[['tau']]), x=coord, y=coord)@data[[1]]
+    d3 = RFsimulate(RMexp(var=1, scale=parameters[['tau']]), x=coord, y=coord)@data[[1]]
+    d4 = RFsimulate(RMexp(var=1, scale=parameters[['tau']]), x=coord, y=coord)@data[[1]]
+    d5 = RFsimulate(RMexp(var=1, scale=parameters[['tau']]), x=coord, y=coord)@data[[1]]
 } else {
     d1 = rnorm(N**2, mean=0, sd=1)
     d2 = rnorm(N**2, mean=0, sd=1)
@@ -64,18 +64,23 @@ if (parameters[['sigma.tau']] == 0) {epsilon = rnorm(N**2, mean=0, sd=parameters
 if (parameters[['sigma.tau']] > 0) {epsilon = grf(n=N**2, grid='reg', cov.model='exponential', cov.pars=c(parameters[['sigma']]**2,parameters[['sigma.tau']]))$data}
 
 #calculate the B1 coefficient surface for the appropriate function type
-if ((process-1) %/% 6 == 0) {
-    B1 = matrix(rep(ifelse(coord<=0.4, 0, ifelse(coord<0.6,5*(coord-0.4),1)), N), N, N)
-} else if ((process-1) %/% 6 == 1) {
-    B1 = matrix(rep(coord, N), N, N)
-} else if ((process-1) %/% 6 == 2) {
-    Xmat = matrix(rep(rep(coord, times=N), times=N), N**2, N**2)
-    Ymat = matrix(rep(rep(coord, each=N), times=N), N**2, N**2)
-    D = (Xmat-0.5)**2 + (Ymat-0.5)**2
-    d = D[,435]
-    B1 = matrix(max(d)-d, N, N)
-    B1 = B1 / max(B1)
-}
+B1 = RFsimulate(RMexp(var=2.5, scale=0.3), x=coord, y=coord)@data[[1]]
+B2 = RFsimulate(RMexp(var=0.5, scale=0.3), x=coord, y=coord)@data[[1]]
+B3 = RFsimulate(RMexp(var=0.1, scale=0.3), x=coord, y=coord)@data[[1]]
+B4 = RFsimulate(RMexp(var=0.02, scale=0.3), x=coord, y=coord)@data[[1]]
+
+#if ((process-1) %/% 6 == 0) {
+#    B1 = matrix(rep(ifelse(coord<=0.4, 0, ifelse(coord<0.6,5*(coord-0.4),1)), N), N, N)
+#} else if ((process-1) %/% 6 == 1) {
+#    B1 = matrix(rep(coord, N), N, N)
+#} else if ((process-1) %/% 6 == 2) {
+#    Xmat = matrix(rep(rep(coord, times=N), times=N), N**2, N**2)
+#    Ymat = matrix(rep(rep(coord, each=N), times=N), N**2, N**2)
+#    D = (Xmat-0.5)**2 + (Ymat-0.5)**2
+#    d = D[,435]
+#    B1 = matrix(max(d)-d, N, N)
+#    B1 = B1 / max(B1)
+#}
 
 #Generate the response variable and set up the data.frame:
 eta = X1*B1
@@ -93,6 +98,7 @@ fl = cbind(loc.x, loc.y)[sample(1:N**2, 10),]
 #MODELS:
 S = 100 #number of draws from the bandwidth distribution for each replication
 model = lagr(Y~X1+X2+X3+X4+X5, data=sim, family=gaussian, coords=c('loc.x','loc.y'), longlat=FALSE, varselect.method='AIC', bw=0.2, kernel=epanechnikov, bw.type='knn', verbose=TRUE)
+
 stop()
 
 cc = sapply(model[['model']], function(x) x[['coef']])
