@@ -115,7 +115,7 @@ for (process in 1:6) {
 }
 
 #As a final act, print the coefficients that we used in the simulation:
-pdf("~/Desktop/coefs.pdf", 9, 4)
+pdf("~/Desktop/coefs.pdf", 8, 3)
 par(oma=c(1,1,1,1))
 par('mar'=c(4,1,1,1))
 layout(matrix(1:3,1,3))
