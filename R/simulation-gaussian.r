@@ -99,7 +99,7 @@ gc()
 
 #GWR:
 allvars = replicate(length(indx)**2, c('(Intercept)', 'X1', 'X2', 'X3', 'X4', 'X5'), simplify=FALSE)
-gwr = lagr(Y~X1+X2+X3+X4+X5, data=data, family='gaussian', coords=c('loc.x','loc.y'), longlat=FALSE, oracle=allvars, bw=0.h, kernel=epanechnikov, bw.type='knn', verbose=TRUE)
+gwr = lagr(Y~X1+X2+X3+X4+X5, data=data, family='gaussian', coords=c('loc.x','loc.y'), longlat=FALSE, oracle=allvars, bw=h, kernel=epanechnikov, bw.type='knn', verbose=TRUE)
 
 #Write the GWR coefficients
 cgwr = t(sapply(gwr[['model']], function(x) x[['coef']]))
