@@ -73,11 +73,12 @@ sim = data.frame(Y=as.vector(Y), X1=as.vector(X1), X2=as.vector(X2), X3=as.vecto
 
 indx = sample(400, parameters[['size']])
 data = sim[indx,]
+h = 0.5*parameters[['size']]**(-1/6)
 
 write.table(cbind(x=loc.x[indx], y=loc.y[indx], B1=B1[indx], B2=B2[indx], B3=B3[indx], B4=B4[indx], Y=Y[indx]), file=paste("output/truth", process, "csv", sep="."))
 
 #LAGR:
-model = lagr(Y~X1+X2+X3+X4+X5, data=data, family='gaussian', coords=c('loc.x','loc.y'), longlat=FALSE, varselect.method='AIC', bw=0.2, kernel=epanechnikov, bw.type='knn', verbose=TRUE)
+model = lagr(Y~X1+X2+X3+X4+X5, data=data, family='gaussian', coords=c('loc.x','loc.y'), longlat=FALSE, varselect.method='AIC', bw=h, kernel=epanechnikov, bw.type='knn', verbose=TRUE)
 
 #Write LAGR coefficients:
 coefs = t(sapply(model[['model']], function(x) x[['coef']]))
@@ -98,7 +99,7 @@ gc()
 
 #GWR:
 allvars = replicate(length(indx)**2, c('(Intercept)', 'X1', 'X2', 'X3', 'X4', 'X5'), simplify=FALSE)
-gwr = lagr(Y~X1+X2+X3+X4+X5, data=data, family='gaussian', coords=c('loc.x','loc.y'), longlat=FALSE, oracle=allvars, bw=0.25, kernel=epanechnikov, bw.type='knn', verbose=TRUE)
+gwr = lagr(Y~X1+X2+X3+X4+X5, data=data, family='gaussian', coords=c('loc.x','loc.y'), longlat=FALSE, oracle=allvars, bw=0.h, kernel=epanechnikov, bw.type='knn', verbose=TRUE)
 
 #Write the GWR coefficients
 cgwr = t(sapply(gwr[['model']], function(x) x[['coef']]))
