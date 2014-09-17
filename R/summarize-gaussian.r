@@ -16,7 +16,7 @@ for (j in 1:18) {
     MISEX[['gwr']][[j]] = list()
     freq.zero[[j]] = list()
 
-    for (k in 1:4) {
+    for (k in 1:3) {
         B = paste("B", k, sep="")
         X = paste("X", k, sep="")
 
@@ -25,9 +25,9 @@ for (j in 1:18) {
 
         freq.zero[[j]][[k]] = (coef.lagr[[X]] == 0) %>% mean
     }
-    MISEX[['lagr']][[j]][[5]] = (coef.lagr$X5)**2 %>% mean
-    MISEX[['gwr']][[j]][[5]] = (coef.gwr$X5)**2 %>% mean
-    freq.zero[[j]][[5]] = (coef.lagr$X5 == 0) %>% mean
+    MISEX[['lagr']][[j]][[4]] = (coef.lagr$X4)**2 %>% mean
+    MISEX[['gwr']][[j]][[4]] = (coef.gwr$X4)**2 %>% mean
+    freq.zero[[j]][[4]] = (coef.lagr$X4 == 0) %>% mean
 
     MISEY[['lagr']][[j]] = (results.lagr$residual)**2 %>% mean
     MISEY[['gwr']][[j]] = (results.gwr$residual)**2 %>% mean
