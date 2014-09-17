@@ -1,14 +1,13 @@
 library(lagr)
+require(sp)
+require(splancs)
+require(foreach)
+require(geoR)
+require(SGL)
 library(lattice)
-library(sp)
-library(splancs)
-library(foreach)
-library(geoR)
-library(RandomFields)
-library(lagr)
-library(doMC)
 
-registerDoMC(7)
+require(doMC)
+registerDoMC(3)
 
 process = 1
 cluster = NA
@@ -65,10 +64,10 @@ if (parameters[['sigma.tau']] == 0) {epsilon = rnorm(N**2, mean=0, sd=parameters
 if (parameters[['sigma.tau']] > 0) {epsilon = grf(n=N**2, grid='reg', cov.model='exponential', cov.pars=c(parameters[['sigma']]**2,parameters[['sigma.tau']]))$data}
 
 #calculate the B1 coefficient surface for the appropriate function type
-B1 = RFsimulate(RMexp(var=2.5, scale=0.3), x=coord, y=coord)@data[[1]]
-B2 = RFsimulate(RMexp(var=0.5, scale=0.3), x=coord, y=coord)@data[[1]]
-B3 = RFsimulate(RMexp(var=0.1, scale=0.3), x=coord, y=coord)@data[[1]]
-B4 = RFsimulate(RMexp(var=0.02, scale=0.3), x=coord, y=coord)@data[[1]]
+B1 = RFsimulate(RMexp(var=2.5, scale=1), x=coord, y=coord)@data[[1]]
+B2 = RFsimulate(RMexp(var=0.5, scale=1), x=coord, y=coord)@data[[1]]
+B3 = RFsimulate(RMexp(var=0.1, scale=1), x=coord, y=coord)@data[[1]]
+B4 = RFsimulate(RMexp(var=0.02, scale=1), x=coord, y=coord)@data[[1]]
 
 #if ((process-1) %/% 6 == 0) {
 #    B1 = matrix(rep(ifelse(coord<=0.4, 0, ifelse(coord<0.6,5*(coord-0.4),1)), N), N, N)
@@ -84,26 +83,31 @@ B4 = RFsimulate(RMexp(var=0.02, scale=0.3), x=coord, y=coord)@data[[1]]
 #}
 
 #Generate the response variable and set up the data.frame:
-eta = X1*B1 + X2*B2 + X3+B3
-#p = binomial()$linkinv(eta)
-#Y = rbinom(N**2, p=p, size=1)
+eta = X1*B1
+p = exp(eta) / (1+exp(eta))
+mu = exp(eta)
+
+#binomial, gaussian, poisson response:
+Y = rbinom(N**2, p=p, size=1)
 Y = eta + epsilon
+Y = rpois(N**2, mu)
+
 sim = data.frame(Y=as.vector(Y), X1=as.vector(X1), X2=as.vector(X2), X3=as.vector(X3), X4=as.vector(X4), X5=as.vector(X5), loc.x, loc.y)
-fl = cbind(loc.x, loc.y)[seq(1, N**2, by=13),]
-fl = cbind(loc.x, loc.y)[sample(1:N**2, 3),]
-colnames(fl) = c('loc.x', 'loc.y')
+fl = cbind(loc.x, loc.y)[sample(1:N**2, 10),]
 
 #MODELS:
 S = 100 #number of draws from the bandwidth distribution for each replication
-model = lagr(Y~X1+X2+X3+X4+X5, data=sim, family='binomial', coords=c('loc.x','loc.y'), longlat=FALSE, varselect.method='AICc', bw=0.35, kernel=epanechnikov, bw.type='knn', verbose=TRUE)
-cc = sapply(model[['model']], function(x) x[['coef']])
-wireframe(matrix(cc[2,], 30, 30))
+model = lagr(Y~X1+X2+X3+X4+X5, data=sim, family=gaussian, coords=c('loc.x','loc.y'), longlat=FALSE, varselect.method='AIC', bw=0.2, kernel=epanechnikov, bw.type='knn', verbose=TRUE)
 
 stop()
 
+cc = sapply(model[['model']], function(x) x[['coef']])
+wireframe(matrix(cc[2,], 30, 30))
+
+
 #LAGR:
 write.log('making lagr model.', logfile)
-#bw.lagr = lagr.sel(Y~X1+X2+X3+X4+X5-1, data=sim, family='gaussian', coords=sim[,c('loc.x','loc.y')], longlat=FALSE, varselect.method='AICc', kernel=epanechnikov, tol.bw=0.01, bw.type='knn', verbose=TRUE, bwselect.method='AICc', resid.type='pearson')
+#bw.lagr = lagr.tune(Y~X1+X2+X3+X4+X5, data=sim, family='binomial', coords=c('loc.x','loc.y'), longlat=FALSE, varselect.method='AIC', kernel=epanechnikov, tol.bw=0.01, bw.type='knn', verbose=TRUE, bwselect.method='AIC', resid.type='deviance')
 #save(bw.lagr, file=paste("bw.", cluster, ".", process, ".lagr.RData", sep=""))
 
 #Draw some typical bandwidths from the CDF and produce a model with each.

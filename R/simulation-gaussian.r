@@ -50,11 +50,11 @@ L = chol(S)
 
 #Force correlation on the Gaussian random fields:
 D = as.matrix(cbind(d1, d2, d3, d4, d5)) %*% L
-X1 = matrix(D[,1], N, N)
-X2 = matrix(D[,2], N, N)
-X3 = matrix(D[,3], N, N)
-X4 = matrix(D[,4], N, N)
-X5 = matrix(D[,5], N, N)
+X1 = D[,1]
+X2 = D[,2]
+X3 = D[,3]
+X4 = D[,4]
+X5 = D[,5]
 
 #Simulate the noise term, either with or without spatial correlation
 if (parameters[['sigma.tau']] == 0) {epsilon = rnorm(N**2, mean=0, sd=parameters[['sigma']])}
@@ -67,7 +67,7 @@ B3 = RFsimulate(RMexp(var=0.1, scale=1), x=coord, y=coord)@data[[1]]
 B4 = RFsimulate(RMexp(var=0.02, scale=1), x=coord, y=coord)@data[[1]]
 
 #Generate the response variable and set up the data.frame:
-eta = X1*B1 + X2*B2 + X3+B3 + X4*B4
+eta = X1*B1 + X2*B2 + X3*B3 + X4*B4
 Y = eta + epsilon
 sim = data.frame(Y=as.vector(Y), X1=as.vector(X1), X2=as.vector(X2), X3=as.vector(X3), X4=as.vector(X4), X5=as.vector(X5), loc.x, loc.y)
 
