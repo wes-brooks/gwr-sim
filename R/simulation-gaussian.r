@@ -67,7 +67,7 @@ for (process in 1:6) {
         indx = indexes[[i]]
         data = sim[indx,]
         size = length(indx)
-        h = 0.5*size**(-1/6)
+        h = 1.5*size**(-1/6) - 0.36
 
         file.num = (i-1)*6 + process
         write.table(cbind(x=loc.x[indx], y=loc.y[indx], B1=B1[indx], B2=B2[indx], B3=B3[indx], Y=Y[indx]), file=paste("output/truth", file.num, "csv", sep="."))

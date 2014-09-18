@@ -108,6 +108,7 @@ wireframe(matrix(cc[2,], 30, 30))
 #LAGR:
 write.log('making lagr model.', logfile)
 #bw.lagr = lagr.tune(Y~X1+X2+X3+X4+X5, data=sim, family='binomial', coords=c('loc.x','loc.y'), longlat=FALSE, varselect.method='AIC', kernel=epanechnikov, tol.bw=0.01, bw.type='knn', verbose=TRUE, bwselect.method='AIC', resid.type='deviance')
+bw.lagr = lagr.tune(Y~X1+X2+X3+X4+X5, data=sim, family='gaussian', coords=c('loc.x','loc.y'), longlat=FALSE, varselect.method='AIC', kernel=epanechnikov, tol.bw=0.01, bw.type='knn', verbose=TRUE, bwselect.method='AIC', resid.type='deviance')
 #save(bw.lagr, file=paste("bw.", cluster, ".", process, ".lagr.RData", sep=""))
 
 #Draw some typical bandwidths from the CDF and produce a model with each.
