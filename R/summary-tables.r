@@ -1,3 +1,5 @@
+library(brooks)
+
 #The simulation parameters
 rho = rep(c(rep(0, 2), rep(0.5, 2), rep(0.9, 2)), 6) #rho is the correlation of the covariates
 sigma.tau = rep(0, 18) #sigma.tau is the spatial autocorrelation range parameter of the noise term
