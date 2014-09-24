@@ -27,21 +27,24 @@ B3 = RFsimulate(RMexp(var=0.1, scale=1), x=coord, y=coord)@data[[1]]
 
 indexes = list(sample(400, 100), sample(400, 200), 1:400)
 
+#The data to use for this simulation setting:
+covariate.model = RMexp(var=1, scale=0.1) + RMnugget(var=0.2)
+d1 = RFsimulate(covariate.model, x=coord, y=coord)@data[[1]]
+d2 = RFsimulate(covariate.model, x=coord, y=coord)@data[[1]]
+d3 = RFsimulate(covariate.model, x=coord, y=coord)@data[[1]]
+d4 = RFsimulate(covariate.model, x=coord, y=coord)@data[[1]]
+
+loc.x = rep(coord, times=N)
+loc.y = rep(coord, each=N)
+
+#Simulate the noise term
+epsilon = rnorm(N**2, mean=0, sd=1)
+
 for (process in 1:6) {
     print(process)
 
     #Simulation parameters are based on the value of process
     parameters = params[process,]
-
-    #The data to use for this simulation setting:
-    covariate.model = RMexp(var=1, scale=0.1) + RMnugget(var=0.2)
-    d1 = RFsimulate(covariate.model, x=coord, y=coord)@data[[1]]
-    d2 = RFsimulate(covariate.model, x=coord, y=coord)@data[[1]]
-    d3 = RFsimulate(covariate.model, x=coord, y=coord)@data[[1]]
-    d4 = RFsimulate(covariate.model, x=coord, y=coord)@data[[1]]
-
-    loc.x = rep(coord, times=N)
-    loc.y = rep(coord, each=N)
 
     #Use the Cholesky decomposition to correlate the random fields:
     S = matrix(parameters[['rho']], 4, 4)
@@ -54,13 +57,10 @@ for (process in 1:6) {
     X2 = D[,2]
     X3 = D[,3]
     X4 = D[,4]
-
-    #Simulate the noise term, either with or without spatial correlation
-    epsilon = rnorm(N**2, mean=0, sd=parameters[['sigma']])
     
     #Generate the response variable and set up the data.frame:
     eta = X1*B1 + X2*B2 + X3*B3
-    Y = eta + epsilon
+    Y = eta + epsilon * parameters[['sigma']]
     sim = data.frame(Y=as.vector(Y), X1=as.vector(X1), X2=as.vector(X2), X3=as.vector(X3), X4=as.vector(X4), loc.x, loc.y)
 
     for (i in 1:3) {
@@ -73,7 +73,7 @@ for (process in 1:6) {
         write.table(cbind(x=loc.x[indx], y=loc.y[indx], B1=B1[indx], B2=B2[indx], B3=B3[indx], Y=Y[indx]), file=paste("output/truth", file.num, "csv", sep="."))
 
         #LAGR:
-        model = lagr(Y~X1+X2+X3+X4, data=data, family='gaussian', coords=c('loc.x','loc.y'), longlat=FALSE, varselect.method='AIC', bw=h, kernel=epanechnikov, bw.type='knn', verbose=TRUE)
+        model = lagr(Y~X1+X2+X3+X4, data=data, family='gaussian', coords=c('loc.x','loc.y'), longlat=FALSE, varselect.method='AIC', bw=h, kernel=epanechnikov, bw.type='knn', verbose=TRUE, n.lambda=100, lagr.convergence.tol=0.005)
 
         #Write LAGR coefficients:
         coefs = t(sapply(model[['model']], function(x) x[['coef']]))

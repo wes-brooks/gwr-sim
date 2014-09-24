@@ -1,4 +1,5 @@
 library(brooks)
+library(dplyr)
 
 #The simulation parameters
 rho = rep(c(rep(0, 2), rep(0.5, 2), rep(0.9, 2)), 6) #rho is the correlation of the covariates
@@ -95,6 +96,14 @@ for (i in 1:18) {
 }
 
 xtable.printbold(xtable(cbind(table.zero.freq, table.MISE.Y)), which.bold=cbind(matrix(FALSE, 18,4),bold.Y), hline.after=NULL,
+                 only.contents=TRUE,
+                 include.rownames=FALSE,
+                 include.colnames=FALSE,
+                 add.to.row=sim.prefix)
+
+
+
+print(xtable(table.zero.freq), hline.after=NULL,
                  only.contents=TRUE,
                  include.rownames=FALSE,
                  include.colnames=FALSE,
