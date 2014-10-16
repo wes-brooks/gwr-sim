@@ -25,6 +25,9 @@ B1 = RFsimulate(RMexp(var=10, scale=1), x=coord, y=coord)@data[[1]]
 B2 = RFsimulate(RMexp(var=1, scale=1), x=coord, y=coord)@data[[1]]
 B3 = RFsimulate(RMexp(var=0.1, scale=1), x=coord, y=coord)@data[[1]]
 
+#Seed the RNG
+set.seed(2)
+
 indexes = list(sample(400, 100), sample(400, 200), 1:400)
 
 #The data to use for this simulation setting:
